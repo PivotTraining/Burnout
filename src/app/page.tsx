@@ -66,14 +66,14 @@ function Hero() {
           <div className="fade-up" style={{ animationDelay: "400ms" }}>
             <div className="flex flex-col sm:flex-row gap-4 mb-16">
               <a
-                href="https://pressureiqtest.com/signup"
+                href="#pricing"
                 className="inline-flex items-center justify-center gap-2 bg-ember hover:bg-ember-light text-white font-semibold px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl text-base"
               >
                 Start Free Assessment
                 <ArrowRight size={18} />
               </a>
               <a
-                href="https://pressureiqtest.com/teams"
+                href="mailto:hello@pivottraining.us?subject=BurnoutIQ%20Team%20Solutions"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 text-white font-medium px-8 py-4 rounded-lg transition-all border border-white/10 text-base"
               >
                 Team Solutions
@@ -296,7 +296,7 @@ const plans = [
     period: "forever",
     desc: "Basic burnout risk score",
     cta: "Start Free",
-    href: "https://pressureiqtest.com/signup",
+    href: "https://www.burnoutiqtest.com/start",
     isStripe: false,
     dark: false,
     popular: false,
@@ -544,7 +544,7 @@ function CTASection() {
         <div className="fade-up" style={{ animationDelay: "200ms" }}>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
-              href="https://pressureiqtest.com/signup"
+              href="#pricing"
               className="inline-flex items-center justify-center gap-2 bg-ember hover:bg-ember-light text-white font-semibold px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl text-base"
             >
               Start Free Assessment
@@ -576,9 +576,9 @@ const footerLinks = {
     { label: "Contact", href: "mailto:hello@pivottraining.us", external: false },
   ],
   Legal: [
-    { label: "Privacy", href: "https://pressureiqtest.com/privacy", external: true },
-    { label: "Terms", href: "https://pressureiqtest.com/terms", external: true },
-    { label: "Security", href: "https://pressureiqtest.com/security", external: true },
+    { label: "Privacy", href: "https://www.burnoutiqtest.com/privacy", external: true },
+    { label: "Terms", href: "https://www.burnoutiqtest.com/terms", external: true },
+    { label: "Security", href: "https://www.burnoutiqtest.com/security", external: true },
   ],
 };
 
