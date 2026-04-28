@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import BurnoutLogo from "./BurnoutLogo";
 
 export default function Navbar({ forceScrolled = false }: { forceScrolled?: boolean }) {
   const [scrolled, setScrolled] = useState(forceScrolled);
@@ -34,14 +34,10 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
     >
       <div className="section-wide flex items-center justify-between h-16 md:h-20">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-ember flex items-center justify-center">
-            <span className="text-white font-bold text-sm">B</span>
-          </div>
-          <span className="text-lg font-bold text-navy group-hover:text-ember transition-colors">
-            BurnoutIQ
-          </span>
-        </Link>
+        <BurnoutLogo
+          size={36}
+          textClass={scrolled ? "text-navy hover:text-ember transition-colors" : "text-white"}
+        />
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">

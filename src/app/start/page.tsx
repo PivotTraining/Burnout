@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import BurnoutLogo from "@/components/BurnoutLogo";
 import {
   ArrowRight, ArrowLeft, Clock, Save, CheckCircle,
   Mail, Lock, RotateCcw, Copy, Shield,
@@ -339,12 +340,7 @@ export default function StartPage() {
         <div className="max-w-2xl mx-auto px-4 py-3 space-y-2">
           {/* Logo + Bar */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 shrink-0">
-              <div className="w-6 h-6 rounded-md bg-ember flex items-center justify-center">
-                <span className="text-white font-bold text-[10px]">B</span>
-              </div>
-              <span className="text-navy font-bold text-sm">BurnoutIQ</span>
-            </Link>
+            <BurnoutLogo size={26} textClass="text-navy text-sm" />
             <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div
                 className="h-full bg-ember rounded-full transition-all duration-500"
