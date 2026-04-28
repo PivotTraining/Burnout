@@ -66,7 +66,7 @@ function Hero() {
           <div className="fade-up" style={{ animationDelay: "400ms" }}>
             <div className="flex flex-col sm:flex-row gap-4 mb-16">
               <a
-                href="#pricing"
+                href="/start"
                 className="inline-flex items-center justify-center gap-2 bg-ember hover:bg-ember-light text-white font-semibold px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl text-base"
               >
                 Start Free Assessment
@@ -544,7 +544,7 @@ function CTASection() {
         <div className="fade-up" style={{ animationDelay: "200ms" }}>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
-              href="#pricing"
+              href="/start"
               className="inline-flex items-center justify-center gap-2 bg-ember hover:bg-ember-light text-white font-semibold px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl text-base"
             >
               Start Free Assessment
