@@ -112,6 +112,22 @@ body{background:var(--charcoal);color:var(--cream);font-family:'DM Sans',sans-se
 .cta-white:hover{transform:translateY(-2px);box-shadow:0 14px 50px rgba(0,0,0,.3);}
 .scarcity-note{margin-top:16px;font-size:13px;color:rgba(255,255,255,.6);position:relative;}
 
+/* ASSESSMENT BRIDGE */
+.assessment-bridge{padding:64px 24px;background:var(--charcoal);border-top:1px solid rgba(255,255,255,.06);}
+.assessment-bridge-inner{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;background:rgba(201,149,42,.07);border:1px solid rgba(201,149,42,.25);border-radius:6px;padding:40px 48px;}
+.bridge-eyebrow{font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.bridge-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,4vw,42px);line-height:1;letter-spacing:1px;color:var(--cream);margin-bottom:12px;}
+.bridge-sub{font-size:14px;line-height:1.7;color:rgba(245,240,232,.55);}
+.bridge-sub strong{color:rgba(245,240,232,.85);}
+.bridge-cta{display:inline-flex;flex-direction:column;align-items:center;gap:10px;text-align:center;white-space:nowrap;}
+.bridge-btn{display:inline-block;background:transparent;color:var(--gold);font-family:'DM Sans',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:16px 32px;border-radius:2px;border:2px solid var(--gold);text-decoration:none;transition:background .2s,color .2s;}
+.bridge-btn:hover{background:var(--gold);color:var(--charcoal);}
+.bridge-note{font-size:11px;color:rgba(245,240,232,.3);letter-spacing:.5px;}
+@media(max-width:640px){
+  .assessment-bridge-inner{grid-template-columns:1fr;gap:28px;padding:28px 24px;}
+  .bridge-cta{align-items:flex-start;}
+}
+
 footer{background:#111;padding:32px 24px;text-align:center;font-size:12px;color:rgba(245,240,232,.3);border-top:1px solid rgba(255,255,255,.05);}
 footer strong{color:var(--gold);}
 footer a{color:inherit;}
@@ -253,6 +269,21 @@ footer a{color:inherit;}
     </div>
     <button class="register-btn">&rarr; Register Me For Free</button>
     <div class="privacy-note">&#128274; Your information is 100% secure and will never be sold. Confirmation email arrives within minutes.</div>
+  </div>
+</div>
+
+<!-- ASSESSMENT BRIDGE -->
+<div class="assessment-bridge">
+  <div class="assessment-bridge-inner">
+    <div>
+      <div class="bridge-eyebrow">Don&rsquo;t Wait For May 20th</div>
+      <h2 class="bridge-headline">Know Your Burnout Score Before The Webinar</h2>
+      <p class="bridge-sub">The frameworks Chris will teach work best when you already know <strong>where your pressure is building</strong>. Take the free BurnoutIQ assessment now &mdash; 20 questions, 6 minutes &mdash; and walk into the webinar with your own data in hand.</p>
+    </div>
+    <div class="bridge-cta">
+      <a href="https://burnout1.vercel.app/start" target="_blank" rel="noopener noreferrer" class="bridge-btn">Take the Free Assessment &rarr;</a>
+      <span class="bridge-note">&#128274; Free &middot; No account needed &middot; Instant results</span>
+    </div>
   </div>
 </div>
 
