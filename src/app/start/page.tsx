@@ -144,6 +144,10 @@ export default function StartPage() {
   const [savedMsg,    setSavedMsg]    = useState(false);
   const [copied,      setCopied]      = useState(false);
   const [advancing,   setAdvancing]   = useState(false);
+  const [email,       setEmail]       = useState("");
+  const [emailSent,   setEmailSent]   = useState(false);
+  const [emailLoading,setEmailLoading]= useState(false);
+  const [emailError,  setEmailError]  = useState("");
 
   // Check for saved progress
   useEffect(() => {
@@ -255,6 +259,36 @@ export default function StartPage() {
     try { await navigator.clipboard.writeText(resultsText); } catch { /* ignore */ }
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.includes("@")) { setEmailError("Enter a valid email address."); return; }
+    setEmailLoading(true);
+    setEmailError("");
+    try {
+      const res = await fetch("/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          workOverall: workScore.overall,
+          persOverall: persScore.overall,
+          workEE: workScore.ee,
+          workDP: workScore.dp,
+          workPA: workScore.pa,
+          persEE: persScore.ee,
+          persDP: persScore.dp,
+          persPA: persScore.pa,
+        }),
+      });
+      if (!res.ok) throw new Error("send failed");
+      setEmailSent(true);
+    } catch {
+      setEmailError("Something went wrong — try again.");
+    } finally {
+      setEmailLoading(false);
+    }
   };
 
   /* ════════════════════════════════════════
@@ -584,28 +618,49 @@ export default function StartPage() {
           </div>
         </div>
 
-        {/* Email / Copy results */}
+        {/* Email capture */}
         <div className="bg-white rounded-2xl border border-border-gray p-5 fade-up">
-          <p className="text-xs font-bold uppercase tracking-wider text-navy/30 mb-3">Save Your Results</p>
-          <div className="flex gap-2">
-            <a
-              href={mailtoHref}
-              className="flex-1 flex items-center justify-center gap-2 border border-border-gray text-navy text-sm font-medium py-3 rounded-xl hover:bg-light-bg transition-colors"
-            >
-              <Mail className="w-4 h-4" />
-              Email to myself
-            </a>
-            <button
-              onClick={handleCopy}
-              className="flex-1 flex items-center justify-center gap-2 border border-border-gray text-sm font-medium py-3 rounded-xl hover:bg-light-bg transition-colors"
-              style={{ color: copied ? "#22c55e" : undefined }}
-            >
-              {copied
-                ? <><CheckCircle className="w-4 h-4" />Copied!</>
-                : <><Copy className="w-4 h-4 text-navy" /><span className="text-navy">Copy results</span></>
-              }
-            </button>
-          </div>
+          {emailSent ? (
+            <div className="flex items-center gap-3 py-2">
+              <CheckCircle className="w-6 h-6 text-green-500 shrink-0" />
+              <div>
+                <p className="font-semibold text-navy text-sm">Results sent!</p>
+                <p className="text-navy/40 text-xs mt-0.5">Check your inbox — and your spam folder just in case.</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm font-semibold text-navy mb-1">Email yourself these results</p>
+              <p className="text-xs text-navy/40 mb-3">We'll send your full breakdown straight to your inbox — free.</p>
+              <form onSubmit={handleEmailSubmit} className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="flex-1 border border-border-gray rounded-xl px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ember/30 focus:border-ember"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={emailLoading}
+                  className="flex items-center gap-2 bg-ember hover:bg-ember-light text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors disabled:opacity-60"
+                >
+                  {emailLoading ? "Sending…" : <><Mail className="w-4 h-4" />Send</>}
+                </button>
+              </form>
+              {emailError && <p className="text-red-500 text-xs mt-2">{emailError}</p>}
+              <div className="mt-3 pt-3 border-t border-border-gray">
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1.5 text-xs text-navy/40 hover:text-navy/70 transition-colors"
+                  style={{ color: copied ? "#22c55e" : undefined }}
+                >
+                  {copied ? <><CheckCircle className="w-3.5 h-3.5" />Copied to clipboard</> : <><Copy className="w-3.5 h-3.5" />Copy results to clipboard</>}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Professional upsell */}
