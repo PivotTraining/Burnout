@@ -256,19 +256,28 @@ footer a{color:inherit;}
 
 <!-- REGISTER -->
 <div class="register-section" id="register">
-  <div class="register-box">
+  <div class="register-box" id="register-box">
     <h2>Claim Your Free Seat</h2>
     <p>Wednesday, May 20 &middot; 12:00 PM EST &middot; Limited to 500 Attendees</p>
     <div class="field-group">
-      <input type="text" placeholder="First Name" />
-      <input type="text" placeholder="Last Name" />
-      <input type="email" placeholder="Work Email Address" />
-      <input type="text" placeholder="Organization Name" />
-      <select><option value="" disabled selected>Select Your Sector</option><option>Corporate / Enterprise</option><option>K-12 Education</option><option>Higher Education</option><option>Nonprofit Organization</option><option>First Responder / Public Safety</option><option>Healthcare</option><option>Other</option></select>
-      <select><option value="" disabled selected>Your Role / Title</option><option>HR Director / CHRO</option><option>School / District Administrator</option><option>L&D Professional</option><option>Executive / C-Suite</option><option>Department Manager</option><option>Consultant / Coach</option><option>Other</option></select>
+      <input id="reg-first" type="text" placeholder="First Name" required />
+      <input id="reg-last" type="text" placeholder="Last Name" required />
+      <input id="reg-email" type="email" placeholder="Work Email Address" required />
+      <input id="reg-org" type="text" placeholder="Organization Name" />
+      <select id="reg-sector"><option value="" disabled selected>Select Your Sector</option><option>Corporate / Enterprise</option><option>K-12 Education</option><option>Higher Education</option><option>Nonprofit Organization</option><option>First Responder / Public Safety</option><option>Healthcare</option><option>Other</option></select>
+      <select id="reg-role"><option value="" disabled selected>Your Role / Title</option><option>HR Director / CHRO</option><option>School / District Administrator</option><option>L&D Professional</option><option>Executive / C-Suite</option><option>Department Manager</option><option>Consultant / Coach</option><option>Other</option></select>
     </div>
-    <button class="register-btn">&rarr; Register Me For Free</button>
+    <button class="register-btn" id="register-btn" onclick="submitRegistration(event)">&rarr; Register Me For Free</button>
+    <div id="reg-error" style="display:none;margin-top:12px;color:#E8401C;font-size:13px;text-align:center;"></div>
     <div class="privacy-note">&#128274; Your information is 100% secure and will never be sold. Confirmation email arrives within minutes.</div>
+  </div>
+  <!-- Success state -->
+  <div id="register-success" style="display:none;max-width:560px;margin:0 auto;text-align:center;padding:48px 32px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;">
+    <div style="font-size:48px;margin-bottom:16px;">&#127881;</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;margin-bottom:12px;">You&rsquo;re Registered!</h2>
+    <p style="color:rgba(245,240,232,.55);font-size:15px;line-height:1.7;margin-bottom:24px;">Check your inbox — a confirmation email is on its way. The Zoom link will arrive 24 hours before the event.</p>
+    <a href="https://burnoutiqtest.com/start" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:var(--fire);color:white;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:16px 32px;border-radius:2px;text-decoration:none;">Take the Free BurnoutIQ Assessment &rarr;</a>
+    <p style="color:rgba(245,240,232,.3);font-size:12px;margin-top:16px;">Know your burnout score before the webinar.</p>
   </div>
 </div>
 
@@ -281,7 +290,7 @@ footer a{color:inherit;}
       <p class="bridge-sub">The frameworks Chris will teach work best when you already know <strong>where your pressure is building</strong>. Take the free BurnoutIQ assessment now &mdash; 20 questions, 6 minutes &mdash; and walk into the webinar with your own data in hand.</p>
     </div>
     <div class="bridge-cta">
-      <a href="https://burnout1.vercel.app/start" target="_blank" rel="noopener noreferrer" class="bridge-btn">Take the Free Assessment &rarr;</a>
+      <a href="https://burnoutiqtest.com/start" target="_blank" rel="noopener noreferrer" class="bridge-btn">Take the Free Assessment &rarr;</a>
       <span class="bridge-note">&#128274; Free &middot; No account needed &middot; Instant results</span>
     </div>
   </div>
@@ -313,6 +322,51 @@ updateCountdown();setInterval(updateCountdown,1000);
 
 var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){x.target.style.opacity='1';x.target.style.transform='translateY(0)';}});},{threshold:.1});
 document.querySelectorAll('.pain-card,.outcome-item,.who-card,.testimonial-card').forEach(function(el){el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .5s ease,transform .5s ease';obs.observe(el);});
+
+async function submitRegistration(e) {
+  e.preventDefault();
+  var btn = document.getElementById('register-btn');
+  var errEl = document.getElementById('reg-error');
+  var first = document.getElementById('reg-first').value.trim();
+  var last  = document.getElementById('reg-last').value.trim();
+  var email = document.getElementById('reg-email').value.trim();
+  var org   = document.getElementById('reg-org').value.trim();
+  var sector = document.getElementById('reg-sector').value;
+  var role   = document.getElementById('reg-role').value;
+
+  errEl.style.display = 'none';
+  if (!first || !last || !email) {
+    errEl.textContent = 'Please fill in your name and email to register.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.textContent = 'Registering…';
+  btn.disabled = true;
+
+  try {
+    var res = await fetch('/api/webinar-register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firstName: first, lastName: last, email: email, org: org, sector: sector, role: role })
+    });
+    var data = await res.json();
+    if (res.ok && data.success) {
+      document.getElementById('register-box').style.display = 'none';
+      document.getElementById('register-success').style.display = 'block';
+    } else {
+      errEl.textContent = data.error || 'Something went wrong. Please try again.';
+      errEl.style.display = 'block';
+      btn.textContent = '→ Register Me For Free';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    errEl.textContent = 'Network error. Please check your connection and try again.';
+    errEl.style.display = 'block';
+    btn.textContent = '→ Register Me For Free';
+    btn.disabled = false;
+  }
+}
 </script>
 </body>
 </html>
