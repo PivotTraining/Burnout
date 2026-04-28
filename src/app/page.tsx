@@ -296,7 +296,7 @@ const plans = [
     period: "forever",
     desc: "Basic burnout risk score",
     cta: "Start Free",
-    href: "https://www.burnoutiqtest.com/start",
+    href: "/start",
     isStripe: false,
     dark: false,
     popular: false,

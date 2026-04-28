@@ -71,7 +71,7 @@ export default function Navbar() {
             Contact
           </a>
           <a
-            href="https://pressureiqtest.com/signup"
+            href="/start"
             className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-ember text-white text-sm font-semibold hover:bg-ember-light transition-colors shadow-sm"
           >
             Take the Assessment
@@ -123,7 +123,7 @@ export default function Navbar() {
               Contact
             </a>
             <a
-              href="https://pressureiqtest.com/signup"
+              href="/start"
               className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-ember text-white text-sm font-semibold hover:bg-ember-light transition-colors shadow-sm"
               onClick={() => setMobileOpen(false)}
             >
