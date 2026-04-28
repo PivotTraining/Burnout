@@ -48,7 +48,16 @@ export async function POST(req: NextRequest) {
           </div>
           <div style="padding:32px;border:1px solid #eee;border-top:none;border-radius:0 0 6px 6px;">
             <p style="font-size:16px;margin-top:0;">Hi ${firstName},</p>
-            <p style="color:#444;line-height:1.7;">Your seat is reserved for <strong>Wednesday, May 20, 2026 at 12:00 PM EST</strong>. The Zoom link will be sent to this email 24 hours before the event, and again 15 minutes before we go live.</p>
+            <p style="color:#444;line-height:1.7;">Your seat is reserved for <strong>Wednesday, May 20, 2026 at 12:00 PM EST</strong>. Here&rsquo;s everything you need to join:</p>
+
+            <div style="background:#f4f4f4;border-radius:6px;padding:24px 28px;margin:20px 0;">
+              <p style="margin:0 0 4px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#999;">Join Zoom Meeting</p>
+              <a href="https://us06web.zoom.us/j/7486866639" style="display:inline-block;background:#1A1A1A;color:white;font-weight:700;font-size:15px;padding:14px 28px;border-radius:4px;text-decoration:none;margin:10px 0;">Join the Webinar &rarr;</a>
+              <p style="margin:12px 0 0;font-size:13px;color:#666;">
+                <strong>Meeting ID:</strong> 748 686 6639<br/>
+                <a href="https://us06web.zoom.us/j/7486866639" style="color:#E8401C;word-break:break-all;">https://us06web.zoom.us/j/7486866639</a>
+              </p>
+            </div>
 
             <div style="background:#fff8f0;border-left:4px solid #E8401C;padding:16px 20px;border-radius:0 4px 4px 0;margin:24px 0;">
               <p style="margin:0;font-weight:700;font-size:15px;color:#1a1a1a;">While you wait — know your number.</p>
