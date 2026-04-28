@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import BurnoutLogo from "@/components/BurnoutLogo";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -30,13 +31,17 @@ function Hero() {
       <div className="section-wide relative z-10 pt-24 pb-20">
         <div className="max-w-4xl">
           <div className="fade-up">
+            <BurnoutLogo size={72} showText={false} asLink={false} className="mb-8" />
+          </div>
+
+          <div className="fade-up" style={{ animationDelay: "100ms" }}>
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-ember text-sm font-medium px-4 py-2 rounded-full mb-8 border border-white/10">
               <span className="w-2 h-2 rounded-full bg-ember animate-pulse" />
               Maslach Burnout Inventory Framework
             </div>
           </div>
 
-          <div className="fade-up" style={{ animationDelay: "100ms" }}>
+          <div className="fade-up" style={{ animationDelay: "150ms" }}>
             <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[0.95] tracking-tight mb-8">
               Measure Burnout
               <br />
