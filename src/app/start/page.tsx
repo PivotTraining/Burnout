@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import {
   ArrowRight, ArrowLeft, Clock, Save, CheckCircle,
   Mail, Lock, RotateCcw, Copy, Shield,
@@ -260,16 +261,9 @@ export default function StartPage() {
   ════════════════════════════════════════ */
   if (phase === "intro") return (
     <div className="min-h-screen bg-navy flex flex-col">
-      <nav className="section-wide flex items-center justify-between py-5">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-7 h-7 rounded-md bg-ember flex items-center justify-center shrink-0">
-            <span className="text-white font-bold text-xs">B</span>
-          </div>
-          <span className="text-white font-bold">BurnoutIQ</span>
-        </Link>
-      </nav>
+      <Navbar forceScrolled />
 
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
+      <main className="flex-1 flex items-center justify-center px-4 py-12 pt-28">
         <div className="max-w-lg w-full">
           {resumeAvail && (
             <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-2xl flex items-start gap-3 fade-up">
@@ -458,14 +452,8 @@ export default function StartPage() {
 
   return (
     <div className="min-h-screen bg-light-bg">
-      <nav className="bg-white border-b border-border-gray">
-        <div className="section-wide flex items-center justify-between py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-ember flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-xs">B</span>
-            </div>
-            <span className="text-navy font-bold">BurnoutIQ</span>
-          </Link>
+      <Navbar forceScrolled />
+      <div className="section-wide flex justify-end pt-24 pb-2">
           <button
             onClick={() => { setPhase("intro"); setAnswers({}); setIdx(0); }}
             className="flex items-center gap-1.5 text-sm text-navy/40 hover:text-navy/70 transition-colors"
@@ -474,9 +462,8 @@ export default function StartPage() {
             Retake
           </button>
         </div>
-      </nav>
 
-      <main className="max-w-2xl mx-auto px-4 py-10 space-y-4">
+      <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         {/* Header */}
         <div className="text-center fade-up">
           <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full mb-4">
