@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import BurnoutLogo from "@/components/BurnoutLogo";
 import {
   ArrowRight, ArrowLeft, Clock, Save, CheckCircle,
-  Mail, Lock, RotateCcw, Copy, Shield,
+  Mail, Lock, RotateCcw, Copy, Shield, ExternalLink,
 } from "lucide-react";
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
@@ -94,6 +94,37 @@ function scoreSection(qs: Question[], answers: Answers): Score {
   return { ee, dp, pa, overall, risk: labelFor(overall), color: colorFor(overall) };
 }
 
+/* ── BIQ Archetype ──────────────────────────────────────────────────────── */
+// Maps 6 dimension scores → one of 8 Pulse archetypes
+function computeBIQArchetype(
+  workEE: number, workDP: number, workPA: number,
+  persEE: number, persDP: number, persPA: number,
+): string {
+  const wOvr = Math.round((workEE + workDP + workPA) / 3);
+  const pOvr = Math.round((persEE + persDP + persPA) / 3);
+  const ovr  = Math.round((wOvr + pOvr) / 2);
+
+  if (ovr < 30) return "STEADY";                         // Low risk across the board
+  if (ovr >= 70) return "SMOLDERING";                    // Severe — fully lit
+
+  if (wOvr >= 60 && pOvr >= 60) return "STRANDED";      // Both domains high — no escape hatch
+
+  const avgEE = (workEE + persEE) / 2;
+  const avgDP = (workDP + persDP) / 2;
+  const avgPA = (workPA + persPA) / 2;
+
+  if (wOvr - pOvr >= 20) return "VOLATILE";             // Work burns hotter than personal
+  if (pOvr - wOvr >= 20) return "DOUBTER";              // Personal drains more than work
+
+  // Dominant dimension
+  if (avgEE >= avgDP && avgEE >= avgPA) return "DEPLETED";
+  if (avgDP >= avgEE && avgDP >= avgPA) return "DETACHED";
+  return "FOGGY";
+}
+
+const PULSE_API = "https://pulse.pivottraining.us/api/record";
+const PULSE_HUB = "https://pulse.pivottraining.us";
+
 /* ── UI helpers ─────────────────────────────────────────────────────────── */
 function RingGauge({ score, color, size = 120 }: { score:number; color:string; size?:number }) {
   const r    = size * 0.38;
@@ -148,6 +179,48 @@ export default function StartPage() {
   const [emailSent,   setEmailSent]   = useState(false);
   const [emailLoading,setEmailLoading]= useState(false);
   const [emailError,  setEmailError]  = useState("");
+  const [pulseCode,   setPulseCode]   = useState<string | null>(null);
+  const [pulseLinked, setPulseLinked] = useState(false);   // true once POST succeeds
+  const [pulseParam,  setPulseParam]  = useState<string | null>(null); // ?pulse= from URL
+
+  // Read ?pulse= param from URL on mount
+  useEffect(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get("pulse");
+      if (p) setPulseParam(p);
+    } catch { /* ignore */ }
+  }, []);
+
+  // POST to Pulse API when results phase begins
+  useEffect(() => {
+    if (phase !== "results") return;
+    const archetype = computeBIQArchetype(
+      workScore.ee, workScore.dp, workScore.pa,
+      persScore.ee, persScore.dp, persScore.pa,
+    );
+    const body: Record<string, unknown> = {
+      side: "burnout",
+      score: overall,
+      archetype,
+      completedAt: new Date().toISOString().split("T")[0],
+    };
+    if (pulseParam) body.code = pulseParam;
+
+    fetch(PULSE_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data?.code) {
+          setPulseCode(data.code);
+          setPulseLinked(true);
+        }
+      })
+      .catch(() => { /* non-fatal */ });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   // Check for saved progress
   useEffect(() => {
@@ -662,6 +735,72 @@ export default function StartPage() {
             </>
           )}
         </div>
+
+        {/* Pulse Handoff */}
+        {pulseLinked && pulseCode && (
+          <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#0B1220] fade-up">
+            <div className="px-5 pt-5 pb-4">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-ember/20 flex items-center justify-center shrink-0">
+                  {/* Mini pulse icon */}
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E85C3A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  {pulseParam ? (
+                    <>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-0.5">Pulse Profile Updated</p>
+                      <p className="text-white font-bold text-sm mb-1">Your burnout results are linked</p>
+                      <p className="text-white/50 text-xs leading-relaxed mb-3">
+                        Your BurnoutIQ results have been added to your Pulse profile alongside your PressureIQ scores. View your combined picture now.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-0.5">Complete Your Pulse Profile</p>
+                      <p className="text-white font-bold text-sm mb-1">See the full picture with PressureIQ</p>
+                      <p className="text-white/50 text-xs leading-relaxed mb-3">
+                        Burnout tells half the story. PressureIQ measures how you handle pressure — together they reveal patterns burnout scores alone can't show.
+                      </p>
+                    </>
+                  )}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    {pulseParam ? (
+                      <a
+                        href={`${PULSE_HUB}/?code=${pulseCode}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-ember hover:bg-ember-light text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+                      >
+                        View My Pulse Profile
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    ) : (
+                      <a
+                        href={`https://pressureiqtest.com/?pulse=${pulseCode}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-ember hover:bg-ember-light text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+                      >
+                        Take PressureIQ — Free
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    <div className="inline-flex items-center gap-1.5 text-white/25 text-[11px]">
+                      <span className="font-mono tracking-wide">{pulseCode}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="px-5 py-2.5 bg-white/4 border-t border-white/8">
+              <p className="text-white/25 text-[11px]">
+                Your Pulse code links both assessments · Results never shared without consent
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Professional upsell */}
         <div className="bg-navy rounded-2xl p-6 fade-up">
