@@ -11,6 +11,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
+    // Add to Resend Audience (contact list) for tracking
+    if (process.env.RESEND_AUDIENCE_ID) {
+      await resend.contacts.create({
+        audienceId: process.env.RESEND_AUDIENCE_ID,
+        email,
+        firstName,
+        lastName,
+        unsubscribed: false,
+      });
+    }
+
     // Notify Pivot Training
     await resend.emails.send({
       from: "BurnoutIQ Webinar <webinar@burnoutiqtest.com>",
