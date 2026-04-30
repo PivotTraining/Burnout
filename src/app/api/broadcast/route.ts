@@ -52,6 +52,6 @@ export async function POST(req: NextRequest) {
     name: `Broadcast — ${new Date().toISOString().slice(0, 10)}`,
   });
 
-  await resend.broadcasts.send((broadcast as { id: string }).id);
+  await resend.broadcasts.send(broadcast.data!.id);
   return NextResponse.json({ success: true, mode: "broadcast", broadcast });
 }
