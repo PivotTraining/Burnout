@@ -27,17 +27,17 @@ const VALUES = [
 const FOUNDERS = [
   {
     name: "Chris Davis, M.S.",
+    initials: "CD",
     role: "Co-Founder & CEO",
-    image: "https://pivottraining.us/images/speaking/closeup.jpeg",
-    objectPos: "object-top",
+    accent: "#E85C3A",
     bio:
       "Master’s in Psychology. 10+ years in psychology and performance coaching. Speaker, author of The What If Effect, and the science and voice behind every BurnoutIQ engagement. Led the design of the six-archetype framework that powers PressureIQ and BurnoutIQ.",
   },
   {
     name: "Jazmine Davis, M.Ed.",
+    initials: "JD",
     role: "Co-Founder & COO",
-    image: "https://pivottraining.us/images/speaking/jazmine.webp",
-    objectPos: "object-[center_20%]",
+    accent: "#1A1A2E",
     bio:
       "Master’s in Education, former collegiate professor, curriculum architect. The operational engine behind every BurnoutIQ engagement — translating behavioral science into classroom-tested curriculum that adults actually retain. A keynote speaker who has moved thousands.",
   },
@@ -46,17 +46,17 @@ const FOUNDERS = [
 const CLINICAL = [
   {
     name: "Whitney Ward, LPCC-S",
+    initials: "WW",
     role: "Clinical Director",
-    image: "https://pivottraining.us/images/speaking/whitney-ward.png",
-    objectPos: "object-[center_15%]",
+    accent: "#0D7377",
     bio:
       "Licensed Professional Clinical Counselor with supervisory designation. Brings clinical depth and evidence-based therapeutic approaches to every BurnoutIQ program.",
   },
   {
     name: "Tihera Clements, LCSW",
+    initials: "TC",
     role: "Clinical Director",
-    image: "https://pivottraining.us/images/speaking/tihera-clements.jpg",
-    objectPos: "object-top",
+    accent: "#9333EA",
     bio:
       "Licensed Clinical Social Worker. Anchors evidence-based mental-health practice across BurnoutIQ services and ensures clinical fidelity in every client engagement.",
   },
@@ -86,7 +86,6 @@ export default function About() {
           </p>
         </section>
 
-        {/* IP Architecture */}
         <section className="bg-cream py-16">
           <div className="section-wide max-w-4xl">
             <h2 className="text-3xl font-bold text-navy mb-6">The IP architecture</h2>
@@ -101,7 +100,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* Outcomes / proof */}
         <section className="section-wide py-16">
           <h2 className="text-3xl font-bold text-navy mb-1">What deployments deliver</h2>
           <p className="text-sm text-navy/50 mb-8">Aggregate across Pivot engagements through 2025.</p>
@@ -113,17 +111,15 @@ export default function About() {
           </div>
         </section>
 
-        {/* Founders */}
         <section className="bg-cream py-16">
           <div className="section-wide">
             <h2 className="text-3xl font-bold text-navy mb-8">Founders</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-              {FOUNDERS.map((p) => <Bio key={p.name} {...p} accent="ember" />)}
+              {FOUNDERS.map((p) => <Bio key={p.name} {...p} />)}
             </div>
           </div>
         </section>
 
-        {/* Clinical bench */}
         <section className="section-wide py-16">
           <h2 className="text-3xl font-bold text-navy mb-2">Clinical bench</h2>
           <p className="text-sm text-navy/50 mb-8">
@@ -131,11 +127,10 @@ export default function About() {
             CHROs and Chief Medical Officers can sign off without a procurement battle.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-            {CLINICAL.map((p) => <Bio key={p.name} {...p} accent="navy" />)}
+            {CLINICAL.map((p) => <Bio key={p.name} {...p} />)}
           </div>
         </section>
 
-        {/* Timeline */}
         <section className="bg-cream py-16">
           <div className="section-wide max-w-3xl">
             <h2 className="text-3xl font-bold text-navy mb-8">Milestones</h2>
@@ -155,7 +150,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* Values */}
         <section className="section-wide py-16">
           <h2 className="text-3xl font-bold text-navy mb-8">What drives us</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -171,7 +165,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* CTA */}
         <section className="bg-navy text-white py-20">
           <div className="section-wide max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Want the long version?</h2>
@@ -219,33 +212,29 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 function Bio({
   name,
+  initials,
   role,
-  image,
-  objectPos,
-  bio,
   accent,
+  bio,
 }: {
   name: string;
+  initials: string;
   role: string;
-  image: string;
-  objectPos: string;
+  accent: string;
   bio: string;
-  accent: "ember" | "navy";
 }) {
-  const roleClass = accent === "ember" ? "text-ember" : "text-navy";
   return (
-    <div className="rounded-2xl border border-border-gray bg-white overflow-hidden">
-      <div className="relative h-72 bg-light-bg">
-        <img
-          src={image}
-          alt={name}
-          className={`w-full h-full object-cover ${objectPos}`}
-          loading="lazy"
-        />
+    <div className="rounded-2xl border border-border-gray bg-white p-6 flex gap-5">
+      <div
+        className="flex-shrink-0 w-20 h-20 rounded-2xl flex items-center justify-center text-white font-extrabold text-2xl tracking-tight"
+        style={{ backgroundColor: accent }}
+        aria-hidden
+      >
+        {initials}
       </div>
-      <div className="p-5">
+      <div>
         <p className="text-lg font-bold text-navy">{name}</p>
-        <p className={`text-sm font-semibold mb-2 ${roleClass}`}>{role}</p>
+        <p className="text-sm font-semibold text-ember mb-2">{role}</p>
         <p className="text-sm text-navy/70 leading-relaxed">{bio}</p>
       </div>
     </div>

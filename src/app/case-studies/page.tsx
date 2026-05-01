@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ClientLogoBar from "@/components/ClientLogoBar";
+import ClientLogoBar, { ClientBadge } from "@/components/ClientLogoBar";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
@@ -10,13 +10,10 @@ export const metadata = {
     "BurnoutIQ deployments at Johnson & Johnson, CUNY, Cleveland Metropolitan School District, and Head Start. Real metrics, real outcomes.",
 };
 
-// Source: prior Pivot engagement data, recast through the BurnoutIQ
-// productized lens. Real client logos and quotes; metrics from prior
-// program reporting.
 const CASES = [
   {
     client: "Johnson & Johnson",
-    logo: "https://pivottraining.us/images/clients/johnson-johnson.png",
+    short: "J&J",
     industry: "Fortune 500 · Healthcare",
     archetype: "Carrier-dominant frontline cohorts",
     tier: "BurnoutIQ Core (90-day)",
@@ -35,7 +32,7 @@ const CASES = [
   },
   {
     client: "Cleveland Metropolitan School District",
-    logo: "https://pivottraining.us/images/clients/cmsd.png",
+    short: "CMSD",
     industry: "K-12 · Public school district",
     archetype: "Racer-dominant administrators, Giver-dominant educators",
     tier: "BurnoutIQ Pulse → BurnoutIQ Core",
@@ -54,7 +51,7 @@ const CASES = [
   },
   {
     client: "Head Start",
-    logo: "https://pivottraining.us/images/clients/head-start.png",
+    short: "Head Start",
     industry: "Early-childhood education · Nonprofit",
     archetype: "Giver-dominant org — secondary trauma vector",
     tier: "BurnoutIQ Core (90-day) + Subscription",
@@ -73,7 +70,7 @@ const CASES = [
   },
   {
     client: "City University of New York (CUNY)",
-    logo: "https://pivottraining.us/images/clients/cuny.png",
+    short: "CUNY",
     industry: "Higher education · Public university system",
     archetype: "Giver-dominant faculty, Fixer-dominant administrators",
     tier: "BurnoutIQ Enterprise (12-month)",
@@ -116,9 +113,10 @@ export default function CaseStudiesPage() {
           {CASES.map((c) => (
             <article key={c.client} className="rounded-3xl border border-border-gray bg-white overflow-hidden">
               <div className="bg-navy text-white px-8 py-6 flex items-center gap-4">
-                <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-2 flex-shrink-0">
-                  <img src={c.logo} alt={c.client} className="w-full h-full object-contain" loading="lazy" />
-                </div>
+                <ClientBadge
+                  logo={{ name: c.client, short: c.short }}
+                  variant="dark"
+                />
                 <div>
                   <h2 className="text-xl font-bold">{c.client}</h2>
                   <p className="text-sm text-white/60">{c.industry}</p>
