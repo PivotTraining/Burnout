@@ -12,11 +12,12 @@ const productLinks = [
   { label: "BurnoutIQ Enterprise", href: "/tiers/enterprise" },
   { label: "Subscription", href: "/subscription" },
   { label: "ROI Calculator", href: "/roi-calculator" },
-  { label: "Take the Assessment", href: "/start" },
+  { label: "Take the Assessment", href: "/assessment" },
 ];
 
 const companyLinks = [
   { label: "About", href: "/about" },
+  { label: "Methodology (Recharge Method™)", href: "/methodology" },
   { label: "Case Studies", href: "/case-studies" },
   { label: "The Six Archetypes", href: "/whitepaper/six-archetypes" },
   { label: "Schedule a Briefing", href: "/briefing" },
@@ -33,7 +34,7 @@ export default function Footer() {
             <p className="text-2xl font-extrabold mb-3">BurnoutIQ™</p>
             <p className="text-sm text-white/60 leading-relaxed mb-4">
               The burnout diagnostic system. Powered by the PressureIQ archetype engine.
-              Built by Pivot.
+              Deployed via the Recharge Method™. Built by Pivot since 2021.
             </p>
             <p className="text-[10px] uppercase tracking-widest text-ember font-semibold">
               Diagnose. Deploy. Defend the P&amp;L.
@@ -47,9 +48,8 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} Pivot Training & Development LLC. BurnoutIQ™ and PressureIQ™ are trademarks of Pivot.
+            &copy; {new Date().getFullYear()} Pivot Training & Development LLC. BurnoutIQ™, PressureIQ™, and Recharge Method™ are trademarks of Pivot. Cleveland, OH · Atlanta, GA.
           </p>
-          <p className="text-xs text-white/40">Cleveland, OH · Atlanta, GA</p>
         </div>
       </div>
     </footer>
@@ -65,28 +65,18 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h4 className="text-xs font-bold uppercase tracking-widest text-ember mb-4">
-        {title}
-      </h4>
+      <h4 className="text-xs font-bold uppercase tracking-widest text-ember mb-4">{title}</h4>
       <ul className="space-y-2.5">
         {links.map((l) =>
           l.external ? (
             <li key={l.label}>
-              <a
-                href={l.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-white/70 hover:text-white transition-colors"
-              >
+              <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-sm text-white/70 hover:text-white transition-colors">
                 {l.label} ↗
               </a>
             </li>
           ) : (
             <li key={l.label}>
-              <Link
-                href={l.href}
-                className="text-sm text-white/70 hover:text-white transition-colors"
-              >
+              <Link href={l.href} className="text-sm text-white/70 hover:text-white transition-colors">
                 {l.label}
               </Link>
             </li>

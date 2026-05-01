@@ -74,14 +74,17 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
               </div>
             )}
           </div>
-          <Link href="/roi-calculator" className={linkClass}>
-            ROI Calculator
+          <Link href="/methodology" className={linkClass}>
+            Methodology
           </Link>
-          <Link href="/whitepaper/six-archetypes" className={linkClass}>
-            Six Archetypes
+          <Link href="/roi-calculator" className={linkClass}>
+            ROI
           </Link>
           <Link href="/case-studies" className={linkClass}>
             Case Studies
+          </Link>
+          <Link href="/about" className={linkClass}>
+            About
           </Link>
           <a
             href="https://pressureiqtest.com"
@@ -111,23 +114,18 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
       {mobileOpen && (
         <div className="md:hidden bg-white/95 backdrop-blur-xl border-b border-border-gray">
           <div className="section-wide py-4 flex flex-col gap-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-ember mb-1">
-              Tiers
-            </p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-ember mb-1">Tiers</p>
             {tierLinks.map((t) => (
-              <Link
-                key={t.href}
-                href={t.href}
-                onClick={() => setMobileOpen(false)}
-                className="py-2 text-sm text-navy/80"
-              >
+              <Link key={t.href} href={t.href} onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">
                 {t.label} <span className="text-navy/40">{t.desc}</span>
               </Link>
             ))}
             <div className="h-px bg-border-gray my-2" />
+            <Link href="/methodology" onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">Methodology</Link>
             <Link href="/roi-calculator" onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">ROI Calculator</Link>
             <Link href="/whitepaper/six-archetypes" onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">Six Archetypes</Link>
             <Link href="/case-studies" onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">Case Studies</Link>
+            <Link href="/about" onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">About</Link>
             <a href="https://pressureiqtest.com" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">PressureIQ ↗</a>
             <Link
               href="/briefing"
