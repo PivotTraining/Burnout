@@ -9,7 +9,8 @@ export const metadata = {
 };
 
 const CALENDLY_URL =
-  "https://calendly.com/pivot-training/burnout-briefing";
+  process.env.NEXT_PUBLIC_CALENDLY_URL ||
+  "https://calendly.com/pivot-training/consultation-calendar";
 
 export default function Briefing() {
   return (
