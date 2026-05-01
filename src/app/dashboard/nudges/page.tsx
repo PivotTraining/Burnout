@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ARCHETYPES, type ArchetypeKey } from "@/lib/archetypes";
-import { Send, Mail } from "lucide-react";
+import { Send, Mail, CheckCircle } from "lucide-react";
 
 const PRESETS: Record<ArchetypeKey, { subject: string; body: string }> = {
   carrier: {
@@ -42,11 +42,40 @@ export default function NudgesPage() {
   const [subject, setSubject] = useState(PRESETS.carrier.subject);
   const [body, setBody] = useState(PRESETS.carrier.body);
   const [scheduled, setScheduled] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState<"sent" | "queued" | "demo" | null>(null);
+  const [error, setError] = useState("");
 
   function loadPreset(key: ArchetypeKey) {
     setArchetype(key);
     setSubject(PRESETS[key].subject);
     setBody(PRESETS[key].body);
+    setSent(null);
+  }
+
+  async function send() {
+    setSending(true);
+    setError("");
+    try {
+      const res = await fetch("/api/nudges", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          archetype,
+          channel: "email",
+          subject,
+          body,
+          scheduledFor: scheduled || null,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to send");
+      setSent(json.demo ? "demo" : scheduled ? "queued" : "sent");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Send failed");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -59,7 +88,6 @@ export default function NudgesPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Archetype picker */}
         <aside className="rounded-2xl border border-border-gray bg-white p-4">
           <p className="text-[10px] font-bold uppercase tracking-widest text-navy/40 mb-3">
             Target archetype
@@ -80,7 +108,6 @@ export default function NudgesPage() {
           </div>
         </aside>
 
-        {/* Composer */}
         <section className="lg:col-span-2 rounded-2xl border border-border-gray bg-white p-6">
           <p className="text-[10px] font-bold uppercase tracking-widest text-ember mb-3">
             <Mail className="inline w-3 h-3 mr-1" /> Email channel
@@ -113,22 +140,30 @@ export default function NudgesPage() {
           </label>
           <div className="flex items-center justify-between pt-4 border-t border-border-gray">
             <p className="text-xs text-navy/40">
-              Recipients: managers of {ARCHETYPES.find((a) => a.key === archetype)!.name}-dominant teams (~14 managers, demo).
+              Recipients: managers of {ARCHETYPES.find((a) => a.key === archetype)!.name}-dominant teams.
             </p>
             <button
-              type="button"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-ember hover:bg-ember-light text-white text-sm font-semibold"
+              onClick={send}
+              disabled={sending}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-ember hover:bg-ember-light text-white text-sm font-semibold disabled:opacity-50"
             >
               <Send className="w-4 h-4" />
-              {scheduled ? "Schedule" : "Send now"}
+              {sending ? "Sending…" : scheduled ? "Schedule" : "Send now"}
             </button>
           </div>
+          {sent && (
+            <p className="mt-3 text-sm text-emerald-600 inline-flex items-center gap-2">
+              <CheckCircle className="w-4 h-4" />
+              {sent === "demo"
+                ? "Demo mode: simulated send (Supabase not configured)."
+                : sent === "queued"
+                  ? "Queued for scheduled delivery."
+                  : "Sent."}
+            </p>
+          )}
+          {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
         </section>
       </div>
-
-      <p className="text-xs text-navy/40 mt-4">
-        Demo composer. Wire to the <code>nudges</code> table + Resend on submit.
-      </p>
     </>
   );
 }

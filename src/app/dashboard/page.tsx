@@ -1,40 +1,38 @@
 import { ARCHETYPES, type ArchetypeKey } from "@/lib/archetypes";
-import { MOCK_ORG, archetypeAccent, archetypeName } from "@/lib/mock-data";
+import { archetypeAccent, archetypeName } from "@/lib/mock-data";
+import { getOrgOverview, isLiveMode } from "@/lib/data";
 
-export const metadata = {
-  title: "Org overview · BurnoutIQ Console",
-};
+export const metadata = { title: "Org overview · BurnoutIQ Console" };
 
-export default function DashboardOverview() {
+export default async function DashboardOverview() {
+  const org = await getOrgOverview();
   return (
     <>
       <div className="flex items-baseline justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">{MOCK_ORG.name}</h1>
+          <h1 className="text-2xl font-bold text-navy">{org.name}</h1>
           <p className="text-sm text-navy/50">
-            {MOCK_ORG.headcount.toLocaleString()} employees · {MOCK_ORG.assessmentsCompleted.toLocaleString()} assessments completed · {MOCK_ORG.participationRate}% participation
+            {org.headcount.toLocaleString()} employees · {org.assessmentsCompleted.toLocaleString()} assessments completed · {org.participationRate}% participation
           </p>
         </div>
         <span className="text-[10px] uppercase tracking-widest font-bold text-ember bg-ember-pale px-2 py-1 rounded">
-          Tier 4 Subscription · demo data
+          Tier 4 Subscription · {isLiveMode ? "live" : "demo data"}
         </span>
       </div>
 
-      {/* KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Kpi label="Burnout risk" value={`${MOCK_ORG.burnoutRisk}%`} delta="− 12 vs Q1" tone="good" />
-        <Kpi label="Participation" value={`${MOCK_ORG.participationRate}%`} delta="+ 6 pts" tone="good" />
+        <Kpi label="Burnout risk" value={`${org.burnoutRisk}%`} delta="− 12 vs Q1" tone="good" />
+        <Kpi label="Participation" value={`${org.participationRate}%`} delta="+ 6 pts" tone="good" />
         <Kpi label="Dominant archetype" value="Carrier" delta="27% of org" />
         <Kpi label="At-risk depts" value="3" delta="ED · Med-Surg · ICU" tone="warn" />
       </div>
 
-      {/* Archetype distribution */}
       <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
         <h2 className="text-lg font-bold text-navy mb-1">Archetype distribution</h2>
-        <p className="text-sm text-navy/50 mb-5">Across {MOCK_ORG.assessmentsCompleted.toLocaleString()} completed assessments.</p>
+        <p className="text-sm text-navy/50 mb-5">Across {org.assessmentsCompleted.toLocaleString()} completed assessments.</p>
         <div className="space-y-3">
           {ARCHETYPES.map((a) => {
-            const pct = MOCK_ORG.archetypeDistribution[a.key];
+            const pct = org.archetypeDistribution[a.key];
             return (
               <div key={a.key}>
                 <div className="flex items-center justify-between text-sm mb-1">
@@ -53,7 +51,6 @@ export default function DashboardOverview() {
         </div>
       </section>
 
-      {/* Department heatmap */}
       <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
         <h2 className="text-lg font-bold text-navy mb-1">Department heatmap</h2>
         <p className="text-sm text-navy/50 mb-5">Sorted by burnout risk. Color reflects dominant archetype.</p>
@@ -67,7 +64,7 @@ export default function DashboardOverview() {
             </tr>
           </thead>
           <tbody>
-            {[...MOCK_ORG.departments].sort((a, b) => b.risk - a.risk).map((d) => (
+            {[...org.departments].sort((a, b) => b.risk - a.risk).map((d) => (
               <tr key={d.name} className="border-t border-border-gray">
                 <td className="py-3 font-semibold text-navy">{d.name}</td>
                 <td>
@@ -100,12 +97,11 @@ export default function DashboardOverview() {
         </table>
       </section>
 
-      {/* Trend */}
       <section className="rounded-2xl border border-border-gray bg-white p-6">
         <h2 className="text-lg font-bold text-navy mb-1">Burnout risk trend</h2>
         <p className="text-sm text-navy/50 mb-5">Quarter-over-quarter, year to date.</p>
         <div className="flex items-end gap-3 h-32">
-          {MOCK_ORG.trend.map((p) => (
+          {org.trend.map((p) => (
             <div key={p.quarter} className="flex-1 flex flex-col items-center gap-2">
               <div
                 className="w-full rounded-t bg-ember"
@@ -122,17 +118,7 @@ export default function DashboardOverview() {
   );
 }
 
-function Kpi({
-  label,
-  value,
-  delta,
-  tone,
-}: {
-  label: string;
-  value: string;
-  delta: string;
-  tone?: "good" | "warn";
-}) {
+function Kpi({ label, value, delta, tone }: { label: string; value: string; delta: string; tone?: "good" | "warn" }) {
   const deltaColor = tone === "good" ? "text-emerald-600" : tone === "warn" ? "text-orange-600" : "text-navy/60";
   return (
     <div className="rounded-xl border border-border-gray bg-white p-4">

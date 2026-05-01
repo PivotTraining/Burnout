@@ -1,24 +1,54 @@
+"use client";
+
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Link from "next/link";
 import { Check } from "lucide-react";
 
-export const metadata = {
-  title: "BurnoutIQ Subscription · Always-on burnout intelligence | BurnoutIQ",
-  description:
-    "BurnoutIQ Subscription: $25–$45 per employee per year. Quarterly archetype pulses, manager nudges, org-level analytics. Annuity layer attached to any Core or Enterprise contract.",
-};
-
 export default function Subscription() {
+  const [seats, setSeats] = useState(1000);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [demo, setDemo] = useState<string | null>(null);
+  const [error, setError] = useState("");
+
   const features = [
     "Year-round PressureIQ archetype assessments",
     "Quarterly org pulse surveys",
-    "Manager nudge system (email, Slack/Teams in v2)",
+    "Manager nudge system (email; Slack/Teams in v2)",
     "Org-level analytics dashboard",
     "Department-level archetype heatmap",
     "Anonymized aggregate reporting layer",
     "API access for HRIS integration (roadmap)",
   ];
+
+  async function startCheckout() {
+    setLoading(true);
+    setError("");
+    setDemo(null);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ seats, customerEmail: email }),
+      });
+      const json = await res.json();
+      if (json.url) {
+        window.location.href = json.url;
+      } else if (json.demo) {
+        setDemo(json.message);
+      } else {
+        throw new Error(json.error || "Checkout failed");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Checkout failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const annual = seats * 35;
+
   return (
     <>
       <Navbar forceScrolled />
@@ -35,11 +65,6 @@ export default function Subscription() {
             always-on layer: pulses, nudges, and analytics that make a Core or
             Enterprise engagement compound.
           </p>
-          <div className="flex flex-wrap gap-6 text-sm">
-            <Stat label="Pricing" value="$25–$45 / employee / year" />
-            <Stat label="Term" value="Annual, renewable" />
-            <Stat label="Buyer" value="Benefits & Total Rewards" />
-          </div>
         </section>
 
         <section className="bg-cream py-16">
@@ -57,14 +82,50 @@ export default function Subscription() {
         </section>
 
         <section className="section-wide py-16">
-          <h2 className="text-3xl font-bold text-navy mb-4">The math</h2>
+          <h2 className="text-3xl font-bold text-navy mb-4">Run the math</h2>
           <div className="rounded-2xl bg-navy text-white p-8 max-w-3xl">
-            <p className="text-sm text-white/60 mb-2">For a 1,000-person organization at the mid-point ($35/employee/year):</p>
-            <p className="text-5xl font-extrabold text-ember">$35,000 ARR</p>
+            <label className="block mb-4">
+              <span className="block text-xs font-semibold text-white/50 uppercase tracking-widest mb-1">
+                Seats
+              </span>
+              <input
+                type="range"
+                min={50}
+                max={50000}
+                step={50}
+                value={seats}
+                onChange={(e) => setSeats(Number(e.target.value))}
+                className="w-full accent-ember"
+              />
+              <p className="text-xs text-white/60 mt-1">{seats.toLocaleString()} employees</p>
+            </label>
+            <p className="text-sm text-white/60">Annual at $35 / employee:</p>
+            <p className="text-5xl font-extrabold text-ember">${annual.toLocaleString()}</p>
             <p className="text-sm text-white/60 mt-2">
-              Layered on top of a Core contract. Renews annually. Compounds with every
-              new business unit.
+              Pricing scales between $25 and $45 / employee / year based on org size and
+              tier attachment.
             </p>
+
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3">
+              <input
+                type="email"
+                placeholder="finance@yourcompany.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="px-4 py-3 rounded-lg bg-white/10 border border-white/10 text-white placeholder:text-white/40 text-sm"
+              />
+              <button
+                onClick={startCheckout}
+                disabled={loading || !email.includes("@")}
+                className="px-5 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-semibold disabled:opacity-50"
+              >
+                {loading ? "Loading…" : "Start subscription →"}
+              </button>
+            </div>
+            {demo && (
+              <p className="mt-3 text-sm text-amber-300">{demo}</p>
+            )}
+            {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
           </div>
         </section>
 
@@ -75,22 +136,16 @@ export default function Subscription() {
               We don’t sell the Subscription as a standalone. It rides with a Core or
               Enterprise engagement so the data has a methodology behind it.
             </p>
-            <Link href="/briefing" className="inline-flex items-center px-6 py-3 rounded-lg bg-ember hover:bg-ember-light font-semibold">
+            <a
+              href="/briefing"
+              className="inline-flex items-center px-6 py-3 rounded-lg bg-ember hover:bg-ember-light font-semibold"
+            >
               Schedule a Briefing →
-            </Link>
+            </a>
           </div>
         </section>
       </main>
       <Footer />
     </>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="text-[10px] uppercase tracking-widest text-navy/40 font-semibold">{label}</div>
-      <div className="text-base font-bold text-navy">{value}</div>
-    </div>
   );
 }
