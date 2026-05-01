@@ -6,7 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ARCHETYPES, ARCHETYPE_BY_KEY, type ArchetypeKey } from "@/lib/archetypes";
-import { DOMAIN_LABEL, type QuizResult } from "@/lib/scoring";
+import { DOMAIN_LABEL, type QuizResult, type Domain } from "@/lib/scoring";
 
 export default function ResultsPage() {
   const params = useSearchParams();
@@ -65,6 +65,9 @@ export default function ResultsPage() {
           {/* Distribution */}
           <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
             <h2 className="text-lg font-bold text-navy mb-4">Score distribution</h2>
+            <p className="text-xs text-navy/50 mb-4">
+              Win-rate across {result.totalPairs} forced-pair scenarios. Each archetype was eligible in 4 pairs.
+            </p>
             <div className="space-y-3">
               {ARCHETYPES.slice()
                 .sort((a, b) => result.percentages[b.key] - result.percentages[a.key])
@@ -73,11 +76,9 @@ export default function ResultsPage() {
                     <div className="flex items-center justify-between text-sm mb-1">
                       <span
                         className={`font-semibold ${
-                          a.key === result.dominant
+                          a.key === result.dominant || a.key === result.supportive
                             ? "text-navy"
-                            : a.key === result.supportive
-                              ? "text-navy"
-                              : "text-navy/60"
+                            : "text-navy/60"
                         }`}
                       >
                         {a.name}
@@ -130,23 +131,48 @@ export default function ResultsPage() {
             </dl>
           </section>
 
-          {/* Domain dominants */}
+          {/* Domain picks (honest representation — NOT "per-domain dominant") */}
           <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
-            <h2 className="text-lg font-bold text-navy mb-1">By pressure domain</h2>
-            <p className="text-sm text-navy/50 mb-5">Different pressures pull different archetypes out of you.</p>
+            <h2 className="text-lg font-bold text-navy mb-1">How you leaned by domain</h2>
+            <p className="text-sm text-navy/50 mb-5">
+              The three archetypes you chose in each pressure domain. With three
+              forced pairs per domain, this is a directional signal — not a definitive
+              per-domain dominant. For that, take the{" "}
+              <a
+                href="https://www.pressureiqtest.com/assessment"
+                className="text-ember underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                PressureIQ Deep Dive
+              </a>
+              .
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {(Object.keys(result.domainDominants) as Array<keyof typeof result.domainDominants>).map((d) => {
-                const a = ARCHETYPE_BY_KEY[result.domainDominants[d] as ArchetypeKey];
+              {(Object.keys(result.domainPicks) as Domain[]).map((d) => {
+                const picks = result.domainPicks[d];
                 return (
                   <div key={d} className="rounded-xl border border-border-gray p-4">
-                    <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold">
+                    <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold mb-2">
                       {DOMAIN_LABEL[d]}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: a.accent }} />
-                      <span className="font-bold text-navy">{a.name}</span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {picks.map((k, i) => {
+                        const a = ARCHETYPE_BY_KEY[k as ArchetypeKey];
+                        return (
+                          <span
+                            key={`${d}-${i}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-navy bg-light-bg rounded-full px-2.5 py-1"
+                          >
+                            <span
+                              className="w-1.5 h-1.5 rounded-full"
+                              style={{ backgroundColor: a.accent }}
+                            />
+                            {a.name}
+                          </span>
+                        );
+                      })}
                     </div>
-                    <p className="text-xs text-navy/60 mt-1">{a.oneLiner}</p>
                   </div>
                 );
               })}
