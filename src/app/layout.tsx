@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import PostHogClient from "@/components/PostHogClient";
 
 const SITE_URL = "https://burnoutiqtest.com";
 const SITE_NAME = "BurnoutIQ";
-const SITE_TITLE = "BurnoutIQ — Measure Burnout Before It Measures You";
+const SITE_TITLE = "BurnoutIQ — Diagnose burnout by archetype";
 const SITE_DESCRIPTION =
-  "BurnoutIQ is a science-backed burnout risk assessment that measures emotional exhaustion, depersonalization, and reduced accomplishment — before they become attrition. Built on Maslach's Burnout Inventory framework by Pivot Training & Development.";
+  "BurnoutIQ is the burnout diagnostic system for the enterprise. Three productized tiers, one always-on subscription, six-archetype engine. Built by Pivot.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -18,24 +19,15 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: {
-    default: SITE_TITLE,
-    template: `%s | ${SITE_NAME}`,
-  },
+  title: { default: SITE_TITLE, template: `%s | ${SITE_NAME}` },
   description: SITE_DESCRIPTION,
   keywords: [
-    "burnout assessment",
-    "burnout risk",
-    "Maslach Burnout Inventory",
-    "emotional exhaustion",
-    "depersonalization",
-    "reduced accomplishment",
+    "BurnoutIQ",
+    "PressureIQ",
+    "burnout diagnostic",
     "workplace burnout",
-    "employee burnout",
-    "burnout prevention",
-    "burnout test",
-    "team burnout",
-    "burnout measurement",
+    "Maslach Burnout Inventory",
+    "archetype assessment",
     "Pivot Training",
   ],
   authors: [{ name: "Pivot Training & Development" }],
@@ -54,55 +46,8 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  alternates: {
-    canonical: SITE_URL,
-  },
-};
-
-const jsonLdWebApp = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: SITE_NAME,
-  url: SITE_URL,
-  description: SITE_DESCRIPTION,
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Any",
-  offers: [
-    {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-      name: "Free Burnout Risk Score",
-    },
-    {
-      "@type": "Offer",
-      price: "9.97",
-      priceCurrency: "USD",
-      name: "Pro — Full 3-Dimension Burnout Profile",
-    },
-    {
-      "@type": "Offer",
-      price: "49.97",
-      priceCurrency: "USD",
-      name: "Professional — Includes Coaching Debrief",
-    },
-  ],
-  creator: {
-    "@type": "Organization",
-    name: "Pivot Training & Development",
-    url: "https://www.pivottraining.us",
-  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: SITE_URL },
 };
 
 const jsonLdOrg = {
@@ -110,27 +55,25 @@ const jsonLdOrg = {
   "@type": "Organization",
   name: "Pivot Training & Development",
   url: "https://www.pivottraining.us",
-  sameAs: [SITE_URL, "https://pressureiqtest.com"],
+  brand: [
+    { "@type": "Brand", name: "BurnoutIQ", url: SITE_URL },
+    { "@type": "Brand", name: "PressureIQ", url: "https://pressureiqtest.com" },
+  ],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="h-full antialiased">
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebApp) }}
-        />
-        <script
-          type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <PostHogClient />
+        {children}
+      </body>
     </html>
   );
 }
