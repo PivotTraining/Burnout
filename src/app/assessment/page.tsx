@@ -6,7 +6,7 @@ import { ARCHETYPES } from "@/lib/archetypes";
 export const metadata = {
   title: "BurnoutIQ Assessment | BurnoutIQ",
   description:
-    "Take the BurnoutIQ assessment. Discover your dominant burnout archetype and the targeted intervention that fits.",
+    "Take a BurnoutIQ assessment. Three paths: archetype quick, full burnout risk, or PressureIQ deep dive.",
 };
 
 export default function AssessmentIntro() {
@@ -19,27 +19,45 @@ export default function AssessmentIntro() {
             BurnoutIQ Assessment
           </p>
           <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">
-            Two paths. Same engine.
+            Three paths. Same engine.
           </h1>
           <p className="text-xl text-navy/60 max-w-3xl leading-relaxed mb-12">
-            BurnoutIQ runs two assessments on top of the PressureIQ archetype engine.
-            Pick the one that fits your role.
+            Pick the one that fits. All three sit on top of the PressureIQ archetype
+            framework underneath.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link
-              href="/start"
-              className="group rounded-2xl border-2 border-ember bg-white p-8 hover:shadow-xl transition-shadow"
+              href="/assessment/take"
+              className="group rounded-2xl border-2 border-ember bg-white p-6 hover:shadow-xl transition-shadow"
             >
               <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-2">
-                For individuals · 5 minutes
+                Archetype Quick · 3 min
               </p>
-              <h2 className="text-2xl font-bold text-navy mb-3">
+              <h2 className="text-xl font-bold text-navy mb-2">
+                BurnoutIQ Archetype Quick
+              </h2>
+              <p className="text-sm text-navy/60 mb-4">
+                Twelve forced-pair scenarios. Returns your dominant + supportive
+                archetype, distribution, and pressure-domain dominants. Built in.
+              </p>
+              <span className="text-sm font-semibold text-ember group-hover:underline">
+                Take the Archetype Quick →
+              </span>
+            </Link>
+
+            <Link
+              href="/start"
+              className="group rounded-2xl border border-border-gray bg-white p-6 hover:shadow-xl transition-shadow"
+            >
+              <p className="text-xs font-semibold uppercase tracking-widest text-navy/60 mb-2">
+                Burnout Risk · 5 min
+              </p>
+              <h2 className="text-xl font-bold text-navy mb-2">
                 Burnout Risk Assessment
               </h2>
               <p className="text-sm text-navy/60 mb-4">
-                Maslach-based three-dimension burnout score (emotional exhaustion,
-                depersonalization, reduced accomplishment) across work and personal
+                Maslach-based three-dimension burnout score across work and personal
                 domains. Free; Pro upgrade unlocks the full breakdown.
               </p>
               <span className="text-sm font-semibold text-ember group-hover:underline">
@@ -51,21 +69,20 @@ export default function AssessmentIntro() {
               href="https://www.pressureiqtest.com/assessment"
               target="_blank"
               rel="noopener noreferrer"
-              className="group rounded-2xl border-2 border-navy/15 bg-white p-8 hover:shadow-xl transition-shadow"
+              className="group rounded-2xl border border-border-gray bg-white p-6 hover:shadow-xl transition-shadow"
             >
               <p className="text-xs font-semibold uppercase tracking-widest text-navy/60 mb-2">
-                For individuals · 8 minutes
+                PressureIQ Deep · 8 min
               </p>
-              <h2 className="text-2xl font-bold text-navy mb-3">
+              <h2 className="text-xl font-bold text-navy mb-2">
                 PressureIQ Archetype Quiz ↗
               </h2>
               <p className="text-sm text-navy/60 mb-4">
-                Forced-pair scoring across four pressure domains. Returns your dominant
-                and supportive archetype out of six (Carrier, Burner, Fixer, Guard,
-                Giver, Racer). Hosted at pressureiqtest.com.
+                Full v4 engine: forced-pair + multi-choice + agreement formats. Returns
+                a performance profile per pressure domain. Hosted at pressureiqtest.com.
               </p>
               <span className="text-sm font-semibold text-ember group-hover:underline">
-                Take the archetype quiz ↗
+                Take the deep dive ↗
               </span>
             </a>
           </div>
@@ -75,7 +92,7 @@ export default function AssessmentIntro() {
               For organizations
             </p>
             <h3 className="text-xl font-bold text-navy mb-2">
-              Deploy both, org-wide
+              Deploy archetype + burnout risk org-wide
             </h3>
             <p className="text-sm text-navy/70 mb-4">
               BurnoutIQ Core and Enterprise tiers run both assessments across your
