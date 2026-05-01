@@ -27,28 +27,45 @@ export default function Whitepaper() {
             the scoring methodology, and how each archetype shows up in the wild.
           </p>
           <form
-            action="/api/submit"
+            action="/api/whitepaper"
             method="post"
-            className="max-w-md rounded-2xl bg-cream p-6 mb-12"
+            className="max-w-md rounded-2xl bg-cream p-6 mb-12 space-y-3"
           >
-            <input type="hidden" name="form" value="whitepaper-six-archetypes" />
-            <label className="block text-sm font-semibold text-navy mb-2">
-              Work email to receive the PDF
+            <label className="block">
+              <span className="block text-xs font-semibold text-navy/70 mb-1">Name</span>
+              <input
+                type="text"
+                name="name"
+                placeholder="First and last"
+                className="w-full px-4 py-2.5 rounded-lg border border-border-gray bg-white text-navy text-sm"
+              />
             </label>
-            <input
-              required
-              type="email"
-              name="email"
-              placeholder="you@company.com"
-              className="w-full px-4 py-3 rounded-lg border border-border-gray bg-white text-navy mb-3"
-            />
+            <label className="block">
+              <span className="block text-xs font-semibold text-navy/70 mb-1">Work email</span>
+              <input
+                required
+                type="email"
+                name="email"
+                placeholder="you@company.com"
+                className="w-full px-4 py-2.5 rounded-lg border border-border-gray bg-white text-navy text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-semibold text-navy/70 mb-1">Company</span>
+              <input
+                type="text"
+                name="company"
+                placeholder="Acme Health System"
+                className="w-full px-4 py-2.5 rounded-lg border border-border-gray bg-white text-navy text-sm"
+              />
+            </label>
             <button
               type="submit"
               className="w-full inline-flex items-center justify-center px-5 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-semibold"
             >
               Send me the whitepaper →
             </button>
-            <p className="text-[11px] text-navy/40 mt-2">
+            <p className="text-[11px] text-navy/40">
               No newsletter spam. We follow up once with a Briefing invite.
             </p>
           </form>
