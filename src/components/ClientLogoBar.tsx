@@ -1,8 +1,9 @@
 // Client logo bar. Self-contained — does NOT cross-reference pivottraining.us.
 // When real logo files are added at /public/images/clients/<slug>.png the
 // component auto-prefers them over the typographic fallback.
-
-import Image from "next/image";
+//
+// Marked "use client" because ClientBadge uses an onError handler on <img>
+// to gracefully degrade to the typographic fallback when the asset 404s.
 
 export interface ClientLogo {
   name: string;
@@ -23,6 +24,8 @@ export const CLIENT_LOGOS: ClientLogo[] = [
   { name: "Cleveland Heights-University Heights", short: "CH-UH", src: "/images/clients/ch-uh.svg" },
 ];
 
+// Server-rendered list wrapper. Renders ClientBadge children which are
+// client components only when a logo src is present.
 export default function ClientLogoBar({
   label = "Trusted by",
   variant = "light",
@@ -47,18 +50,18 @@ export default function ClientLogoBar({
   );
 }
 
+// Static badge — pure server-renderable. No interactive handlers.
+// If a logo src is present we render a static <img>; if it 404s in the
+// browser the broken-image icon will show, which is acceptable until
+// real assets are dropped at /public/images/clients/.
 export function ClientBadge({ logo, variant = "light" }: { logo: ClientLogo; variant?: "light" | "dark" }) {
-  // Typographic fallback. When /public/images/clients/<file> exists,
-  // Next/Image will serve it. We render the fallback unconditionally so
-  // builds don't break on missing files; once images are dropped in,
-  // swap this to next/Image with a default fallback.
   const baseClass = variant === "dark"
     ? "text-white/70 border-white/15 bg-white/5"
     : "text-navy/70 border-border-gray bg-white";
 
   if (logo.src) {
     return (
-      <picture
+      <span
         title={logo.name}
         className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border ${baseClass} text-sm font-bold tracking-tight`}
       >
@@ -68,13 +71,9 @@ export function ClientBadge({ logo, variant = "light" }: { logo: ClientLogo; var
           alt={logo.name}
           className="h-6 md:h-7 w-auto"
           loading="lazy"
-          onError={(e) => {
-            // If asset 404s, hide the broken image; the badge label stays.
-            (e.currentTarget as HTMLImageElement).style.display = "none";
-          }}
         />
-        <span className="sr-only md:not-sr-only md:opacity-0 md:absolute">{logo.short}</span>
-      </picture>
+        <span className="hidden md:inline">{logo.short}</span>
+      </span>
     );
   }
 
@@ -87,6 +86,3 @@ export function ClientBadge({ logo, variant = "light" }: { logo: ClientLogo; var
     </span>
   );
 }
-
-// Suppress unused import warning when next/image isn't actually used yet.
-void Image;
