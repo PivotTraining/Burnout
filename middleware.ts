@@ -17,14 +17,14 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
-  let res = NextResponse.next();
+  const res = NextResponse.next();
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
-      get: (name) => req.cookies.get(name)?.value,
-      set: (name, value, options: CookieOptions) => {
+      get: (name: string) => req.cookies.get(name)?.value,
+      set: (name: string, value: string, options: CookieOptions) => {
         res.cookies.set({ name, value, ...options });
       },
-      remove: (name, options: CookieOptions) => {
+      remove: (name: string, options: CookieOptions) => {
         res.cookies.set({ name, value: "", ...options });
       },
     },
