@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import type Stripe from "stripe";
 import { requireStripe } from "@/lib/stripe";
 import { TIERS, stripePriceFor, type TierProduct } from "@/lib/biq-tiers";
 import { validatePromoCode } from "@/lib/promo-codes";
@@ -19,7 +20,6 @@ export async function POST(req: NextRequest) {
   }
   const tier = TIERS[product];
   if (tier.product === "teams") {
-    // Teams is quoted, not Stripe-checkout. Direct buyers to /tiers/teams.
     return NextResponse.json(
       {
         error:
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   const origin = req.nextUrl.origin;
 
   const isRecurring = tier.billing.kind === "recurring";
-  const params: Parameters<typeof stripe.checkout.sessions.create>[0] = {
+  const params: Stripe.Checkout.SessionCreateParams = {
     mode: isRecurring ? "subscription" : "payment",
     customer_email: customerEmail,
     allow_promotion_codes: true,
