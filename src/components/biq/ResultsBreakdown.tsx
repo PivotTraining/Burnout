@@ -4,7 +4,9 @@ import { SUBSCALE_LABELS } from "@/lib/biq-bank";
 import type { BiqResults } from "@/lib/biq-scoring";
 import { colorOf } from "@/lib/biq-scoring";
 import DriversChart, { SymptomBars } from "./DriversChart";
+import LeadershipBriefing from "./LeadershipBriefing";
 import { OPEN_ENDED } from "@/lib/biq-bank";
+import type { Sector, Role } from "@/lib/biq-sectors";
 
 function RingGauge({ score, color, size = 140 }: { score: number; color: string; size?: number }) {
   const r = size * 0.38;
@@ -47,9 +49,13 @@ function RingGauge({ score, color, size = 140 }: { score: number; color: string;
 export default function ResultsBreakdown({
   results,
   openResponses,
+  sector = null,
+  role = null,
 }: {
   results: BiqResults;
   openResponses: Record<string, string>;
+  sector?: Sector | null;
+  role?: Role | null;
 }) {
   const composite = results.composite;
   const topDriver = results.topDrivers[0];
@@ -113,6 +119,14 @@ export default function ResultsBreakdown({
           highlight={results.topDrivers as string[]}
         />
       </div>
+
+      {/* Leadership briefing — the wedge that lets a leader take this to the table */}
+      <LeadershipBriefing
+        results={results}
+        sector={sector}
+        role={role}
+        openResponses={openResponses}
+      />
 
       {/* Open-ended echo */}
       {Object.values(openResponses).some((v) => v && v.trim().length > 0) && (

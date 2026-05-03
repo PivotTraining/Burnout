@@ -11,7 +11,7 @@ import TierUpsell from "@/components/biq/TierUpsell";
 import {
   ArrowRight, Clock, Mail, CheckCircle, Copy, RotateCcw, Shield,
 } from "lucide-react";
-import { BIQ_ITEMS, OPEN_ENDED, SUBSCALE_LABELS } from "@/lib/biq-bank";
+import { BIQ_ITEMS, SUBSCALE_LABELS } from "@/lib/biq-bank";
 import { calculateResults, type BiqResults } from "@/lib/biq-scoring";
 import type { Sector, Role } from "@/lib/biq-sectors";
 import { SECTOR_LABELS, ROLE_LABELS } from "@/lib/biq-sectors";
@@ -40,19 +40,16 @@ export default function StartPage() {
   const [savedFlash, setSavedFlash] = useState(false);
   const [resumeAvail, setResumeAvail] = useState(false);
 
-  // Email submit
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // Pulse handoff
   const [pulseCode, setPulseCode] = useState<string | null>(null);
   const [pulseLinked, setPulseLinked] = useState(false);
   const [pulseParam, setPulseParam] = useState<string | null>(null);
 
-  // ─── Initial mount: read pulse param, check saved progress ───
   useEffect(() => {
     try {
       const p = new URLSearchParams(window.location.search).get("pulse");
@@ -69,7 +66,6 @@ export default function StartPage() {
     } catch {}
   }, []);
 
-  // ─── Save state helper ───
   const save = useCallback(
     (next: Partial<SavedState>) => {
       const state: SavedState = {
@@ -113,7 +109,6 @@ export default function StartPage() {
     } catch {}
   };
 
-  // ─── Question flow ───
   const total = BIQ_ITEMS.length;
   const currentItem = BIQ_ITEMS[idx];
   const selected =
@@ -142,7 +137,6 @@ export default function StartPage() {
     setTimeout(() => setSavedFlash(false), 2400);
   };
 
-  // ─── Open-ended flow ───
   const handleOpenChange = (id: string, v: string) => {
     const next = { ...openResponses, [id]: v };
     setOpenResponses(next);
@@ -153,11 +147,9 @@ export default function StartPage() {
     try { localStorage.removeItem(STORAGE_KEY); } catch {}
   };
 
-  // ─── Results computation ───
   const results: BiqResults | null =
     phase === "results" ? calculateResults(answers) : null;
 
-  // ─── Pulse handoff on results phase ───
   useEffect(() => {
     if (phase !== "results" || !results) return;
     const body: Record<string, unknown> = {
@@ -183,7 +175,6 @@ export default function StartPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
-  // ─── Email submit ───
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes("@")) {
@@ -252,8 +243,6 @@ export default function StartPage() {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  // ────────────────────────────────────────────────────────────────
-  // INTRO
   if (phase === "intro") {
     return (
       <div className="min-h-screen bg-navy flex flex-col">
@@ -267,12 +256,8 @@ export default function StartPage() {
                   <p className="text-white/40 text-xs mt-0.5">Pick up where you left off?</p>
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={startResume} className="text-xs font-bold text-ember hover:text-ember-light">
-                    Resume
-                  </button>
-                  <button onClick={() => setResumeAvail(false)} className="text-xs text-white/30 hover:text-white/60">
-                    Dismiss
-                  </button>
+                  <button onClick={startResume} className="text-xs font-bold text-ember hover:text-ember-light">Resume</button>
+                  <button onClick={() => setResumeAvail(false)} className="text-xs text-white/30 hover:text-white/60">Dismiss</button>
                 </div>
               </div>
             )}
@@ -284,19 +269,24 @@ export default function StartPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
               The serious workplace burnout diagnostic.
             </h1>
+            <p className="text-white/55 leading-relaxed mb-3 text-sm">
+              36 items across 9 dimensions — the three Maslach burnout symptoms
+              (Emotional Exhaustion, Detachment, Reduced Effectiveness) plus the
+              six workplace drivers from the Areas of Worklife framework
+              (workload, control, reward, community, fairness, values). Plus
+              three optional open‑ended questions that say what numbers can’t.
+            </p>
             <p className="text-white/55 leading-relaxed mb-8 text-sm">
-              36 items across 9 dimensions — the three Maslach burnout
-              symptoms (Emotional Exhaustion, Detachment, Reduced
-              Effectiveness) plus the six workplace drivers from the Areas
-              of Worklife framework (workload, control, reward, community,
-              fairness, values). Plus three optional open-ended questions
-              that say what numbers can’t.
+              Built for individuals — and for leaders who want results they can
+              take back to the table. Every result includes a Leadership
+              Briefing with org‑level signals, leverage points, and the
+              questions to put on next quarter’s agenda.
             </p>
             <div className="grid grid-cols-3 gap-3 mb-8">
               {[
                 ["36 items", "Scored across 9 dimensions"],
-                ["3 open-ended", "Optional, anonymous in aggregate"],
-                ["Instant results", "Email yourself a copy"],
+                ["3 open-ended", "Optional, anonymized"],
+                ["Leadership briefing", "For your next leadership meeting"],
               ].map(([t, b], i) => (
                 <div key={i} className="bg-white/5 border border-white/8 rounded-xl p-3 text-center">
                   <div className="text-white text-xs font-semibold mb-0.5">{t}</div>
@@ -312,10 +302,7 @@ export default function StartPage() {
               <ArrowRight className="w-5 h-5" />
             </button>
             <div className="flex items-center justify-center gap-4 mt-5 text-white/20 text-xs">
-              <span className="flex items-center gap-1">
-                <Shield className="w-3 h-3" />
-                100% confidential
-              </span>
+              <span className="flex items-center gap-1"><Shield className="w-3 h-3" />100% confidential</span>
               <span>·</span>
               <span>No account needed</span>
               <span>·</span>
@@ -327,27 +314,19 @@ export default function StartPage() {
     );
   }
 
-  // INTAKE
   if (phase === "intake") {
     return (
       <IntakeScreen
         sector={sector}
         role={role}
-        onSector={(s) => {
-          setSector(s);
-          save({ sector: s });
-        }}
-        onRole={(r) => {
-          setRole(r);
-          save({ role: r });
-        }}
+        onSector={(s) => { setSector(s); save({ sector: s }); }}
+        onRole={(r) => { setRole(r); save({ role: r }); }}
         onContinue={() => setPhase("assessing")}
         onBack={() => setPhase("intro")}
       />
     );
   }
 
-  // ASSESSING
   if (phase === "assessing" && currentItem) {
     return (
       <QuestionScreen
@@ -364,7 +343,6 @@ export default function StartPage() {
     );
   }
 
-  // OPEN-ENDED
   if (phase === "open-ended") {
     return (
       <OpenEndedScreen
@@ -376,19 +354,13 @@ export default function StartPage() {
     );
   }
 
-  // RESULTS
   if (phase === "results" && results) {
     return (
       <div className="min-h-screen bg-light-bg">
         <Navbar forceScrolled />
         <div className="section-wide flex justify-end pt-24 pb-2">
           <button
-            onClick={() => {
-              setPhase("intro");
-              setAnswers({});
-              setOpenResponses({});
-              setIdx(0);
-            }}
+            onClick={() => { setPhase("intro"); setAnswers({}); setOpenResponses({}); setIdx(0); }}
             className="flex items-center gap-1.5 text-sm text-navy/40 hover:text-navy/70"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -401,17 +373,19 @@ export default function StartPage() {
               <CheckCircle className="w-3.5 h-3.5" />
               Assessment complete
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-navy mb-1">
-              Your BurnoutIQ Results
-            </h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-navy mb-1">Your BurnoutIQ Results</h1>
             <p className="text-navy/40 text-sm">
-              Based on 36 items across 9 dimensions{sector && role ? `, ${SECTOR_LABELS[sector]} · ${ROLE_LABELS[role]}` : ""}
+              36 items across 9 dimensions{sector && role ? ` · ${SECTOR_LABELS[sector]} · ${ROLE_LABELS[role]}` : ""}
             </p>
           </div>
 
-          <ResultsBreakdown results={results} openResponses={openResponses} />
+          <ResultsBreakdown
+            results={results}
+            openResponses={openResponses}
+            sector={sector}
+            role={role}
+          />
 
-          {/* Email capture */}
           <div className="bg-white rounded-2xl border border-border-gray p-5">
             {emailSent ? (
               <div className="flex items-center gap-3 py-2">
@@ -424,7 +398,7 @@ export default function StartPage() {
             ) : (
               <>
                 <p className="text-sm font-semibold text-navy mb-1">Email yourself these results</p>
-                <p className="text-xs text-navy/40 mb-3">Free. We only use your address to send the results.</p>
+                <p className="text-xs text-navy/40 mb-3">Free. Includes the leadership briefing for forwarding.</p>
                 <form onSubmit={handleEmailSubmit} className="flex gap-2">
                   <input
                     type="email"
@@ -439,12 +413,7 @@ export default function StartPage() {
                     disabled={emailLoading}
                     className="flex items-center gap-2 bg-ember hover:bg-ember-light text-white font-semibold text-sm px-5 py-2.5 rounded-xl disabled:opacity-60"
                   >
-                    {emailLoading ? "Sending…" : (
-                      <>
-                        <Mail className="w-4 h-4" />
-                        Send
-                      </>
-                    )}
+                    {emailLoading ? "Sending…" : (<><Mail className="w-4 h-4" />Send</>)}
                   </button>
                 </form>
                 {emailError && <p className="text-red-500 text-xs mt-2">{emailError}</p>}
@@ -453,29 +422,17 @@ export default function StartPage() {
                     onClick={handleCopy}
                     className={`flex items-center gap-1.5 text-xs ${copied ? "text-emerald-600" : "text-navy/40 hover:text-navy/70"}`}
                   >
-                    {copied ? (
-                      <>
-                        <CheckCircle className="w-3.5 h-3.5" />
-                        Copied to clipboard
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        Copy results to clipboard
-                      </>
-                    )}
+                    {copied ? (<><CheckCircle className="w-3.5 h-3.5" />Copied to clipboard</>) : (<><Copy className="w-3.5 h-3.5" />Copy results to clipboard</>)}
                   </button>
                 </div>
               </>
             )}
           </div>
 
-          {/* Tier upsell */}
           <div className="pt-2">
             <TierUpsell />
           </div>
 
-          {/* Pulse handoff */}
           {pulseLinked && pulseCode && (
             <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#0B1220]">
               <div className="px-5 py-4">
@@ -515,6 +472,5 @@ export default function StartPage() {
     );
   }
 
-  // Fallback: nothing matched (shouldn’t happen)
   return null;
 }
