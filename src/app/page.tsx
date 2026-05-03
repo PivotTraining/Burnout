@@ -14,6 +14,7 @@ import {
   PieChart,
   Zap,
 } from "lucide-react";
+import { TIERS, priceLabel } from "@/lib/biq-tiers";
 
 /* ------------------------------------------------------------------ */
 /*  Hero                                                              */
@@ -21,7 +22,6 @@ import {
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center bg-navy overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-20 right-20 w-96 h-96 bg-indigo/20 rounded-full ambient-glow blur-[150px]" />
         <div className="absolute bottom-20 left-20 w-72 h-72 bg-ember/10 rounded-full ambient-glow blur-[120px]" />
@@ -37,34 +37,32 @@ function Hero() {
           <div className="fade-up" style={{ animationDelay: "100ms" }}>
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-ember text-sm font-medium px-4 py-2 rounded-full mb-8 border border-white/10">
               <span className="w-2 h-2 rounded-full bg-ember animate-pulse" />
-              Maslach Burnout Inventory Framework
+              Maslach Burnout Inventory · Areas of Worklife
             </div>
           </div>
 
           <div className="fade-up" style={{ animationDelay: "150ms" }}>
             <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[0.95] tracking-tight mb-8">
-              Measure Burnout
+              Diagnose burnout.
               <br />
-              <span className="text-ember">Before</span> It
+              <span className="text-ember">Take it back</span>
               <br />
-              Measures You
+              to your leadership team.
             </h1>
           </div>
 
           <div className="fade-up" style={{ animationDelay: "250ms" }}>
             <p className="text-lg md:text-xl text-white/60 max-w-xl leading-relaxed mb-4">
-              BurnoutIQ is a science-backed assessment that identifies burnout risk
-              across three dimensions&nbsp;&mdash; emotional exhaustion,
-              depersonalization, and reduced accomplishment&nbsp;&mdash; before they
-              become attrition.
+              BurnoutIQ is a serious workplace burnout diagnostic. 36 items across
+              9 dimensions — the three Maslach symptoms plus the six workplace drivers.
+              Every result includes a Leadership Briefing built for forwarding.
             </p>
           </div>
 
           <div className="fade-up" style={{ animationDelay: "350ms" }}>
             <p className="text-sm text-white/30 max-w-xl leading-relaxed mb-12">
-              Built on the Maslach Burnout Inventory framework by Pivot Training
-              &amp; Development, BurnoutIQ gives individuals and teams the
-              intelligence to act before burnout takes hold.
+              Built on the Maslach Burnout Inventory framework and the Areas of
+              Worklife model by Pivot Training &amp; Development.
             </p>
           </div>
 
@@ -77,12 +75,12 @@ function Hero() {
                 Start Free Assessment
                 <ArrowRight size={18} />
               </a>
-              <a
-                href="mailto:hello@pivottraining.us?subject=BurnoutIQ%20Team%20Solutions"
+              <Link
+                href="/tiers/teams"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 text-white font-medium px-8 py-4 rounded-lg transition-all border border-white/10 text-base"
               >
-                Team Solutions
-              </a>
+                For Teams
+              </Link>
             </div>
           </div>
 
@@ -94,7 +92,7 @@ function Hero() {
               </div>
               <div className="flex items-center gap-2">
                 <BarChart3 size={16} className="text-ember/60" />
-                <span>Instant results</span>
+                <span>~10 min · 36 items + 3 optional</span>
               </div>
             </div>
           </div>
@@ -110,7 +108,7 @@ function Hero() {
 const stats = [
   { value: "82%", label: "of workers report burnout risk", source: "Mercer, 2024" },
   { value: "$322B", label: "global cost of burnout-related turnover", source: "" },
-  { value: "3", label: "burnout dimensions measured", source: "" },
+  { value: "9", label: "burnout dimensions measured", source: "3 symptoms + 6 drivers" },
   { value: "77%", label: "of employees experience burnout at current job", source: "" },
 ];
 
@@ -156,7 +154,7 @@ const dimensions = [
   },
   {
     icon: UserX,
-    title: "Depersonalization",
+    title: "Detachment / Cynicism",
     description:
       "Growing cynical, detached, or disengaged from work and colleagues.",
     color: "text-indigo",
@@ -164,7 +162,7 @@ const dimensions = [
   },
   {
     icon: TrendingDown,
-    title: "Reduced Accomplishment",
+    title: "Reduced Effectiveness",
     description:
       "Feeling ineffective despite effort, losing confidence in your ability to contribute.",
     color: "text-navy",
@@ -172,44 +170,73 @@ const dimensions = [
   },
 ];
 
+const drivers = [
+  "Workload",
+  "Control / Autonomy",
+  "Reward / Recognition",
+  "Community / Belonging",
+  "Fairness / Trust",
+  "Values Alignment",
+];
+
 function Dimensions() {
   return (
     <section id="about" className="py-24 md:py-32 bg-light-bg">
       <div className="section-wide">
         <div className="text-center mb-16">
-          <div
-            className="fade-up"
-            style={{ animationDelay: "0ms" }}
-          >
+          <div className="fade-up">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-navy tracking-tight mb-4">
-              The Three Dimensions of Burnout
+              Symptoms and drivers — measured separately.
             </h2>
             <p className="text-lg text-navy-light/60 max-w-2xl mx-auto">
-              BurnoutIQ measures burnout across the three clinically validated
-              dimensions from Maslach&apos;s Burnout Inventory&nbsp;&mdash; the
-              gold standard in burnout research.
+              Three Maslach burnout symptoms plus six Areas of Worklife drivers
+              — because knowing how you feel doesn&apos;t tell you what to do
+              about it.
             </p>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          {dimensions.map((d, i) => (
-            <div
-              key={d.title}
-              className="fade-up relative rounded-2xl p-8 bg-white border border-border-gray hover:shadow-lg transition-shadow"
-              style={{ animationDelay: `${(i + 1) * 100}ms` }}
-            >
+        <div className="max-w-5xl mx-auto">
+          <p className="text-xs font-bold text-ember uppercase tracking-widest text-center mb-4">
+            The three symptoms (Maslach)
+          </p>
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
+            {dimensions.map((d, i) => (
               <div
-                className={`w-12 h-12 rounded-xl ${d.bg} flex items-center justify-center mb-5`}
+                key={d.title}
+                className="fade-up relative rounded-2xl p-6 bg-white border border-border-gray hover:shadow-lg transition-shadow"
+                style={{ animationDelay: `${(i + 1) * 100}ms` }}
               >
-                <d.icon size={24} className={d.color} />
+                <div
+                  className={`w-12 h-12 rounded-xl ${d.bg} flex items-center justify-center mb-4`}
+                >
+                  <d.icon size={24} className={d.color} />
+                </div>
+                <h3 className="text-base font-semibold text-navy mb-2">{d.title}</h3>
+                <p className="text-sm text-navy-light/60 leading-relaxed">
+                  {d.description}
+                </p>
               </div>
-              <h3 className="text-lg font-semibold text-navy mb-2">{d.title}</h3>
-              <p className="text-sm text-navy-light/60 leading-relaxed">
-                {d.description}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <p className="text-xs font-bold text-ember uppercase tracking-widest text-center mb-4">
+            The six workplace drivers (Areas of Worklife)
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {drivers.map((label) => (
+              <div
+                key={label}
+                className="rounded-xl p-4 bg-white border border-border-gray text-center"
+              >
+                <p className="text-sm font-semibold text-navy">{label}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-center text-xs text-navy-light/40 mt-6 max-w-xl mx-auto">
+            Drivers are the workplace conditions feeding the symptoms. They are
+            where leadership intervention actually moves the score.
+          </p>
         </div>
       </div>
     </section>
@@ -223,29 +250,29 @@ const steps = [
   {
     icon: UserPlus,
     step: "01",
-    title: "Sign Up Free",
-    description: "Create your account in seconds. No credit card required.",
+    title: "Set context",
+    description: "Pick your sector and role. No account, no credit card.",
   },
   {
     icon: ClipboardList,
     step: "02",
-    title: "Take the Assessment",
+    title: "Take 36 items + 3 optional",
     description:
-      "Answer 20 scenario-based questions designed to surface burnout risk patterns.",
+      "Six-point Likert across 9 subscales, plus three optional open-ended prompts. Auto-saves as you go.",
   },
   {
     icon: PieChart,
     step: "03",
-    title: "Get Your Burnout Risk Profile",
+    title: "Get your 9-dimension reading",
     description:
-      "Receive a 3-dimension breakdown of your burnout risk across emotional exhaustion, depersonalization, and reduced accomplishment.",
+      "Composite Burnout Risk, three symptom bars, six driver bars, sector benchmarks, and your top driver called out.",
   },
   {
     icon: Zap,
     step: "04",
-    title: "Act Before Burnout Hits",
+    title: "Take it to leadership",
     description:
-      "Get personalized interventions and strategies to address your specific burnout risk profile.",
+      "Every result includes a sanitized Leadership Briefing you can copy or email — org-level signals, leverage points, and a question for the next meeting.",
   },
 ];
 
@@ -256,10 +283,10 @@ function HowItWorks() {
         <div className="text-center mb-16">
           <div className="fade-up">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-navy tracking-tight mb-4">
-              How It Works
+              How it works
             </h2>
             <p className="text-lg text-navy-light/60 max-w-xl mx-auto">
-              From sign-up to actionable insights in under 10 minutes.
+              Ten minutes to a result you can act on — personally or with your team.
             </p>
           </div>
         </div>
@@ -299,79 +326,51 @@ const plans = [
     name: "Free",
     price: "$0",
     period: "forever",
-    desc: "Basic burnout risk score",
+    desc: "Full diagnostic + leadership briefing",
     cta: "Start Free",
     href: "/start",
-    isStripe: false,
     dark: false,
-    popular: false,
     badge: null,
     features: [
-      "20-question scenario-based assessment",
-      "Overall burnout risk score",
-      "Basic dimension indicators",
-      "Shareable result snapshot",
+      "36-item assessment + 3 open-ended",
+      "9-dimension reading with sector benchmarks",
+      "Top driver + composite burnout risk",
+      "Leadership Briefing — forwardable",
+      "Three things to try this week",
     ],
   },
   {
-    name: "Pro",
-    price: "$9.97",
+    name: TIERS.pro.name.replace("BurnoutIQ ", ""),
+    price: priceLabel(TIERS.pro),
     period: "one-time",
-    desc: "Full 3-dimension burnout profile",
-    cta: "Unlock Full Report",
-    href: "https://buy.stripe.com/eVq8wP6JTdHWcPJ0QRa3u0s",
-    isStripe: true,
+    desc: TIERS.pro.tagline,
+    cta: "Get Pro",
+    href: TIERS.pro.route,
     dark: true,
-    popular: true,
     badge: "Most Popular",
-    features: [
-      "Everything in Free",
-      "Full 3-dimension Burnout Profile",
-      "Personalized risk breakdown",
-      "Development recommendations",
-      "Team compatibility insights",
-      "Downloadable PDF report",
-    ],
+    features: TIERS.pro.payoff,
   },
   {
-    name: "Professional",
-    price: "$49.97",
+    name: TIERS.continuum.name.replace("BurnoutIQ ", ""),
+    price: "$9",
+    period: "/ mo",
+    desc: TIERS.continuum.tagline,
+    cta: "Subscribe",
+    href: TIERS.continuum.route,
+    dark: false,
+    badge: "Recurring",
+    features: TIERS.continuum.payoff,
+  },
+  {
+    name: TIERS.coach.name.replace("BurnoutIQ ", ""),
+    price: priceLabel(TIERS.coach),
     period: "one-time",
-    desc: "Assessment + coaching debrief",
-    cta: "Get Full Experience",
-    href: "https://buy.stripe.com/bJeeVd2tDeM0dTN2YZa3u0t",
-    isStripe: true,
+    desc: TIERS.coach.tagline,
+    cta: "Get Coach",
+    href: TIERS.coach.route,
     dark: false,
-    popular: false,
-    badge: "Best Value",
-    features: [
-      "Everything in Pro",
-      "60-min coaching debrief session",
-      "Custom recovery roadmap",
-      "Re-assessment over time",
-      "Priority email support",
-      "Burnout prevention playbook",
-    ],
-  },
-  {
-    name: "Teams",
-    price: "$29.97",
-    period: "per person",
-    desc: "Team burnout mapping & insights",
-    cta: "Get Team Access",
-    href: "https://buy.stripe.com/4gM5kD5FP33i4jd433a3u0u",
-    isStripe: true,
-    dark: false,
-    popular: false,
-    badge: null,
-    features: [
-      "Everything in Pro",
-      "Team Burnout Heat Map",
-      "Manager discussion guides",
-      "Team dashboard access",
-      "Ongoing pulse tracking",
-      "Pivot Training tie-ins",
-    ],
+    badge: "Includes 1:1",
+    features: TIERS.coach.payoff,
   },
 ];
 
@@ -381,18 +380,19 @@ function Pricing() {
       <div className="section-wide">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-navy tracking-tight mb-4">
-            Simple, transparent pricing
+            Free first. Pro fixes a moment. Continuum keeps it fixed.
           </h2>
           <p className="text-lg text-navy-light/60 max-w-xl mx-auto">
-            Start free. Unlock your full burnout profile once. Scale to teams when ready.
+            The full diagnostic and Leadership Briefing are free. Pay if you want
+            structure, ongoing measurement, or a real coach.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {plans.map((plan, i) => (
             <div
               key={plan.name}
-              className={`fade-up relative rounded-2xl p-8 flex flex-col ${
+              className={`fade-up relative rounded-2xl p-7 flex flex-col ${
                 plan.dark
                   ? "bg-navy text-white shadow-xl shadow-navy/20 scale-[1.02]"
                   : "bg-white text-navy border border-border-gray"
@@ -402,7 +402,7 @@ function Pricing() {
               {plan.badge && (
                 <div
                   className={`absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full tracking-wide uppercase whitespace-nowrap ${
-                    plan.badge === "Best Value"
+                    plan.badge === "Recurring" || plan.badge === "Includes 1:1"
                       ? "bg-emerald-400 text-navy"
                       : "bg-ember text-white"
                   }`}
@@ -411,98 +411,85 @@ function Pricing() {
                 </div>
               )}
 
-              <div className="mb-6">
-                <h3
-                  className={`text-lg font-semibold mb-1 ${
-                    plan.dark ? "text-white" : "text-navy"
-                  }`}
-                >
+              <div className="mb-5">
+                <h3 className={`text-lg font-semibold mb-1 ${plan.dark ? "text-white" : "text-navy"}`}>
                   {plan.name}
                 </h3>
-                <p
-                  className={`text-sm ${
-                    plan.dark ? "text-white/50" : "text-navy-light/50"
-                  }`}
-                >
+                <p className={`text-sm leading-snug ${plan.dark ? "text-white/60" : "text-navy-light/60"}`}>
                   {plan.desc}
                 </p>
               </div>
 
-              <div className="mb-6">
-                <span
-                  className={`text-4xl font-bold ${
-                    plan.dark ? "text-white" : "text-navy"
-                  }`}
-                >
+              <div className="mb-5">
+                <span className={`text-4xl font-bold ${plan.dark ? "text-white" : "text-navy"}`}>
                   {plan.price}
                 </span>
-                <span
-                  className={`text-sm ml-1 ${
-                    plan.dark ? "text-white/50" : "text-navy-light/50"
-                  }`}
-                >
+                <span className={`text-sm ml-1 ${plan.dark ? "text-white/50" : "text-navy-light/50"}`}>
                   {plan.period}
                 </span>
               </div>
 
-              <ul className="space-y-3 mb-8 flex-1">
+              <ul className="space-y-2.5 mb-7 flex-1">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5">
+                  <li key={f} className="flex items-start gap-2">
                     <Check
-                      size={16}
-                      className={`mt-0.5 flex-shrink-0 ${
-                        plan.dark ? "text-ember-light" : "text-ember"
-                      }`}
+                      size={15}
+                      className={`mt-0.5 flex-shrink-0 ${plan.dark ? "text-ember-light" : "text-ember"}`}
                     />
-                    <span
-                      className={`text-sm ${
-                        plan.dark ? "text-white/70" : "text-navy-light/60"
-                      }`}
-                    >
+                    <span className={`text-sm leading-snug ${plan.dark ? "text-white/75" : "text-navy-light/70"}`}>
                       {f}
                     </span>
                   </li>
                 ))}
               </ul>
 
-              {/* Stripe links MUST be plain <a> tags with target="_blank" */}
-              {plan.isStripe ? (
-                <a
-                  href={plan.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`block text-center font-medium py-3.5 rounded-xl transition-all text-sm ${
-                    plan.dark
-                      ? "bg-ember hover:bg-ember-light text-white"
-                      : "bg-navy hover:bg-navy-light text-white"
-                  }`}
-                >
-                  {plan.cta}
-                </a>
-              ) : plan.href.startsWith("mailto:") ? (
-                <a
-                  href={plan.href}
-                  className="block text-center font-medium py-3.5 rounded-xl transition-all text-sm bg-navy hover:bg-navy-light text-white"
-                >
-                  {plan.cta}
-                </a>
-              ) : (
-                <a
-                  href={plan.href}
-                  className="block text-center font-medium py-3.5 rounded-xl transition-all text-sm bg-navy hover:bg-navy-light text-white"
-                >
-                  {plan.cta}
-                </a>
-              )}
+              <Link
+                href={plan.href}
+                className={`block text-center font-semibold py-3 rounded-xl transition-all text-sm ${
+                  plan.dark
+                    ? "bg-ember hover:bg-ember-light text-white"
+                    : "bg-navy hover:bg-navy-light text-white"
+                }`}
+              >
+                {plan.cta}
+              </Link>
             </div>
           ))}
         </div>
 
+        {/* Teams banner */}
+        <div className="fade-up mt-10 max-w-4xl mx-auto" style={{ animationDelay: "400ms" }}>
+          <div className="rounded-2xl bg-navy text-white p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-5 justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-ember mb-1">
+                For organizations
+              </p>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-1">
+                BurnoutIQ Teams — 30-day org diagnostic
+              </h3>
+              <p className="text-sm text-white/60 max-w-xl">
+                Every employee gets the full assessment + Pro PDF. You get a
+                department-level heatmap, 90-min manager training, executive
+                readout, and 3 months of Continuum for every employee.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 shrink-0">
+              <Link
+                href="/tiers/teams"
+                className="inline-flex items-center justify-center gap-2 bg-ember hover:bg-ember-light text-white font-bold px-5 py-2.5 rounded-lg text-sm whitespace-nowrap"
+              >
+                See Teams
+                <ArrowRight size={14} />
+              </Link>
+              <span className="text-[11px] text-white/40 text-center">Quoted engagement · 50–250 employees</span>
+            </div>
+          </div>
+        </div>
+
         {/* Cross-sell PressureIQ */}
-        <div className="fade-up mt-10 text-center" style={{ animationDelay: "300ms" }}>
+        <div className="fade-up mt-10 text-center" style={{ animationDelay: "500ms" }}>
           <p className="text-sm text-navy-light/40">
-            Also from Pivot Training&nbsp;&mdash; measure stress response under
-            pressure with{" "}
+            Also from Pivot Training&nbsp;— measure stress response under pressure with{" "}
             <a
               href="https://pressureiqtest.com"
               target="_blank"
@@ -535,14 +522,14 @@ function CTASection() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-6 max-w-3xl mx-auto">
             Burnout doesn&apos;t announce itself.
             <br />
-            <span className="text-ember">Measure it before it measures you.</span>
+            <span className="text-ember">Diagnose it. Take it back to the table.</span>
           </h2>
         </div>
 
         <div className="fade-up" style={{ animationDelay: "100ms" }}>
           <p className="text-lg text-white/50 max-w-xl mx-auto mb-10">
-            Take the free assessment in under 10 minutes. Know your burnout risk
-            before it becomes a resignation letter.
+            Free 36-item diagnostic in ~10 minutes. Includes a Leadership Briefing
+            you can forward.
           </p>
         </div>
 
@@ -575,9 +562,17 @@ function CTASection() {
 /* ------------------------------------------------------------------ */
 const footerLinks = {
   Product: [
+    { label: "Pro", href: "/pro", external: false },
+    { label: "Continuum", href: "/continuum", external: false },
+    { label: "Coach", href: "/coach", external: false },
+    { label: "Teams", href: "/tiers/teams", external: false },
     { label: "PressureIQ", href: "https://pressureiqtest.com", external: true },
-    { label: "The Recharge Method", href: "https://www.pivottraining.us/recharge-method", external: true },
-    { label: "Pivot Training", href: "https://www.pivottraining.us", external: true },
+  ],
+  Learn: [
+    { label: "Methodology", href: "/methodology/burnoutiq", external: false },
+    { label: "Resources", href: "/resources", external: false },
+    { label: "Case Studies", href: "/case-studies", external: false },
+    { label: "About", href: "/about", external: false },
     { label: "Contact", href: "mailto:hello@pivottraining.us", external: false },
   ],
   Legal: [
@@ -592,7 +587,6 @@ function Footer() {
     <footer className="bg-navy border-t border-white/5">
       <div className="section-wide py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-          {/* Brand */}
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-ember flex items-center justify-center">
@@ -601,15 +595,14 @@ function Footer() {
               <span className="text-lg font-bold text-white">BurnoutIQ</span>
             </div>
             <p className="text-sm text-white/40 leading-relaxed mb-4 max-w-xs">
-              A science-backed burnout risk assessment built on
-              Maslach&apos;s Burnout Inventory framework.
+              A serious workplace burnout diagnostic built on the Maslach Burnout
+              Inventory and Areas of Worklife frameworks.
             </p>
             <p className="text-xs text-white/25">
               Built by Pivot Training &amp; Development
             </p>
           </div>
 
-          {/* Link columns */}
           {Object.entries(footerLinks).map(([heading, links]) => (
             <div key={heading}>
               <h4 className="text-sm font-semibold text-white/80 mb-4 uppercase tracking-wider">
