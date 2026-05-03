@@ -7,6 +7,7 @@ import DriversChart, { SymptomBars } from "./DriversChart";
 import LeadershipBriefing from "./LeadershipBriefing";
 import KeywordEcho from "./KeywordEcho";
 import MethodologyDisclosure from "./MethodologyDisclosure";
+import TipsForYou from "./TipsForYou";
 import { OPEN_ENDED } from "@/lib/biq-bank";
 import type { Sector, Role } from "@/lib/biq-sectors";
 
@@ -80,6 +81,8 @@ export default function ResultsBreakdown({
       <MethodologyDisclosure />
 
       <LeadershipBriefing results={results} sector={sector} role={role} openResponses={openResponses} />
+
+      <TipsForYou results={results} />
 
       <KeywordEcho results={results} openResponses={openResponses} />
 
