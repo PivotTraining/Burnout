@@ -19,7 +19,8 @@ const enterpriseLinks = [
 ];
 
 const learnLinks = [
-  { label: "Methodology", href: "/methodology", desc: "How the assessment works" },
+  { label: "The 8 Archetypes", href: "/archetypes", desc: "Steady, Depleted, Detached, and 5 more" },
+  { label: "Methodology", href: "/methodology/burnoutiq", desc: "How the assessment is scored" },
   { label: "Resources", href: "/resources", desc: "Free curated library" },
   { label: "ROI Calculator", href: "/roi-calculator", desc: "Cost of burnout to your org" },
   { label: "Case Studies", href: "/case-studies", desc: "J&J, CMSD, Head Start, CUNY" },
