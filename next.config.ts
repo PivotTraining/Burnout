@@ -7,6 +7,17 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
+  async redirects() {
+    return [
+      // /tiers/pulse renamed to /tiers/teams in the Phase A overhaul.
+      // 301 preserves any inbound SEO equity while we settle the new URL.
+      {
+        source: "/tiers/pulse",
+        destination: "/tiers/teams",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

@@ -1,12 +1,34 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { requireStripe, SUBSCRIPTION_TIERS } from "@/lib/stripe";
+import { requireStripe } from "@/lib/stripe";
+import { TIERS, stripePriceFor, type TierProduct } from "@/lib/biq-tiers";
 import { validatePromoCode } from "@/lib/promo-codes";
 
 export async function POST(req: NextRequest) {
-  const { seats, customerEmail, promoCode } = await req.json();
-  const seatCount = Math.max(1, Number(seats) || 0);
+  const body = await req.json().catch(() => ({}));
+  const product = (body.product || "continuum") as TierProduct;
+  const cycle = (body.cycle || "monthly") as "monthly" | "annual";
+  const customerEmail = body.customerEmail as string | undefined;
+  const seats = Math.max(1, Number(body.seats) || 1);
+  const promoCode = body.promoCode as string | undefined;
 
-  // Validate the promo code locally for nice errors before we hit Stripe.
+  if (!TIERS[product]) {
+    return NextResponse.json(
+      { error: `Unknown product: ${product}` },
+      { status: 400 },
+    );
+  }
+  const tier = TIERS[product];
+  if (tier.product === "teams") {
+    // Teams is quoted, not Stripe-checkout. Direct buyers to /tiers/teams.
+    return NextResponse.json(
+      {
+        error:
+          "Teams is sold via consultation. Visit /tiers/teams to schedule a kickoff call.",
+      },
+      { status: 400 },
+    );
+  }
+
   let promo: ReturnType<typeof validatePromoCode> | null = null;
   if (promoCode) {
     promo = validatePromoCode(String(promoCode));
@@ -15,13 +37,16 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  if (!process.env.STRIPE_SECRET_KEY || !SUBSCRIPTION_TIERS.base.priceId) {
+  const priceId = stripePriceFor(product, cycle);
+  if (!process.env.STRIPE_SECRET_KEY || !priceId) {
     return NextResponse.json({
       demo: true,
       message:
         promo && promo.valid
-          ? `Stripe not configured. In live mode this would apply "${promo.label}" (${promo.discount}% off) to ${seatCount.toLocaleString()} seats.`
-          : "Stripe not configured. In live mode this returns a Checkout URL for the BurnoutIQ Subscription seats.",
+          ? `Stripe not configured. In live mode this would purchase ${tier.name} (${cycle}) with "${promo.label}" applied.`
+          : `Stripe not configured. In live mode this returns a Checkout URL for ${tier.name}.`,
+      product,
+      cycle,
       promo: promo && promo.valid ? promo : null,
     });
   }
@@ -29,32 +54,26 @@ export async function POST(req: NextRequest) {
   const stripe = requireStripe();
   const origin = req.nextUrl.origin;
 
-  // Build Checkout Session. allow_promotion_codes lets buyers enter any
-  // active Stripe-side promotion code directly in the Stripe-hosted
-  // Checkout UI, in addition to the local pre-validation above.
-  const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-    mode: "subscription",
+  const isRecurring = tier.billing.kind === "recurring";
+  const params: Parameters<typeof stripe.checkout.sessions.create>[0] = {
+    mode: isRecurring ? "subscription" : "payment",
     customer_email: customerEmail,
     allow_promotion_codes: true,
     line_items: [
       {
-        price: SUBSCRIPTION_TIERS.base.priceId,
-        quantity: seatCount,
+        price: priceId,
+        quantity: isRecurring ? 1 : seats,
       },
     ],
-    success_url: `${origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/subscription`,
+    success_url: `${origin}${tier.route}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}${tier.route}`,
   };
 
-  // If the local code maps to a real Stripe Promotion Code, pre-apply
-  // it so the buyer never has to retype it inside the Checkout UI.
   if (promo?.valid && promo.stripePromotionCode) {
-    sessionParams.discounts = [{ promotion_code: promo.stripePromotionCode }];
-    // discounts[] and allow_promotion_codes are mutually exclusive.
-    delete sessionParams.allow_promotion_codes;
+    params.discounts = [{ promotion_code: promo.stripePromotionCode }];
+    delete params.allow_promotion_codes;
   }
 
-  const session = await stripe.checkout.sessions.create(sessionParams);
-
+  const session = await stripe.checkout.sessions.create(params);
   return NextResponse.json({ url: session.url });
 }

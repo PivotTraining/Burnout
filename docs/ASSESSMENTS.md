@@ -1,111 +1,102 @@
 # BurnoutIQ Assessments — Measurement Claims & Limits
 
-This repo ships three assessment paths off `/assessment`. Each measures
-something different. Do not edit a question bank without confirming the
+This repo ships three assessment paths off `/assessment` (intro hub) plus
+the primary BurnoutIQ flow at `/start`. Each measures something
+different. Do not edit a question bank without confirming the
 measurement claim still holds.
 
-## 1. Burnout Risk Assessment — `/start`
+## 1. BurnoutIQ — `/start` (PRIMARY, Phase A overhaul)
 
-**Measures:** Maslach Burnout Inventory dimensions across two life domains.
+**Measures:** Workplace burnout symptoms (Maslach) and the six workplace
+drivers from the Areas of Worklife framework, plus optional qualitative
+context.
 
-- **Emotional Exhaustion (EE)** — work and personal
-- **Depersonalization / Detachment (DP)** — work and personal
-- **Personal Accomplishment / Effectiveness (PA, reverse-scored)** — work and personal
+**Item structure:** 36 scored items across 9 subscales + 3 optional
+open-ended prompts. 6-point Likert (Never…Always, mapped 0–5).
 
-**Item structure:** 20 statements, 6-point scale (Never…Always, mapped 0–5).
+| Group | Subscale | Items | Reverse |
+| --- | --- | --- | --- |
+| **Burnout symptoms (Maslach)** | Emotional Exhaustion (EE) | 6 | No |
+| | Detachment / Cynicism (DP) | 6 | No |
+| | Reduced Effectiveness (PA) | 6 | **Yes** |
+| **Workplace drivers (Areas of Worklife)** | Workload | 3 | No |
+| | Control / Autonomy | 3 | No |
+| | Reward / Recognition | 3 | No |
+| | Community / Belonging | 3 | No |
+| | Fairness / Trust | 3 | No |
+| | Values Alignment | 3 | No |
 
-| Domain | EE | DP | PA | Subtotal |
-| --- | --- | --- | --- | --- |
-| Work | 4 | 3 | 3 | 10 |
-| Personal | 4 | 3 | 3 | 10 |
+**Open-ended (optional):**
+1. Biggest source of pressure right now
+2. What would make work feel sustainable
+3. What you wish leadership understood about your workload or emotional state
 
-PA items are reverse-scored: a high agreement with `"I feel I'm making a
-meaningful difference"` lowers PA-risk. Average raw → percent on a 0–5 scale
-per dimension; overall = mean of the three dimensions per domain.
+**Sector + role intake** captures Healthcare / K-12 / Higher Ed /
+Corporate / Nonprofit / First Responders / Government / Other and
+IC / Manager / Director-VP / Executive / Other before the assessment
+starts. Used for sector-aware item phrasing on a small number of
+items (`dp_2`, `pa_5`).
 
-**What it does NOT measure:** archetype, pressure mode, performance profile.
+**Outputs:**
+- Per-subscale 0–100 percentage with risk band (Low / Moderate / High /
+  Severe at 30 / 50 / 70 thresholds)
+- Composite Burnout Risk: weighted 45% EE + 30% DP + 25% PA, with a
+  small driver amplification when the dominant driver is High/Severe
+- Top Drivers: 1–3 driver subscales above 35% sorted by risk
+- 8-archetype label preserved (`STEADY` / `DEPLETED` / `DETACHED` /
+  `FOGGY` / `VOLATILE` / `DOUBTER` / `STRANDED` / `SMOLDERING`) for
+  Pulse cross-link compatibility
+- **Leadership briefing** — org-level translation per at-risk subscale,
+  with leverage points and a leadership question. Shipped both on the
+  results page and in the user receipt email; can be copied or emailed
+  in a forward-ready, sanitized form via
+  `buildLeadershipBriefingText()`.
 
-**Source / lineage:** standard MBI dimensions, custom item wording. The
-6-point scale is an adaptation of MBI's 7-point Likert; results are
-directional, not clinical.
+**Source / lineage:** Maslach et al. (Maslach Burnout Inventory) for
+the symptom dimensions; Leiter & Maslach (Areas of Worklife Survey)
+for the driver dimensions. Item wording is original to BurnoutIQ.
+PA reverse-scoring is canonical to the MBI structure.
+
+**What it does NOT claim:**
+- Peer-reviewed psychometric validation (planned, not delivered)
+- Sector-normed percentile benchmarks (Phase B)
+- Clinical diagnosis of burnout disorder — the assessment is a screening
+  / signal tool, not a medical instrument. Results are informational.
 
 **Files:**
-- Question bank + scoring: `src/app/start/page.tsx`
-- Email send: `src/app/api/submit/route.ts`
+- Question bank: `src/lib/biq-bank.ts`
+- Sector / role enums: `src/lib/biq-sectors.ts`
+- Scoring: `src/lib/biq-scoring.ts`
+- Org context (leadership briefing): `src/lib/biq-org-context.ts`
+- Tests: `tests/biq-bank.test.ts`, `tests/biq-scoring.test.ts`
+- UI: `src/app/start/page.tsx` + `src/components/biq/*`
+- Email: `src/app/api/submit/route.ts`
 
 ## 2. BurnoutIQ Archetype Quick — `/assessment/take`
 
-**Measures:** dominant + supportive archetype on the six-archetype
-framework (Carrier, Burner, Fixer, Guard, Giver, Racer), with directional
-picks per pressure domain.
+12-pair forced-choice quick scan returning a PressureIQ-style archetype
+profile (Carrier / Burner / Fixer / Guard / Giver / Racer). Slim port
+of the v2 PressureIQ engine; intentionally separate from the Maslach
+BurnoutIQ above.
 
-**Item structure:** 12 forced-pair scenarios across 4 pressure domains.
-
-**Design invariants** (encoded in `auditScenarios()` and enforced by
-structure):
-
-1. Exactly 12 scenarios.
-2. Exactly 3 pairs per pressure domain (`time_pressure`, `interpersonal`,
-   `ambiguity`, `high_stakes`).
-3. Within each domain's 3 pairs, all 6 archetypes appear exactly once — a
-   perfect matching on the 6-archetype set.
-4. Therefore each archetype appears exactly 4 times globally and
-   exactly once per domain.
-5. Each option's framing must match its archetype's documented behavioral
-   pattern in `src/lib/archetypes.ts`.
-
-If you change any of these, update the docstring in
-`src/lib/assessment-bank.ts` and `src/lib/scoring.ts` and update this doc.
-
-**Outputs:**
-
-- `dominant`, `supportive` — ranked by win-rate across the 4 trials per
-  archetype (tie-breakers: raw wins, then percentage)
-- `percentages` — win-rate-normalized, sums to 100
-- `domainPicks` — ordered list of the archetypes the user picked in each
-  domain (3 per domain). This is a directional signal, not a per-domain
-  dominant.
-
-**What it does NOT measure** (intentionally):
-
-- **Per-domain dominant archetype.** Within a single domain, each archetype
-  appears in exactly one pair, so three archetypes always tie at win-rate
-  1.0. Picking a "winner" would silently tie-break by declaration order.
-  The results page exposes `domainPicks` instead and links out to the deep
-  dive for proper per-domain measurement.
-- **Performance profile** (peak / functional / degraded states by domain).
-- **Burnout risk score.**
-
-**Source / lineage:** slim port of the PressureIQ v2 forced-pair scorer.
-Canonical v4 implementation lives at
-`pivottraining/pressureiq:src/lib/scoring.ts`.
-
-**Files:**
-- Question bank: `src/lib/assessment-bank.ts`
-- Scoring: `src/lib/scoring.ts`
-- UI: `src/app/assessment/take/page.tsx`, `src/app/assessment/results/page.tsx`
+Files: `src/lib/assessment-bank.ts`, `src/lib/scoring.ts`, audit via
+`auditScenarios()` and `tests/assessment-bank.test.ts`.
 
 ## 3. PressureIQ Deep Dive — external
 
-**Measures:** full archetype profile + per-domain dominants + performance
-profile across four pressure domains, using the v4 unified 3-format engine
-(forced-pair + multi-choice + agreement, ~25 items).
-
-**Hosted at:** `https://www.pressureiqtest.com/assessment`
-
-**Why we link out instead of re-implementing:** the v4 engine, the full
-`assessment-data.ts` metadata (32KB+), and the performance matrix all live
-in the canonical PressureIQ codebase. Duplicating risks drift and rotting
-the enterprise narrative if the methodology updates.
+Full v4 engine hosted at https://www.pressureiqtest.com/assessment.
+Linked from the `/assessment` hub. Not implemented in this repo.
 
 ## Editing rules
 
 - **Never silently change a question bank.** Update this doc + the
-  measurement claim in the relevant file's docstring in the same commit.
-- **Run `auditScenarios(SCENARIOS)`** if you touch the Archetype Quick bank.
-  An empty array means clean.
-- **For the Maslach bank**, item changes should preserve the EE/DP/PA
-  count per domain (4/3/3) and the reverse-scoring on PA.
-- **Cross-assessment renames** (e.g. archetype renamed from "Burner" to
-  "Igniter") require a coordinated change across this repo and the
-  PressureIQ canonical engine. Open companion PRs.
+  measurement claim docstring in the relevant file in the same commit.
+- **Run `auditBank()`** if you touch BurnoutIQ items. An empty array
+  return means clean.
+- **Run `auditScenarios()`** if you touch the Archetype Quick bank.
+- **Maintain reverse-scoring on PA** in the BurnoutIQ bank. PA items
+  must have `reverse: true`; everything else must have `reverse:
+  false`. The bank-audit test enforces this.
+- **Keep archetype label compatibility** when changing scoring math.
+  The Pulse cross-link contract (`pulse.pivottraining.us/api/record`)
+  expects one of the 8 string labels.
