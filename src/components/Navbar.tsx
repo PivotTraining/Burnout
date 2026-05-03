@@ -6,16 +6,16 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import BurnoutLogo from "./BurnoutLogo";
 
 const consumerLinks = [
-  { label: "Pro · one-time", href: "/pro", desc: "$19 · PDF + 90-day plan + 12-week nudges" },
-  { label: "Continuum · monthly", href: "/continuum", desc: "$9/mo · ongoing pulse + content" },
-  { label: "Coach · with 1:1", href: "/coach", desc: "$197 · includes 60-min coaching" },
+  { label: "Pro", href: "/pro", desc: "Full PDF + 90-day plan + nudges" },
+  { label: "Continuum", href: "/continuum", desc: "Ongoing pulse + content" },
+  { label: "Coach", href: "/coach", desc: "Includes a 60-min 1:1" },
 ];
 
 const enterpriseLinks = [
-  { label: "Teams · 30-day", href: "/tiers/teams", desc: "$9.7K–$14.7K" },
-  { label: "Core · 90-day", href: "/tiers/core", desc: "$35K–$75K" },
-  { label: "Enterprise · 12-month", href: "/tiers/enterprise", desc: "$125K–$300K+" },
-  { label: "Subscription", href: "/subscription", desc: "$25–$45/employee/yr" },
+  { label: "Teams", href: "/tiers/teams", desc: "30-day org diagnostic" },
+  { label: "Core", href: "/tiers/core", desc: "90-day program" },
+  { label: "Enterprise", href: "/tiers/enterprise", desc: "12-month transformation" },
+  { label: "Subscription", href: "/subscription", desc: "Always-on org layer" },
 ];
 
 export default function Navbar({ forceScrolled = false }: { forceScrolled?: boolean }) {
@@ -96,14 +96,14 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
             <p className="text-[10px] font-bold uppercase tracking-widest text-ember mb-1">Personal</p>
             {consumerLinks.map((t) => (
               <Link key={t.href} href={t.href} onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">
-                {t.label} <span className="text-navy/40">{t.desc}</span>
+                {t.label} <span className="text-navy/40">· {t.desc}</span>
               </Link>
             ))}
             <div className="h-px bg-border-gray my-2" />
             <p className="text-[10px] font-bold uppercase tracking-widest text-ember mb-1">Enterprise</p>
             {enterpriseLinks.map((t) => (
               <Link key={t.href} href={t.href} onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">
-                {t.label} <span className="text-navy/40">{t.desc}</span>
+                {t.label} <span className="text-navy/40">· {t.desc}</span>
               </Link>
             ))}
             <div className="h-px bg-border-gray my-2" />
