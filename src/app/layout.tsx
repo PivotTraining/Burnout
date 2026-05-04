@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import PostHogClient from "@/components/PostHogClient";
+import { Analytics } from "@vercel/analytics/next";
 
 const SITE_URL = "https://burnoutiqtest.com";
 const SITE_NAME = "BurnoutIQ";
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-full flex flex-col">
         <PostHogClient />
         {children}
+        <Analytics />
       </body>
     </html>
   );
