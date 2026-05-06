@@ -397,13 +397,6 @@ export default function StartPage() {
             </p>
           </div>
 
-          <ResultsBreakdown
-            results={results}
-            openResponses={openResponses}
-            sector={sector}
-            role={role}
-          />
-
           <div className="bg-white rounded-2xl border border-border-gray p-5">
             {autoSubmitState === "sent" && (
               <div className="flex items-center gap-3 py-2">
@@ -435,6 +428,13 @@ export default function StartPage() {
               </button>
             </div>
           </div>
+
+          <ResultsBreakdown
+            results={results}
+            openResponses={openResponses}
+            sector={sector}
+            role={role}
+          />
 
           {pulseLinked && pulseCode && (
             <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#0B1220]">
