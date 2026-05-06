@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 const STEPS = [
-  { letter: "R", name: "Recognize", desc: "Surface the systemic and individual signs of burnout. The BurnoutIQ Maslach assessment + PressureIQ archetype quiz map your burnout landscape end to end.", color: "#E07A5F" },
+  { letter: "R", name: "Recognize", desc: "Surface the systemic and individual signs of burnout. The BurnoutIQ assessment + PressureIQ archetype quiz map your burnout landscape end to end.", color: "#E07A5F" },
   { letter: "E", name: "Evaluate", desc: "Deep-dive analysis of culture, workflows, and stressors. We find the root causes — not just the symptoms. Archetype distribution by department becomes the diagnostic substrate.", color: "#2B4DA0" },
   { letter: "C", name: "Calibrate", desc: "Build an intervention plan calibrated to your industry, archetype mix, and tier. Pulse, Core, and Enterprise tiers all live inside this step.", color: "#D4A843" },
   { letter: "H", name: "Heal", desc: "Deliver targeted workshops, manager training, and team interventions tailored to the dominant archetypes we surfaced. Carrier loads get redistributed; Racer pre-mortems get installed; Giver 1:1s get bounded.", color: "#4A6FBF" },

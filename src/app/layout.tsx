@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "PressureIQ",
     "burnout diagnostic",
     "workplace burnout",
-    "Maslach Burnout Inventory",
+    "burnout assessment",
     "archetype assessment",
     "Pivot Training",
   ],

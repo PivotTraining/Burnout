@@ -57,8 +57,9 @@ export default function AssessmentIntro() {
                 Burnout Risk Assessment
               </h2>
               <p className="text-sm text-navy/60 mb-4">
-                Maslach-based three-dimension burnout score across work and personal
-                domains. Free; Pro upgrade unlocks the full breakdown.
+                Three-dimension burnout score across work and personal
+                domains, grounded in published burnout research. Free; Pro
+                upgrade unlocks the full breakdown.
               </p>
               <span className="text-sm font-semibold text-ember group-hover:underline">
                 Start the burnout risk assessment →

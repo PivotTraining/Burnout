@@ -35,9 +35,12 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-navy mb-3">2. Description of Service</h2>
             <p>
-              BurnoutIQ provides a science-informed burnout risk assessment based on the Maslach Burnout Inventory
-              (MBI) framework. The assessment measures three dimensions: Emotional Exhaustion, Depersonalization,
-              and Personal Accomplishment. BurnoutIQ is offered by Pivot Training &amp; Development.
+              BurnoutIQ provides a workplace burnout assessment conceptually grounded in published burnout
+              research (Maslach &amp; Leiter), with original items authored by Pivot Training &amp; Development.
+              The assessment measures three burnout symptoms (Emotional Exhaustion, Depersonalization, and
+              Personal Accomplishment) plus six workplace drivers. BurnoutIQ is not affiliated with, nor
+              validated against, the Maslach Burnout Inventory&reg;, which is a copyrighted instrument
+              distributed by Mind Garden, Inc. BurnoutIQ is offered by Pivot Training &amp; Development.
             </p>
             <p className="mt-3">
               <strong>Not a medical service.</strong> BurnoutIQ is an educational and professional development tool.
@@ -101,10 +104,11 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-navy mb-3">7. Intellectual Property</h2>
             <p>
-              All content, design, assessment framework implementation, and scoring methodology on BurnoutIQ
-              is the intellectual property of Pivot Training &amp; Development. The Maslach Burnout Inventory
-              framework is used under the scholarly tradition of burnout research; our implementation is
-              proprietary.
+              All content, design, assessment items, and scoring methodology on BurnoutIQ are the intellectual
+              property of Pivot Training &amp; Development. BurnoutIQ does not reproduce, license, or adapt
+              verbatim items from the Maslach Burnout Inventory&reg; or Areas of Worklife Survey, which are
+              copyrighted instruments distributed by Mind Garden, Inc. BurnoutIQ items operationalize the same
+              theoretical constructs through original Pivot-authored language.
             </p>
           </section>
 

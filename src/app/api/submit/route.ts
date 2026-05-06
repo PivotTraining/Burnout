@@ -11,6 +11,9 @@ const NOTIFY = process.env.RESEND_NOTIFY_EMAIL || "hello@pivottraining.us";
 
 interface SubmitPayload {
   email: string;
+  firstName?: string;
+  lastName?: string;
+  organization?: string;
   sector?: Sector | null;
   role?: Role | null;
   archetype: string;
@@ -175,7 +178,9 @@ function renderNotifyEmail(p: SubmitPayload): string {
 <!DOCTYPE html><html><body style="font-family:system-ui,sans-serif;padding:24px;color:#1A1A2E;">
 <h2 style="margin:0 0 12px;">🔥 New BurnoutIQ Submission</h2>
 <table cellpadding="6" style="border-collapse:collapse;width:100%;max-width:520px;font-size:13px;">
-  <tr style="background:#f8f8fc;"><td><strong>Email</strong></td><td>${escapeHtml(p.email)}</td></tr>
+  <tr style="background:#f8f8fc;"><td><strong>Name</strong></td><td>${escapeHtml(`${p.firstName || ""} ${p.lastName || ""}`.trim() || "—")}</td></tr>
+  <tr><td><strong>Email</strong></td><td>${escapeHtml(p.email)}</td></tr>
+  <tr style="background:#f8f8fc;"><td><strong>Organization</strong></td><td>${escapeHtml(p.organization || "—")}</td></tr>
   <tr><td><strong>Sector / Role</strong></td><td>${p.sector ? SECTOR_LABELS[p.sector] : "—"} · ${p.role ? ROLE_LABELS[p.role] : "—"}</td></tr>
   <tr style="background:#f8f8fc;"><td><strong>Composite</strong></td><td><strong>${p.composite}%</strong> — ${bandOf(p.composite)} · ${p.archetype}</td></tr>
   <tr><td><strong>Top drivers</strong></td><td>${(p.topDrivers || []).map((d) => SUBSCALE_LABELS[d as Subscale]).join(", ") || "—"}</td></tr>
@@ -197,10 +202,12 @@ function escapeHtml(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
+const AUDIENCE = process.env.RESEND_AUDIENCE_ID;
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as SubmitPayload;
-    const { email } = body;
+    const { email, firstName, lastName } = body;
     if (!email || !email.includes("@")) {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
@@ -208,16 +215,34 @@ export async function POST(req: NextRequest) {
       console.warn("[submit] RESEND_API_KEY missing — skipping send", { email });
       return NextResponse.json({ ok: true, skipped: true });
     }
+
+    // Lead capture: add to audience (non-fatal if it fails — e.g., already exists)
+    if (AUDIENCE) {
+      try {
+        await resend.contacts.create({
+          audienceId: AUDIENCE,
+          email,
+          firstName: firstName || undefined,
+          lastName: lastName || undefined,
+          unsubscribed: false,
+        });
+      } catch {
+        /* non-fatal — likely already in audience */
+      }
+    }
+
     await resend.emails.send({
       from: FROM,
       to: [email],
+      replyTo: NOTIFY,
       subject: "Your BurnoutIQ Results + Leadership Briefing",
       html: renderUserEmail(body),
     });
     await resend.emails.send({
       from: FROM,
       to: [NOTIFY],
-      subject: `New BurnoutIQ submission: ${email}`,
+      replyTo: email,
+      subject: `New BurnoutIQ submission: ${firstName || ""} ${lastName || ""} <${email}>`,
       html: renderNotifyEmail(body),
     });
     return NextResponse.json({ ok: true });

@@ -37,15 +37,15 @@ function Hero() {
           <div className="fade-up" style={{ animationDelay: "100ms" }}>
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-ember text-sm font-medium px-4 py-2 rounded-full mb-8 border border-white/10">
               <span className="w-2 h-2 rounded-full bg-ember animate-pulse" />
-              Maslach Burnout Inventory · Areas of Worklife
+              By Pivot Training &amp; Development
             </div>
           </div>
 
           <div className="fade-up" style={{ animationDelay: "150ms" }}>
             <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[0.95] tracking-tight mb-8">
-              Diagnose burnout.
+              Understand burnout.
               <br />
-              <span className="text-ember">Take it back</span>
+              <span className="text-ember">Bring it</span>
               <br />
               to your leadership team.
             </h1>
@@ -53,16 +53,23 @@ function Hero() {
 
           <div className="fade-up" style={{ animationDelay: "250ms" }}>
             <p className="text-lg md:text-xl text-white/60 max-w-xl leading-relaxed mb-4">
-              BurnoutIQ is a serious workplace burnout diagnostic. 36 items across
-              9 dimensions — the three Maslach symptoms plus the six workplace drivers.
-              Every result includes a Leadership Briefing built for forwarding.
+              BurnoutIQ is a workplace burnout assessment grounded in published
+              burnout research. 36 items across 9 dimensions — three burnout
+              symptoms and six workplace drivers. Every result includes a
+              Leadership Briefing built for forwarding.
             </p>
           </div>
 
           <div className="fade-up" style={{ animationDelay: "350ms" }}>
             <p className="text-sm text-white/30 max-w-xl leading-relaxed mb-12">
-              Built on the Maslach Burnout Inventory framework and the Areas of
-              Worklife model by Pivot Training &amp; Development.
+              Conceptually grounded in published burnout research (Maslach &amp;
+              Leiter), with original items authored by Pivot Training &amp;
+              Development. BurnoutIQ is not affiliated with, nor validated against,
+              the Maslach Burnout Inventory&reg;.{" "}
+              <Link href="/methodology/burnoutiq" className="underline text-white/50 hover:text-ember">
+                See methodology
+              </Link>
+              .
             </p>
           </div>
 
@@ -189,16 +196,15 @@ function Dimensions() {
               Symptoms and drivers — measured separately.
             </h2>
             <p className="text-lg text-navy-light/60 max-w-2xl mx-auto">
-              Three Maslach burnout symptoms plus six Areas of Worklife drivers
-              — because knowing how you feel doesn&apos;t tell you what to do
-              about it.
+              Three burnout symptoms plus six workplace drivers — because knowing
+              how you feel doesn&apos;t tell you what to do about it.
             </p>
           </div>
         </div>
 
         <div className="max-w-5xl mx-auto">
           <p className="text-xs font-bold text-ember uppercase tracking-widest text-center mb-4">
-            The three symptoms (Maslach)
+            The three burnout symptoms
           </p>
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {dimensions.map((d, i) => (
@@ -221,7 +227,7 @@ function Dimensions() {
           </div>
 
           <p className="text-xs font-bold text-ember uppercase tracking-widest text-center mb-4">
-            The six workplace drivers (Areas of Worklife)
+            The six workplace drivers
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {drivers.map((label) => (
@@ -522,7 +528,7 @@ function CTASection() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-6 max-w-3xl mx-auto">
             Burnout doesn&apos;t announce itself.
             <br />
-            <span className="text-ember">Diagnose it. Take it back to the table.</span>
+            <span className="text-ember">Measure it. Bring it to the table.</span>
           </h2>
         </div>
 
@@ -595,8 +601,9 @@ function Footer() {
               <span className="text-lg font-bold text-white">BurnoutIQ</span>
             </div>
             <p className="text-sm text-white/40 leading-relaxed mb-4 max-w-xs">
-              A serious workplace burnout diagnostic built on the Maslach Burnout
-              Inventory and Areas of Worklife frameworks.
+              A workplace burnout assessment grounded in published burnout
+              research, with original items authored by Pivot Training &amp;
+              Development.
             </p>
             <p className="text-xs text-white/25">
               Built by Pivot Training &amp; Development

@@ -1,5 +1,6 @@
 "use client";
 
+import Navbar from "@/components/Navbar";
 import { OPEN_ENDED } from "@/lib/biq-bank";
 import { ArrowRight, SkipForward } from "lucide-react";
 
@@ -16,7 +17,8 @@ export default function OpenEndedScreen({
 }) {
   const anyAnswered = Object.values(responses).some((v) => v.trim().length > 0);
   return (
-    <div className="min-h-screen bg-light-bg pt-12 pb-12 px-4">
+    <div className="min-h-screen bg-light-bg pt-28 pb-12 px-4">
+      <Navbar forceScrolled />
       <div className="max-w-2xl mx-auto">
         <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-2">
           Step 3 of 3 · Optional context

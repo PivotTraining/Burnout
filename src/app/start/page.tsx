@@ -7,9 +7,8 @@ import IntakeScreen from "@/components/biq/IntakeScreen";
 import QuestionScreen from "@/components/biq/QuestionScreen";
 import OpenEndedScreen from "@/components/biq/OpenEndedScreen";
 import ResultsBreakdown from "@/components/biq/ResultsBreakdown";
-import TierUpsell from "@/components/biq/TierUpsell";
 import {
-  ArrowRight, Clock, Mail, CheckCircle, Copy, RotateCcw, Shield,
+  ArrowRight, Clock, CheckCircle, Copy, RotateCcw, Shield,
 } from "lucide-react";
 import { BIQ_ITEMS, SUBSCALE_LABELS } from "@/lib/biq-bank";
 import { calculateResults, type BiqResults } from "@/lib/biq-scoring";
@@ -25,6 +24,10 @@ const PULSE_HUB = "https://pulse.pivottraining.us";
 interface SavedState {
   sector: Sector | null;
   role: Role | null;
+  firstName: string;
+  lastName: string;
+  email: string;
+  organization: string;
   answers: Record<string, number>;
   open: Record<string, string>;
   idx: number;
@@ -34,16 +37,17 @@ export default function StartPage() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [sector, setSector] = useState<Sector | null>(null);
   const [role, setRole] = useState<Role | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [organization, setOrganization] = useState("");
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [openResponses, setOpenResponses] = useState<Record<string, string>>({});
   const [idx, setIdx] = useState(0);
   const [savedFlash, setSavedFlash] = useState(false);
   const [resumeAvail, setResumeAvail] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [emailSent, setEmailSent] = useState(false);
-  const [emailLoading, setEmailLoading] = useState(false);
-  const [emailError, setEmailError] = useState("");
+  const [autoSubmitState, setAutoSubmitState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [copied, setCopied] = useState(false);
 
   const [pulseCode, setPulseCode] = useState<string | null>(null);
@@ -71,6 +75,10 @@ export default function StartPage() {
       const state: SavedState = {
         sector,
         role,
+        firstName,
+        lastName,
+        email,
+        organization,
         answers,
         open: openResponses,
         idx,
@@ -80,12 +88,13 @@ export default function StartPage() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       } catch {}
     },
-    [sector, role, answers, openResponses, idx],
+    [sector, role, firstName, lastName, email, organization, answers, openResponses, idx],
   );
 
   const startFresh = () => {
     try { localStorage.removeItem(STORAGE_KEY); } catch {}
     setSector(null); setRole(null);
+    setFirstName(""); setLastName(""); setEmail(""); setOrganization("");
     setAnswers({}); setOpenResponses({}); setIdx(0);
     setPhase("intake");
   };
@@ -97,11 +106,16 @@ export default function StartPage() {
         const s = JSON.parse(raw) as SavedState;
         setSector(s.sector ?? null);
         setRole(s.role ?? null);
+        setFirstName(s.firstName ?? "");
+        setLastName(s.lastName ?? "");
+        setEmail(s.email ?? "");
+        setOrganization(s.organization ?? "");
         setAnswers(s.answers ?? {});
         setOpenResponses(s.open ?? {});
         setIdx(s.idx ?? 0);
         setResumeAvail(false);
-        if (!s.sector || !s.role) setPhase("intake");
+        const hasIntake = !!(s.sector && s.role && s.firstName && s.email);
+        if (!hasIntake) setPhase("intake");
         else if (Object.keys(s.answers ?? {}).length < BIQ_ITEMS.length)
           setPhase("assessing");
         else setPhase("open-ended");
@@ -175,40 +189,37 @@ export default function StartPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.includes("@")) {
-      setEmailError("Enter a valid email address.");
-      return;
-    }
-    if (!results) return;
-    setEmailLoading(true);
-    setEmailError("");
-    try {
-      const res = await fetch("/api/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          sector,
-          role,
-          archetype: results.archetype,
-          composite: results.composite.pct,
-          subscales: Object.fromEntries(
-            Object.entries(results.subscales).map(([k, v]) => [k, v.pct]),
-          ),
-          topDrivers: results.topDrivers,
-          openResponses,
-        }),
-      });
-      if (!res.ok) throw new Error("send failed");
-      setEmailSent(true);
-    } catch {
-      setEmailError("Something went wrong — try again.");
-    } finally {
-      setEmailLoading(false);
-    }
-  };
+  // Auto-submit results to the registrant's email + notify ops, the moment results render.
+  useEffect(() => {
+    if (phase !== "results" || !results || autoSubmitState !== "idle") return;
+    if (!email || !email.includes("@")) return;
+    setAutoSubmitState("sending");
+    fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        firstName,
+        lastName,
+        organization,
+        sector,
+        role,
+        archetype: results.archetype,
+        composite: results.composite.pct,
+        subscales: Object.fromEntries(
+          Object.entries(results.subscales).map(([k, v]) => [k, v.pct]),
+        ),
+        topDrivers: results.topDrivers,
+        openResponses,
+      }),
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error("send failed");
+        setAutoSubmitState("sent");
+      })
+      .catch(() => setAutoSubmitState("error"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   const handleCopy = async () => {
     if (!results) return;
@@ -267,14 +278,13 @@ export default function StartPage() {
               ~10 min · 36 questions + 3 optional · Free
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
-              The serious workplace burnout diagnostic.
+              The workplace burnout assessment.
             </h1>
             <p className="text-white/55 leading-relaxed mb-3 text-sm">
-              36 items across 9 dimensions — the three Maslach burnout symptoms
-              (Emotional Exhaustion, Detachment, Reduced Effectiveness) plus the
-              six workplace drivers from the Areas of Worklife framework
-              (workload, control, reward, community, fairness, values). Plus
-              three optional open‑ended questions that say what numbers can’t.
+              36 items across 9 dimensions — three burnout symptoms (Emotional
+              Exhaustion, Detachment, Reduced Effectiveness) plus six workplace
+              drivers (workload, control, reward, community, fairness, values).
+              Plus three optional open‑ended questions that say what numbers can&apos;t.
             </p>
             <p className="text-white/55 leading-relaxed mb-8 text-sm">
               Built for individuals — and for leaders who want results they can
@@ -319,8 +329,16 @@ export default function StartPage() {
       <IntakeScreen
         sector={sector}
         role={role}
+        firstName={firstName}
+        lastName={lastName}
+        email={email}
+        organization={organization}
         onSector={(s) => { setSector(s); save({ sector: s }); }}
         onRole={(r) => { setRole(r); save({ role: r }); }}
+        onFirstName={(v) => { setFirstName(v); save({ firstName: v }); }}
+        onLastName={(v) => { setLastName(v); save({ lastName: v }); }}
+        onEmail={(v) => { setEmail(v); save({ email: v }); }}
+        onOrganization={(v) => { setOrganization(v); save({ organization: v }); }}
         onContinue={() => setPhase("assessing")}
         onBack={() => setPhase("intro")}
       />
@@ -387,50 +405,35 @@ export default function StartPage() {
           />
 
           <div className="bg-white rounded-2xl border border-border-gray p-5">
-            {emailSent ? (
+            {autoSubmitState === "sent" && (
               <div className="flex items-center gap-3 py-2">
                 <CheckCircle className="w-6 h-6 text-green-500 shrink-0" />
                 <div>
-                  <p className="font-semibold text-navy text-sm">Results sent</p>
-                  <p className="text-navy/40 text-xs mt-0.5">Check your inbox — and your spam folder.</p>
+                  <p className="font-semibold text-navy text-sm">Results sent to {email}</p>
+                  <p className="text-navy/40 text-xs mt-0.5">Includes the Leadership Briefing for forwarding. Check your inbox — and your spam folder.</p>
                 </div>
               </div>
-            ) : (
-              <>
-                <p className="text-sm font-semibold text-navy mb-1">Email yourself these results</p>
-                <p className="text-xs text-navy/40 mb-3">Free. Includes the leadership briefing for forwarding.</p>
-                <form onSubmit={handleEmailSubmit} className="flex gap-2">
-                  <input
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="flex-1 border border-border-gray rounded-xl px-4 py-2.5 text-sm text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-ember/30 focus:border-ember"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    disabled={emailLoading}
-                    className="flex items-center gap-2 bg-ember hover:bg-ember-light text-white font-semibold text-sm px-5 py-2.5 rounded-xl disabled:opacity-60"
-                  >
-                    {emailLoading ? "Sending…" : (<><Mail className="w-4 h-4" />Send</>)}
-                  </button>
-                </form>
-                {emailError && <p className="text-red-500 text-xs mt-2">{emailError}</p>}
-                <div className="mt-3 pt-3 border-t border-border-gray">
-                  <button
-                    onClick={handleCopy}
-                    className={`flex items-center gap-1.5 text-xs ${copied ? "text-emerald-600" : "text-navy/40 hover:text-navy/70"}`}
-                  >
-                    {copied ? (<><CheckCircle className="w-3.5 h-3.5" />Copied to clipboard</>) : (<><Copy className="w-3.5 h-3.5" />Copy results to clipboard</>)}
-                  </button>
-                </div>
-              </>
             )}
-          </div>
-
-          <div className="pt-2">
-            <TierUpsell />
+            {autoSubmitState === "sending" && (
+              <div className="flex items-center gap-3 py-2">
+                <div className="w-5 h-5 border-2 border-ember/30 border-t-ember rounded-full animate-spin" />
+                <p className="text-navy/60 text-sm">Sending your results to {email}…</p>
+              </div>
+            )}
+            {autoSubmitState === "error" && (
+              <div className="py-2">
+                <p className="font-semibold text-navy text-sm">We couldn&apos;t deliver to {email}.</p>
+                <p className="text-navy/40 text-xs mt-0.5">Use the copy button below or email hello@pivottraining.us and we&apos;ll resend.</p>
+              </div>
+            )}
+            <div className="mt-3 pt-3 border-t border-border-gray">
+              <button
+                onClick={handleCopy}
+                className={`flex items-center gap-1.5 text-xs ${copied ? "text-emerald-600" : "text-navy/40 hover:text-navy/70"}`}
+              >
+                {copied ? (<><CheckCircle className="w-3.5 h-3.5" />Copied to clipboard</>) : (<><Copy className="w-3.5 h-3.5" />Copy results to clipboard</>)}
+              </button>
+            </div>
           </div>
 
           {pulseLinked && pulseCode && (

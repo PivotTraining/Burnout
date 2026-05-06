@@ -1,5 +1,6 @@
 "use client";
 
+import Navbar from "@/components/Navbar";
 import { SCALE_LABELS, type BiqItem } from "@/lib/biq-bank";
 import { itemText } from "@/lib/biq-bank";
 import { SUBSCALE_LABELS } from "@/lib/biq-bank";
@@ -29,9 +30,10 @@ export default function QuestionScreen({
 }) {
   const pct = Math.round(((index + 1) / total) * 100);
   return (
-    <div className="min-h-screen bg-light-bg flex flex-col">
+    <div className="min-h-screen bg-light-bg flex flex-col pt-16">
+      <Navbar forceScrolled />
       {/* Sticky progress */}
-      <div className="bg-white border-b border-border-gray sticky top-0 z-10">
+      <div className="bg-white border-b border-border-gray sticky top-16 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 space-y-2">
           <div className="flex items-center gap-3">
             <span className="text-xs text-navy/40 font-medium tabular-nums shrink-0">
