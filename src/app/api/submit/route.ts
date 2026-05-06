@@ -6,7 +6,9 @@ import { SECTOR_LABELS, ROLE_LABELS, type Sector, type Role } from "@/lib/biq-se
 import { ORG_CONTEXT, buildLeadershipBriefingText } from "@/lib/biq-org-context";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@pivottraining.us>";
+// FROM must use a domain verified in Resend. burnoutiqtest.com is verified;
+// pivottraining.us is NOT — sends from it will fail silently.
+const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";
 const NOTIFY = process.env.RESEND_NOTIFY_EMAIL || "hello@pivottraining.us";
 
 interface SubmitPayload {
