@@ -110,13 +110,18 @@ function DropdownMenu({
         {label} <ChevronDown className="w-3.5 h-3.5" />
       </button>
       {openMenu === menuKey && (
-        <div className="absolute top-full left-0 mt-1 w-72 bg-white rounded-xl shadow-xl border border-border-gray p-2">
-          {links.map((t) => (
-            <Link key={t.href} href={t.href} className="block px-3 py-2 rounded-lg hover:bg-cream">
-              <div className="text-sm font-semibold text-navy">{t.label}</div>
-              <div className="text-xs text-navy/50">{t.desc}</div>
-            </Link>
-          ))}
+        // Outer wrapper has pt-2 to give visual gap while keeping hit-area
+        // flush with the trigger button — prevents mouseLeave from firing
+        // as the cursor crosses the gap.
+        <div className="absolute top-full left-0 pt-2 w-72 z-50">
+          <div className="bg-white rounded-xl shadow-xl border border-border-gray p-2">
+            {links.map((t) => (
+              <Link key={t.href} href={t.href} className="block px-3 py-2 rounded-lg hover:bg-cream">
+                <div className="text-sm font-semibold text-navy">{t.label}</div>
+                <div className="text-xs text-navy/50">{t.desc}</div>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>
