@@ -158,6 +158,12 @@ export default function SignIn() {
             {error && <p className="text-sm text-red-600">{error}</p>}
             <p className="text-xs text-navy/50 text-center pt-2 border-t border-border-gray">
               New customer? <Link href="/briefing" className="text-ember underline">Schedule a Briefing</Link> to get provisioned.
+              <br />
+              Sales prospect with a demo password?{" "}
+              <Link href="/signin?mode=demo" className="text-ember underline">
+                Enter demo console
+              </Link>
+              .
             </p>
           </form>
         )}

@@ -4,16 +4,13 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Protect /dashboard/* with a Supabase session.
+// Protect /dashboard/* — two paths, additive:
+//   1. Real magic-link auth via Supabase (production customers).
+//   2. Shared demo password (sales prospects / preview).
 //
-// Three modes:
-//   1. Supabase configured → real magic-link auth (the production path).
-//   2. Supabase NOT configured but DASHBOARD_DEMO_PASSWORD env var set →
-//      shared-password gate via signed cookie. Lets the team show the
-//      console to a prospect on a sales call without leaking it publicly.
-//   3. Neither → return 404 so /dashboard isn't browsable on the open web.
-//
-// This closes the public-internet exposure on demo deploys.
+// If neither is satisfied → redirect to /signin. /signin lets the user
+// pick magic-link or demo-password. If Supabase isn't configured AND no
+// demo password is set, /dashboard returns 404 (open-web safety).
 const DEMO_PASSWORD = process.env.DASHBOARD_DEMO_PASSWORD;
 const DEMO_COOKIE = "biq-demo-pass";
 
@@ -21,23 +18,24 @@ export async function middleware(req: NextRequest) {
   const isDashboard = req.nextUrl.pathname.startsWith("/dashboard");
   if (!isDashboard) return NextResponse.next();
 
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    // Demo / shared-password mode.
-    if (!DEMO_PASSWORD) {
-      // No Supabase, no demo password → /dashboard is hidden.
-      return new NextResponse("Not Found", { status: 404 });
-    }
-    const supplied = req.cookies.get(DEMO_COOKIE)?.value;
-    if (supplied !== DEMO_PASSWORD) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/signin";
-      url.searchParams.set("next", req.nextUrl.pathname);
-      url.searchParams.set("mode", "demo");
-      return NextResponse.redirect(url);
-    }
+  // Demo cookie is honored regardless of Supabase state — additive path.
+  if (DEMO_PASSWORD && req.cookies.get(DEMO_COOKIE)?.value === DEMO_PASSWORD) {
     const res = NextResponse.next();
     res.headers.set("x-burnoutiq-mode", "demo");
     return res;
+  }
+
+  // No Supabase + no demo password = console fully hidden.
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    if (!DEMO_PASSWORD) {
+      return new NextResponse("Not Found", { status: 404 });
+    }
+    // Demo password configured but no cookie yet → /signin?mode=demo.
+    const url = req.nextUrl.clone();
+    url.pathname = "/signin";
+    url.searchParams.set("next", req.nextUrl.pathname);
+    url.searchParams.set("mode", "demo");
+    return NextResponse.redirect(url);
   }
 
   const res = NextResponse.next();
