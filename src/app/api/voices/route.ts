@@ -73,7 +73,18 @@ export async function POST(req: NextRequest) {
 }
 
 // ─── Admin read ────────────────────────────────────────────────────────
-export async function GET() {
+const DEMO_PASSWORD = process.env.DASHBOARD_DEMO_PASSWORD;
+const DEMO_COOKIE = "biq-demo-pass";
+
+export async function GET(req: NextRequest) {
+  // Demo mode: if the demo cookie is set and matches, serve a curated
+  // mock dataset so sales prospects see what the page looks like with
+  // real submissions — including some categories above the n>=5 floor
+  // (unlocked, messages visible) and some below (count visible, text hidden).
+  if (DEMO_PASSWORD && req.cookies.get(DEMO_COOKIE)?.value === DEMO_PASSWORD) {
+    return NextResponse.json(buildDemoVoices());
+  }
+
   if (!SUPABASE_LIVE) {
     return NextResponse.json({ ok: false, error: "Console not provisioned" }, { status: 503 });
   }
@@ -116,4 +127,52 @@ export async function GET() {
     hiddenCount,
     totalCount: all.length,
   });
+}
+
+function buildDemoVoices() {
+  const now = Date.now();
+  const ago = (days: number) => new Date(now - days * 86400000).toISOString();
+
+  // 6 workload, 5 management, 3 culture, 2 reward → 11 visible, 5 hidden.
+  const messages: VoiceRow[] = [
+    // Workload — unlocked (6 ≥ 5)
+    { id: "v1", category: "workload", message: "Three concurrent launches this quarter and no time to decompress between them. The pace isn't sustainable.", created_at: ago(2) },
+    { id: "v2", category: "workload", message: "Engineering is doing PM work, design work, and on-call. Headcount math doesn't add up to the roadmap commitments.", created_at: ago(4) },
+    { id: "v3", category: "workload", message: "I haven't had a full uninterrupted hour to think in three weeks. Not exaggerating.", created_at: ago(7) },
+    { id: "v4", category: "workload", message: "Cross-team dependencies are blocking us weekly. Either we cut scope or we add people. Right now we're doing neither.", created_at: ago(9) },
+    { id: "v5", category: "workload", message: "Our 'fast-track' projects keep multiplying. None of them get killed when a new one starts.", created_at: ago(12) },
+    { id: "v6", category: "workload", message: "Asking for help is treated as a status hit. So nobody asks.", created_at: ago(15) },
+
+    // Management — unlocked (5 ≥ 5)
+    { id: "v7", category: "management", message: "My manager hasn't given me real feedback in 8 months. The 1:1s are status updates.", created_at: ago(3) },
+    { id: "v8", category: "management", message: "Decisions get reversed at the next level up after we've already executed. Hard to stay motivated.", created_at: ago(6) },
+    { id: "v9", category: "management", message: "Skip-levels happen but the feedback never makes it back to my direct manager. So nothing changes.", created_at: ago(8) },
+    { id: "v10", category: "management", message: "When we miss a deadline, the leadership response is to add more meetings, not to triage scope.", created_at: ago(11) },
+    { id: "v11", category: "management", message: "Praise is loud, criticism is whispered. We never know what's actually working.", created_at: ago(14) },
+
+    // Culture — locked (3 < 5)
+    { id: "v12", category: "culture", message: "[hidden]", created_at: ago(5) },
+    { id: "v13", category: "culture", message: "[hidden]", created_at: ago(10) },
+    { id: "v14", category: "culture", message: "[hidden]", created_at: ago(16) },
+
+    // Reward — locked (2 < 5)
+    { id: "v15", category: "reward", message: "[hidden]", created_at: ago(13) },
+    { id: "v16", category: "reward", message: "[hidden]", created_at: ago(18) },
+  ];
+
+  const counts: Record<string, number> = {};
+  for (const v of messages) counts[v.category] = (counts[v.category] || 0) + 1;
+
+  const visible = messages.filter((v) => (counts[v.category] || 0) >= VOICE_FLOOR);
+  const hiddenCount = messages.length - visible.length;
+
+  return {
+    ok: true,
+    floor: VOICE_FLOOR,
+    counts,
+    visible,
+    hiddenCount,
+    totalCount: messages.length,
+    demo: true,
+  };
 }
