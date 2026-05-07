@@ -3,6 +3,14 @@
 
 import { ARCHETYPES, type ArchetypeKey } from "@/lib/archetypes";
 
+import type { DriverKey } from "@/lib/console-content";
+
+export interface DriverConcern {
+  driver: DriverKey;
+  meanPct: number;     // mean % at-risk across the org
+  atRiskCount: number; // employees whose driver score is in the High/Severe band
+}
+
 export interface MockOrg {
   name: string;
   headcount: number;
@@ -12,6 +20,7 @@ export interface MockOrg {
   archetypeDistribution: Record<ArchetypeKey, number>;
   departments: { name: string; archetype: ArchetypeKey; risk: number; size: number }[];
   trend: { quarter: string; risk: number }[];
+  driverConcerns: DriverConcern[];
 }
 
 export const MOCK_ORG: MockOrg = {
@@ -43,6 +52,14 @@ export const MOCK_ORG: MockOrg = {
     { quarter: "Q2", risk: 49 },
     { quarter: "Q3", risk: 44 },
     { quarter: "Q4", risk: 41 },
+  ],
+  driverConcerns: [
+    { driver: "workload", meanPct: 62, atRiskCount: 488 },
+    { driver: "reward", meanPct: 51, atRiskCount: 369 },
+    { driver: "control", meanPct: 44, atRiskCount: 282 },
+    { driver: "fairness", meanPct: 38, atRiskCount: 217 },
+    { driver: "community", meanPct: 31, atRiskCount: 152 },
+    { driver: "values", meanPct: 27, atRiskCount: 119 },
   ],
 };
 

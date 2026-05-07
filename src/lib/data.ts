@@ -35,10 +35,11 @@ export async function getOrgOverview(): Promise<MockOrg> {
       burnout_risk: number | null;
       department: string | null;
       taken_at: string | null;
+      scores_json: { subscales?: Record<string, number> } | null;
     };
     const { data: assessments } = await supabase
       .from("assessments")
-      .select("archetype, burnout_risk, department, taken_at")
+      .select("archetype, burnout_risk, department, taken_at, scores_json")
       .eq("org_id", orgId);
 
     const rows: AssessmentRow[] = (assessments ?? []) as AssessmentRow[];
@@ -114,6 +115,29 @@ export async function getOrgOverview(): Promise<MockOrg> {
       quarters.push({ quarter: qLabel, risk: mean });
     }
 
+    // ─── Driver concerns ────────────────────────────────────────
+    // Aggregate subscales from scores_json. driver scores in scores_json
+    // are 0-100 (% at-risk). Mean across all assessments per driver.
+    const DRIVERS = ["workload", "control", "reward", "community", "fairness", "values"] as const;
+    const driverConcerns = DRIVERS.map((d) => {
+      let sum = 0;
+      let n = 0;
+      let atRisk = 0;
+      for (const r of rows) {
+        const v = r.scores_json?.subscales?.[d];
+        if (typeof v === "number") {
+          sum += v;
+          n++;
+          if (v >= 50) atRisk++;
+        }
+      }
+      return {
+        driver: d,
+        meanPct: n === 0 ? 0 : Math.round(sum / n),
+        atRiskCount: atRisk,
+      };
+    }).sort((a, b) => b.meanPct - a.meanPct);
+
     return {
       name: orgRow?.name ?? "Your organization",
       headcount: orgRow?.headcount ?? total,
@@ -126,6 +150,9 @@ export async function getOrgOverview(): Promise<MockOrg> {
       archetypeDistribution,
       departments: departments.length > 0 ? departments : MOCK_ORG.departments,
       trend: quarters.some((q) => q.risk > 0) ? quarters : MOCK_ORG.trend,
+      driverConcerns: driverConcerns.some((d) => d.meanPct > 0)
+        ? driverConcerns
+        : MOCK_ORG.driverConcerns,
     };
   } catch (err) {
     console.error("[data] live query failed, falling back to mock", err);
