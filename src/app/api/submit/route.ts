@@ -4,6 +4,11 @@ import { SUBSCALE_LABELS, type Subscale } from "@/lib/biq-bank";
 import { bandOf, colorOf } from "@/lib/biq-scoring";
 import { SECTOR_LABELS, ROLE_LABELS, type Sector, type Role } from "@/lib/biq-sectors";
 import { ORG_CONTEXT, buildLeadershipBriefingText } from "@/lib/biq-org-context";
+import { supabaseAdmin } from "@/lib/supabase";
+
+const SUPABASE_LIVE = Boolean(
+  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY,
+);
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 // FROM must use a domain verified in Resend. burnoutiqtest.com is verified;
@@ -23,6 +28,8 @@ interface SubmitPayload {
   subscales: Record<Subscale, number>;
   topDrivers: string[];
   openResponses: Record<string, string>;
+  /** Optional invitation token from /start?token=… (Teams employee path). */
+  orgToken?: string | null;
 }
 
 function dimRow(label: string, score: number): string {
@@ -230,6 +237,44 @@ export async function POST(req: NextRequest) {
         });
       } catch {
         /* non-fatal — likely already in audience */
+      }
+    }
+
+    // Persist to Supabase if configured AND an org_token is present (Teams flow).
+    // Individual / non-org assessments are emailed only.
+    if (SUPABASE_LIVE && body.orgToken) {
+      try {
+        const admin = supabaseAdmin();
+        const { data: invite } = await admin
+          .from("invitations")
+          .select("id, org_id, department, status, expires_at")
+          .eq("token", body.orgToken)
+          .maybeSingle();
+        if (invite && new Date(invite.expires_at) > new Date()) {
+          await admin.from("assessments").insert({
+            org_id: invite.org_id,
+            invitation_id: invite.id,
+            email,
+            first_name: firstName,
+            last_name: lastName,
+            department: invite.department,
+            archetype: body.archetype,
+            burnout_risk: body.composite,
+            scores_json: {
+              subscales: body.subscales,
+              topDrivers: body.topDrivers,
+              openResponses: body.openResponses,
+              sector: body.sector,
+              role: body.role,
+            },
+          });
+          await admin
+            .from("invitations")
+            .update({ status: "completed", completed_at: new Date().toISOString() })
+            .eq("id", invite.id);
+        }
+      } catch (err) {
+        console.error("[submit] supabase write failed (non-fatal)", err);
       }
     }
 

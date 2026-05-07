@@ -54,10 +54,34 @@ export default function StartPage() {
   const [pulseLinked, setPulseLinked] = useState(false);
   const [pulseParam, setPulseParam] = useState<string | null>(null);
 
+  // Teams employee path: /start?token=… — invitation prefill.
+  const [orgToken, setOrgToken] = useState<string | null>(null);
+  const [orgInviteOrg, setOrgInviteOrg] = useState<string | null>(null);
+
   useEffect(() => {
     try {
-      const p = new URLSearchParams(window.location.search).get("pulse");
+      const params = new URLSearchParams(window.location.search);
+      const p = params.get("pulse");
       if (p) setPulseParam(p);
+      const t = params.get("token");
+      if (t) {
+        setOrgToken(t);
+        // Validate + prefill from invitation.
+        fetch(`/api/invitations/validate?token=${encodeURIComponent(t)}`)
+          .then((r) => r.json())
+          .then((d) => {
+            if (d?.valid) {
+              if (d.email) setEmail(d.email);
+              if (d.firstName) setFirstName(d.firstName);
+              if (d.lastName) setLastName(d.lastName);
+              if (d.organization) {
+                setOrganization(d.organization);
+                setOrgInviteOrg(d.organization);
+              }
+            }
+          })
+          .catch(() => {});
+      }
     } catch {}
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -211,6 +235,7 @@ export default function StartPage() {
         ),
         topDrivers: results.topDrivers,
         openResponses,
+        orgToken,
       }),
     })
       .then((r) => {
@@ -273,6 +298,17 @@ export default function StartPage() {
               </div>
             )}
             <BurnoutLogo size={56} showText={false} asLink={false} className="mb-6" />
+            {orgInviteOrg && (
+              <div className="mb-6 p-4 rounded-2xl bg-ember/10 border border-ember/30">
+                <p className="text-ember text-[10px] font-bold uppercase tracking-widest mb-1">
+                  Invited by {orgInviteOrg}
+                </p>
+                <p className="text-white text-sm leading-relaxed">
+                  Your individual responses stay private. Leadership only sees aggregated,
+                  department-level patterns — never your name or your specific answers.
+                </p>
+              </div>
+            )}
             <div className="inline-flex items-center gap-2 bg-ember/15 text-ember text-xs font-bold px-3 py-1.5 rounded-full mb-6">
               <Clock className="w-3.5 h-3.5" />
               ~10 min · 36 questions + 3 optional · Free

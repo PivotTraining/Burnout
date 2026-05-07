@@ -30,18 +30,25 @@ export async function getOrgOverview(): Promise<MockOrg> {
     const orgId = membership.org_id as string;
     const orgRow = (membership as unknown as { orgs: { name: string; headcount: number | null } }).orgs;
 
+    type AssessmentRow = {
+      archetype: string | null;
+      burnout_risk: number | null;
+      department: string | null;
+      taken_at: string | null;
+    };
     const { data: assessments } = await supabase
       .from("assessments")
-      .select("archetype, burnout_risk")
+      .select("archetype, burnout_risk, department, taken_at")
       .eq("org_id", orgId);
 
-    const total = assessments?.length ?? 0;
+    const rows: AssessmentRow[] = (assessments ?? []) as AssessmentRow[];
+    const total = rows.length;
     const dist: Record<ArchetypeKey, number> = {
       carrier: 0, burner: 0, fixer: 0, guard: 0, giver: 0, racer: 0,
     };
     let riskSum = 0;
     let riskN = 0;
-    for (const a of assessments ?? []) {
+    for (const a of rows) {
       const k = (a.archetype ?? "") as ArchetypeKey;
       if (k in dist) dist[k]++;
       if (typeof a.burnout_risk === "number") {
@@ -53,6 +60,60 @@ export async function getOrgOverview(): Promise<MockOrg> {
       Object.entries(dist).map(([k, v]) => [k, total === 0 ? 0 : Math.round((v / total) * 100)]),
     ) as Record<ArchetypeKey, number>;
 
+    // ─── Department aggregation ─────────────────────────────────
+    // Group assessments by department. For each, compute mean burnout
+    // risk + dominant archetype. Privacy floor: never report depts
+    // with < 5 respondents (matches BurnoutIQ methodology v0.1 §5.1).
+    const MIN_DEPT_SIZE = 5;
+    const byDept: Record<
+      string,
+      { count: number; riskSum: number; archetypeCounts: Partial<Record<ArchetypeKey, number>> }
+    > = {};
+    for (const a of rows) {
+      const dept = a.department || "Unassigned";
+      const bucket = (byDept[dept] ||= { count: 0, riskSum: 0, archetypeCounts: {} });
+      bucket.count++;
+      if (typeof a.burnout_risk === "number") bucket.riskSum += a.burnout_risk;
+      if (a.archetype && (a.archetype as ArchetypeKey) in dist) {
+        const k = a.archetype as ArchetypeKey;
+        bucket.archetypeCounts[k] = (bucket.archetypeCounts[k] ?? 0) + 1;
+      }
+    }
+    const departments = Object.entries(byDept)
+      .filter(([, v]) => v.count >= MIN_DEPT_SIZE)
+      .map(([name, v]) => {
+        const dominantArchetype = Object.entries(v.archetypeCounts)
+          .sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0] as ArchetypeKey ?? "carrier";
+        return {
+          name,
+          archetype: dominantArchetype,
+          size: v.count,
+          risk: Math.round(v.riskSum / v.count),
+        };
+      })
+      .sort((a, b) => b.risk - a.risk);
+
+    // ─── Quarter-over-quarter trend ─────────────────────────────
+    // Bucket the last 4 quarters (relative to today) and compute mean risk.
+    const now = new Date();
+    const quarters: { quarter: string; risk: number }[] = [];
+    for (let i = 3; i >= 0; i--) {
+      const start = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3 - i * 3, 1);
+      const end = new Date(start.getFullYear(), start.getMonth() + 3, 1);
+      const qLabel = `Q${Math.floor(start.getMonth() / 3) + 1} ${start.getFullYear()}`;
+      const inWindow = rows.filter((a) => {
+        const t = a.taken_at ? new Date(a.taken_at) : null;
+        return t && t >= start && t < end && typeof a.burnout_risk === "number";
+      });
+      const mean =
+        inWindow.length === 0
+          ? 0
+          : Math.round(
+              inWindow.reduce((s, a) => s + (a.burnout_risk as number), 0) / inWindow.length,
+            );
+      quarters.push({ quarter: qLabel, risk: mean });
+    }
+
     return {
       name: orgRow?.name ?? "Your organization",
       headcount: orgRow?.headcount ?? total,
@@ -63,10 +124,8 @@ export async function getOrgOverview(): Promise<MockOrg> {
           : 0,
       burnoutRisk: riskN === 0 ? 0 : Math.round(riskSum / riskN),
       archetypeDistribution,
-      // Departments and trend require richer tables/aggregation; show empty
-      // until those queries are implemented.
-      departments: MOCK_ORG.departments,
-      trend: MOCK_ORG.trend,
+      departments: departments.length > 0 ? departments : MOCK_ORG.departments,
+      trend: quarters.some((q) => q.risk > 0) ? quarters : MOCK_ORG.trend,
     };
   } catch (err) {
     console.error("[data] live query failed, falling back to mock", err);

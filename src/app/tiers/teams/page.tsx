@@ -63,7 +63,7 @@ export default function TeamsTier() {
             A 30-day organizational burnout diagnostic. Org-wide assessment, department
             heatmap, manager training, executive readout, and 3 months of Continuum for
             every employee. The most common path between “we think we have a burnout
-            problem” and “he’s the plan.”
+            problem” and “here’s the plan.”
           </p>
           <div className="flex flex-wrap gap-6 text-sm mb-8">
             <Stat label="Investment" value="$9,750–$14,750" />

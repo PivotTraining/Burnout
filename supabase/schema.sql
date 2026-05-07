@@ -28,15 +28,51 @@ create table if not exists members (
   unique (org_id, user_id)
 );
 
+-- ─── Invitations (employees, do NOT need auth accounts) ────────
+-- Used by Teams engagements: admin invites N employees, each gets a
+-- token-link to /start?token=…, takes the assessment, and the result
+-- is attributed to the org. No auth account required.
+
+create table if not exists invitations (
+  id            uuid primary key default uuid_generate_v4(),
+  org_id        uuid not null references orgs(id) on delete cascade,
+  email         text not null,
+  first_name    text,
+  last_name     text,
+  department    text,
+  token         text unique not null,
+  status        text not null check (status in ('pending','sent','opened','completed','expired')) default 'pending',
+  expires_at    timestamptz not null default (now() + interval '60 days'),
+  sent_at       timestamptz,
+  opened_at     timestamptz,
+  completed_at  timestamptz,
+  created_at    timestamptz not null default now()
+);
+
+create index if not exists idx_invitations_token on invitations (token);
+create index if not exists idx_invitations_org on invitations (org_id, status);
+
+alter table invitations enable row level security;
+
+create policy "org admins can manage invitations" on invitations
+  for all using (
+    org_id in (select org_id from members where user_id = auth.uid() and role in ('owner','admin'))
+  );
+
 -- ─── Assessments (BurnoutIQ + PressureIQ archetype responses) ───
 
 create table if not exists assessments (
   id            uuid primary key default uuid_generate_v4(),
   org_id        uuid not null references orgs(id) on delete cascade,
   member_id     uuid references members(id) on delete set null,
-  archetype     text check (archetype in ('carrier','burner','fixer','guard','giver','racer')),
-  supportive    text check (supportive in ('carrier','burner','fixer','guard','giver','racer')),
-  scores_json   jsonb not null,         -- raw v4 result payload
+  invitation_id uuid references invitations(id) on delete set null,
+  email         text,                   -- denormalized for dashboard/heatmap
+  first_name    text,
+  last_name     text,
+  department    text,                   -- denormalized for dept aggregation
+  archetype     text,                   -- 8-archetype string from biq-scoring
+  supportive    text,
+  scores_json   jsonb not null,         -- raw scoring payload
   burnout_risk  integer check (burnout_risk between 0 and 100),
   taken_at      timestamptz not null default now()
 );
