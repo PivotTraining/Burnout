@@ -17,10 +17,16 @@ export interface MockOrg {
   assessmentsCompleted: number;
   participationRate: number;
   burnoutRisk: number;
-  archetypeDistribution: Record<ArchetypeKey, number>;
-  departments: { name: string; archetype: ArchetypeKey; risk: number; size: number }[];
+  archetypeDistribution: Record<string, number>; // 6-key (mock) or 8-key (live BIQ_ARCHETYPES)
+  departments: { name: string; archetype: string; risk: number; size: number }[];
   trend: { quarter: string; risk: number }[];
   driverConcerns: DriverConcern[];
+  /** True when we hit the "you're signed in but haven't gathered enough
+   *  data yet" state. Dashboard renders an empty-state guidance panel
+   *  instead of pretending the heatmap is populated. */
+  isEmpty?: boolean;
+  /** When isEmpty, how many invited employees haven't completed yet. */
+  pendingInvites?: number;
 }
 
 export const MOCK_ORG: MockOrg = {

@@ -1,5 +1,4 @@
-import { ARCHETYPES, type ArchetypeKey } from "@/lib/archetypes";
-import { archetypeAccent, archetypeName } from "@/lib/mock-data";
+import Link from "next/link";
 import { getOrgOverview, isLiveMode } from "@/lib/data";
 import {
   bandFor,
@@ -8,27 +7,54 @@ import {
   DRIVER_INSIGHTS,
   type DriverKey,
 } from "@/lib/console-content";
-import { TrendingDown, TrendingUp, Minus, AlertCircle, ArrowRight } from "lucide-react";
+import {
+  archetypeName,
+  archetypeAccent,
+  distributionRows,
+  MODERN_ARCHETYPES,
+  LEGACY_ARCHETYPES,
+} from "@/lib/dashboard-archetypes";
+import {
+  TrendingDown,
+  TrendingUp,
+  Minus,
+  AlertCircle,
+  ArrowRight,
+  Send,
+  Inbox,
+} from "lucide-react";
 
 export const metadata = { title: "Org overview · BurnoutIQ Console" };
 
 export default async function DashboardOverview() {
   const org = await getOrgOverview();
+
+  // ─── Empty state — real org with no assessments yet ───────
+  if (org.isEmpty) {
+    return <EmptyState org={org} />;
+  }
+
   const band = bandFor(org.burnoutRisk);
   const trend = trendInsight(org.trend.map((q) => q.risk));
-  const dominantArchetype = (Object.entries(org.archetypeDistribution) as [ArchetypeKey, number][])
-    .sort((a, b) => b[1] - a[1])[0];
+  const distRows = distributionRows(org.archetypeDistribution);
+  const dominantArchetype = distRows[0] ?? null;
   const topDriver = (org.driverConcerns[0]?.driver as DriverKey) ?? null;
   const secondDriver = (org.driverConcerns[1]?.driver as DriverKey) ?? null;
   const actionPlan = buildActionPlan({
     compositePct: org.burnoutRisk,
     topDriver,
     secondDriver,
-    dominantArchetype: dominantArchetype?.[0] || null,
+    dominantArchetype: dominantArchetype?.key || null,
   });
   const TrendIcon =
     trend.direction === "improving" ? TrendingDown :
     trend.direction === "worsening" ? TrendingUp : Minus;
+
+  // Use legacy 6 reference cards when the data is mock (demo) and the
+  // modern 8 when it's live data.
+  const referenceArchetypes = isLiveMode && org.name !== "Acme Health System (demo)"
+    ? MODERN_ARCHETYPES
+    : LEGACY_ARCHETYPES;
 
   return (
     <>
@@ -83,13 +109,13 @@ export default async function DashboardOverview() {
         />
         <Kpi
           label="Dominant archetype"
-          value={dominantArchetype ? archetypeName(dominantArchetype[0]) : "—"}
-          delta={dominantArchetype ? `${dominantArchetype[1]}% of org` : ""}
+          value={dominantArchetype ? dominantArchetype.name : "—"}
+          delta={dominantArchetype ? `${dominantArchetype.pct}% of org` : ""}
         />
         <Kpi
           label="Top driver"
           value={topDriver ? DRIVER_INSIGHTS[topDriver].label : "—"}
-          delta={topDriver ? `${org.driverConcerns[0].meanPct}% mean concern` : ""}
+          delta={topDriver && org.driverConcerns[0] ? `${org.driverConcerns[0].meanPct}% mean concern` : ""}
           tone="warn"
         />
         <Kpi
@@ -102,13 +128,15 @@ export default async function DashboardOverview() {
                   .map((d) => d.name.split(" ")[0])
                   .slice(0, 3)
                   .join(" · ")
-              : "All depts below 50%"
+              : org.departments.length > 0
+                ? "All depts below 50%"
+                : "n<5 in all depts"
           }
           tone={org.departments.filter((d) => d.risk >= 50).length > 0 ? "warn" : "good"}
         />
       </div>
 
-      {/* Action plan — synthesized from band + drivers + archetype */}
+      {/* Action plan */}
       <section className="rounded-2xl border-2 border-navy bg-navy text-white p-6 mb-8">
         <div className="flex items-center gap-2 mb-1">
           <AlertCircle className="w-4 h-4 text-ember" />
@@ -145,118 +173,107 @@ export default async function DashboardOverview() {
       </section>
 
       {/* Driver concerns */}
-      <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
-        <h2 className="text-lg font-bold text-navy mb-1">Top driver concerns</h2>
-        <p className="text-sm text-navy/50 mb-5">
-          The Areas of Worklife driver dimensions, ranked by mean concern across your assessments.
-          The top one is where leadership intervention will move the composite the fastest.
-        </p>
-        <div className="space-y-3">
-          {org.driverConcerns.slice(0, 3).map((dc, i) => {
-            const insight = DRIVER_INSIGHTS[dc.driver as DriverKey];
-            const dcBand = bandFor(dc.meanPct);
-            return (
-              <div
-                key={dc.driver}
-                className="rounded-xl p-5 border-2"
-                style={{ borderColor: i === 0 ? dcBand.color : "#e5e7eb", backgroundColor: i === 0 ? dcBand.bg : "#fff" }}
-              >
-                <div className="flex items-baseline justify-between mb-1">
-                  <h3 className="font-bold text-navy">
-                    #{i + 1} · {insight.label}
-                  </h3>
-                  <span className="text-2xl font-extrabold tabular-nums" style={{ color: dcBand.color }}>
-                    {dc.meanPct}%
-                  </span>
+      {org.driverConcerns.length > 0 && (
+        <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
+          <h2 className="text-lg font-bold text-navy mb-1">Top driver concerns</h2>
+          <p className="text-sm text-navy/50 mb-5">
+            The Areas of Worklife driver dimensions, ranked by mean concern across your assessments.
+            The top one is where leadership intervention will move the composite the fastest.
+          </p>
+          <div className="space-y-3">
+            {org.driverConcerns.slice(0, 3).map((dc, i) => {
+              const insight = DRIVER_INSIGHTS[dc.driver as DriverKey];
+              const dcBand = bandFor(dc.meanPct);
+              return (
+                <div
+                  key={dc.driver}
+                  className="rounded-xl p-5 border-2"
+                  style={{ borderColor: i === 0 ? dcBand.color : "#e5e7eb", backgroundColor: i === 0 ? dcBand.bg : "#fff" }}
+                >
+                  <div className="flex items-baseline justify-between mb-1">
+                    <h3 className="font-bold text-navy">
+                      #{i + 1} · {insight.label}
+                    </h3>
+                    <span className="text-2xl font-extrabold tabular-nums" style={{ color: dcBand.color }}>
+                      {dc.meanPct}%
+                    </span>
+                  </div>
+                  <p className="text-xs text-navy/50 mb-2">
+                    {dc.atRiskCount} employees in the High/Severe band on this driver.
+                  </p>
+                  <p className="text-sm text-navy mb-2"><strong>What it is:</strong> {insight.whatItIs}</p>
+                  <p className="text-sm text-navy/80 mb-3"><strong>Why it drives burnout:</strong> {insight.whenItDrives}</p>
+                  <p className="text-[10px] uppercase tracking-widest font-bold text-navy/50 mb-1.5">
+                    Top actions
+                  </p>
+                  <ul className="space-y-1">
+                    {insight.topActions.map((a, j) => (
+                      <li key={j} className="text-sm text-navy/80 leading-relaxed flex gap-2">
+                        <span className="text-ember flex-shrink-0">→</span>
+                        <span>{a}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <p className="text-xs text-navy/50 mb-2">
-                  {dc.atRiskCount} employees in the High/Severe band on this driver.
-                </p>
-                <p className="text-sm text-navy mb-2"><strong>What it is:</strong> {insight.whatItIs}</p>
-                <p className="text-sm text-navy/80 mb-3"><strong>Why it drives burnout:</strong> {insight.whenItDrives}</p>
-                <p className="text-[10px] uppercase tracking-widest font-bold text-navy/50 mb-1.5">
-                  Top actions
-                </p>
-                <ul className="space-y-1">
-                  {insight.topActions.map((a, j) => (
-                    <li key={j} className="text-sm text-navy/80 leading-relaxed flex gap-2">
-                      <span className="text-ember flex-shrink-0">→</span>
-                      <span>{a}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Archetype distribution + reference */}
-      <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
-        <h2 className="text-lg font-bold text-navy mb-1">Archetype distribution</h2>
-        <p className="text-sm text-navy/50 mb-5">
-          Across {org.assessmentsCompleted.toLocaleString()} completed assessments. Click any
-          archetype below for the full intervention playbook.
-        </p>
-        <div className="space-y-3 mb-6">
-          {ARCHETYPES.map((a) => {
-            const pct = org.archetypeDistribution[a.key];
-            return (
-              <div key={a.key}>
+      {distRows.length > 0 && (
+        <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
+          <h2 className="text-lg font-bold text-navy mb-1">Archetype distribution</h2>
+          <p className="text-sm text-navy/50 mb-5">
+            Across {org.assessmentsCompleted.toLocaleString()} completed assessments. Click any
+            archetype below for the full intervention playbook.
+          </p>
+          <div className="space-y-3 mb-6">
+            {distRows.map((row) => (
+              <div key={row.key}>
                 <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="font-semibold text-navy">{a.name}</span>
-                  <span className="tabular-nums text-navy/60">{pct}%</span>
+                  <span className="font-semibold text-navy">{row.name}</span>
+                  <span className="tabular-nums text-navy/60">{row.pct}%</span>
                 </div>
                 <div className="h-2 rounded-full bg-light-bg overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${Math.min(pct * 3.5, 100)}%`, backgroundColor: a.accent }} />
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(row.pct * 3.5, 100)}%`, backgroundColor: row.accent }} />
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Archetype reference cards */}
-        <div className="border-t border-border-gray pt-5 mt-5">
-          <p className="text-[10px] uppercase tracking-widest font-bold text-navy/50 mb-3">
-            What each archetype means
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {ARCHETYPES.map((a) => (
-              <details
-                key={a.key}
-                className="rounded-xl border border-border-gray bg-light-bg/50 group"
-              >
-                <summary className="cursor-pointer list-none p-4 flex items-center gap-3 hover:bg-light-bg">
-                  <span
-                    className="w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: a.accent }}
-                  />
-                  <span className="font-semibold text-navy text-sm">{a.name}</span>
-                  <span className="text-xs text-navy/50 italic flex-1">{a.oneLiner}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-navy/30 transition-transform group-open:rotate-90 flex-shrink-0" />
-                </summary>
-                <div className="px-4 pb-4 pt-1 space-y-2 text-sm">
-                  <p className="text-navy/80">
-                    <strong className="text-navy">Org signal:</strong> {a.enterpriseSignal}
-                  </p>
-                  <p className="text-navy/80">
-                    <strong className="text-navy">Burnout pattern:</strong> {a.burnoutPattern}
-                  </p>
-                  <p className="text-navy">
-                    <strong>Intervention:</strong> <span className="text-navy/80">{a.intervention}</span>
-                  </p>
-                </div>
-              </details>
             ))}
           </div>
-        </div>
-      </section>
+
+          <div className="border-t border-border-gray pt-5 mt-5">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-navy/50 mb-3">
+              What each archetype means
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {referenceArchetypes.map((a) => (
+                <details key={a.key} className="rounded-xl border border-border-gray bg-light-bg/50 group">
+                  <summary className="cursor-pointer list-none p-4 flex items-center gap-3 hover:bg-light-bg">
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: a.accent }} />
+                    <span className="font-semibold text-navy text-sm">{a.name}</span>
+                    <span className="text-xs text-navy/50 italic flex-1">{a.oneLiner}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-navy/30 transition-transform group-open:rotate-90 flex-shrink-0" />
+                  </summary>
+                  <div className="px-4 pb-4 pt-1 space-y-2 text-sm">
+                    <p className="text-navy/80"><strong className="text-navy">Org signal:</strong> {a.enterpriseSignal}</p>
+                    <p className="text-navy/80"><strong className="text-navy">Burnout pattern:</strong> {a.burnoutPattern}</p>
+                    <p className="text-navy"><strong>Intervention:</strong> <span className="text-navy/80">{a.intervention}</span></p>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Department heatmap */}
       <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
         <h2 className="text-lg font-bold text-navy mb-1">Department heatmap</h2>
         <p className="text-sm text-navy/50 mb-3">
           Sorted by burnout risk. Color reflects dominant archetype. Risk bar reflects severity band.
+          Departments with fewer than 5 respondents are not shown (privacy floor).
         </p>
         <div className="flex flex-wrap items-center gap-3 mb-5 text-[11px]">
           <span className="text-navy/40 uppercase tracking-widest font-bold">Bands:</span>
@@ -271,76 +288,165 @@ export default async function DashboardOverview() {
             );
           })}
         </div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-[10px] uppercase tracking-widest text-navy/40">
-              <th className="pb-2">Department</th>
-              <th className="pb-2">Dominant archetype</th>
-              <th className="pb-2">Headcount</th>
-              <th className="pb-2">Burnout risk</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[...org.departments].sort((a, b) => b.risk - a.risk).map((d) => {
-              const deptBand = bandFor(d.risk);
-              return (
-                <tr key={d.name} className="border-t border-border-gray">
-                  <td className="py-3 font-semibold text-navy">{d.name}</td>
-                  <td>
-                    <span
-                      className="text-xs font-semibold px-2 py-1 rounded text-white"
-                      style={{ backgroundColor: archetypeAccent(d.archetype as ArchetypeKey) }}
-                    >
-                      {archetypeName(d.archetype as ArchetypeKey)}
-                    </span>
-                  </td>
-                  <td className="text-navy/70 tabular-nums">{d.size}</td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 rounded-full bg-light-bg overflow-hidden max-w-[140px]">
-                        <div className="h-full rounded-full" style={{ width: `${d.risk}%`, backgroundColor: deptBand.color }} />
+        {org.departments.length === 0 ? (
+          <div className="rounded-xl bg-light-bg/50 border-2 border-dashed border-border-gray p-6 text-center">
+            <p className="text-sm text-navy/60">
+              No departments have hit the n≥5 privacy floor yet. As more employees complete
+              the assessment within each department, the heatmap will populate here.
+            </p>
+          </div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-[10px] uppercase tracking-widest text-navy/40">
+                <th className="pb-2">Department</th>
+                <th className="pb-2">Dominant archetype</th>
+                <th className="pb-2">Headcount</th>
+                <th className="pb-2">Burnout risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...org.departments].sort((a, b) => b.risk - a.risk).map((d) => {
+                const deptBand = bandFor(d.risk);
+                return (
+                  <tr key={d.name} className="border-t border-border-gray">
+                    <td className="py-3 font-semibold text-navy">{d.name}</td>
+                    <td>
+                      <span className="text-xs font-semibold px-2 py-1 rounded text-white" style={{ backgroundColor: archetypeAccent(d.archetype) }}>
+                        {archetypeName(d.archetype)}
+                      </span>
+                    </td>
+                    <td className="text-navy/70 tabular-nums">{d.size}</td>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 rounded-full bg-light-bg overflow-hidden max-w-[140px]">
+                          <div className="h-full rounded-full" style={{ width: `${d.risk}%`, backgroundColor: deptBand.color }} />
+                        </div>
+                        <span className="tabular-nums text-navy/70 w-10">{d.risk}%</span>
                       </div>
-                      <span className="tabular-nums text-navy/70 w-10">{d.risk}%</span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </section>
 
-      {/* Trend with interpretation */}
-      <section className="rounded-2xl border border-border-gray bg-white p-6">
-        <div className="flex items-baseline justify-between mb-1">
-          <h2 className="text-lg font-bold text-navy">Burnout risk trend</h2>
-          <span
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2 py-1 rounded"
-            style={{ backgroundColor: `${trend.color}1A`, color: trend.color }}
-          >
-            <TrendIcon className="w-3 h-3" />
-            {trend.label}
-          </span>
+      {/* Trend */}
+      {org.trend.length > 0 && (
+        <section className="rounded-2xl border border-border-gray bg-white p-6">
+          <div className="flex items-baseline justify-between mb-1">
+            <h2 className="text-lg font-bold text-navy">Burnout risk trend</h2>
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2 py-1 rounded" style={{ backgroundColor: `${trend.color}1A`, color: trend.color }}>
+              <TrendIcon className="w-3 h-3" />
+              {trend.label}
+            </span>
+          </div>
+          <p className="text-sm text-navy/50 mb-5">{trend.message}</p>
+          <div className="flex items-end gap-3 h-32">
+            {org.trend.map((p) => {
+              const qBand = bandFor(p.risk);
+              return (
+                <div key={p.quarter} className="flex-1 flex flex-col items-center gap-2">
+                  <div className="w-full rounded-t" style={{ height: `${p.risk * 1.5}px`, backgroundColor: qBand.color, opacity: 0.85 }} aria-label={`${p.quarter}: ${p.risk}%`} />
+                  <span className="text-xs text-navy/60">{p.quarter}</span>
+                  <span className="text-xs font-semibold text-navy">{p.risk}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+    </>
+  );
+}
+
+// ─── Empty state ────────────────────────────────────────────────────
+function EmptyState({ org }: { org: { name: string; headcount: number; pendingInvites?: number } }) {
+  const pending = org.pendingInvites ?? 0;
+  return (
+    <>
+      <div className="flex items-baseline justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-navy">{org.name}</h1>
+          <p className="text-sm text-navy/50">
+            {org.headcount.toLocaleString()} employees · 0 assessments completed
+          </p>
         </div>
-        <p className="text-sm text-navy/50 mb-5">{trend.message}</p>
-        <div className="flex items-end gap-3 h-32">
-          {org.trend.map((p) => {
-            const qBand = bandFor(p.risk);
-            return (
-              <div key={p.quarter} className="flex-1 flex flex-col items-center gap-2">
-                <div
-                  className="w-full rounded-t"
-                  style={{ height: `${p.risk * 1.5}px`, backgroundColor: qBand.color, opacity: 0.85 }}
-                  aria-label={`${p.quarter}: ${p.risk}%`}
-                />
-                <span className="text-xs text-navy/60">{p.quarter}</span>
-                <span className="text-xs font-semibold text-navy">{p.risk}%</span>
-              </div>
-            );
-          })}
-        </div>
+        <span className="text-[10px] uppercase tracking-widest font-bold text-ember bg-ember-pale px-2 py-1 rounded">
+          Tier 4 Subscription · live
+        </span>
+      </div>
+
+      <section className="rounded-2xl border-2 border-dashed border-ember/40 bg-ember/5 p-10 text-center mb-6">
+        <Inbox className="w-12 h-12 text-ember/60 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-navy mb-2">No assessments yet.</h2>
+        <p className="text-navy/70 max-w-xl mx-auto mb-6 leading-relaxed">
+          {pending > 0
+            ? `${pending.toLocaleString()} employees have been invited but haven't completed their assessment yet. Once at least 5 in any department finish, the heatmap unlocks. Aim for 70%+ participation for stable percentages.`
+            : "Send invitations to your team to start gathering data. Once at least 5 employees in any department complete the assessment, the heatmap unlocks. Aim for 70%+ participation for stable percentages."}
+        </p>
+        <Link
+          href="/dashboard/members"
+          className="inline-flex items-center gap-2 bg-ember hover:bg-ember-light text-white font-bold px-5 py-3 rounded-lg"
+        >
+          <Send className="w-4 h-4" />
+          {pending > 0 ? "Manage invitations" : "Send invitations"}
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      </section>
+
+      <section className="rounded-2xl border border-border-gray bg-white p-6 mb-6">
+        <h2 className="text-lg font-bold text-navy mb-3">What you&apos;ll see here once data flows</h2>
+        <ul className="space-y-3 text-sm text-navy/70">
+          <Bullet>
+            <strong className="text-navy">Burnout Risk Index (0–100)</strong> — single composite score with band
+            interpretation (Minimal / Elevated / High / Severe) and what to do at each level.
+          </Bullet>
+          <Bullet>
+            <strong className="text-navy">Recommended action plan</strong> — synthesized priorities from your top
+            drivers and dominant archetype, with specific steps and timeframes.
+          </Bullet>
+          <Bullet>
+            <strong className="text-navy">Top driver concerns</strong> — Workload, Control, Reward, Community,
+            Fairness, Values ranked by mean concern, with intervention playbook per driver.
+          </Bullet>
+          <Bullet>
+            <strong className="text-navy">Archetype distribution</strong> — which patterns dominate your team,
+            with intervention playbook per archetype.
+          </Bullet>
+          <Bullet>
+            <strong className="text-navy">Department heatmap</strong> — risk by department (n≥5 privacy floor),
+            color-coded by severity band and dominant archetype.
+          </Bullet>
+          <Bullet>
+            <strong className="text-navy">Trend</strong> — quarter-over-quarter direction, plus interpretation
+            of what the change means.
+          </Bullet>
+        </ul>
+      </section>
+
+      <section className="rounded-2xl border border-border-gray bg-light-bg/50 p-5">
+        <p className="text-sm text-navy/60">
+          <strong className="text-navy">Want to see what a populated console looks like?</strong>{" "}
+          Visit{" "}
+          <Link href="/signin?mode=demo" className="text-ember underline">
+            the demo console
+          </Link>{" "}
+          for the Acme Health System sample data.
+        </p>
       </section>
     </>
+  );
+}
+
+function Bullet({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex gap-3">
+      <span className="text-ember flex-shrink-0 mt-0.5">→</span>
+      <span className="leading-relaxed">{children}</span>
+    </li>
   );
 }
 

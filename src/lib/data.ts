@@ -1,14 +1,23 @@
-// Data layer for the BurnoutIQ console. Falls back to mock data when
-// Supabase isn't configured so previews and demos work end-to-end without
-// provisioning. Real deployments hit live tables.
+// Data layer for the BurnoutIQ console. Three modes:
+//   1. Demo (no Supabase) → MOCK_ORG (Acme Health System).
+//   2. Live but signed-in user has no org → MOCK_ORG (treated as preview).
+//   3. Live + real org → real assessments. If sparse, return an
+//      explicit isEmpty payload — DO NOT mask with mock departments,
+//      otherwise a real customer's first dashboard view shows fake data.
 
 import { supabaseServer } from "@/lib/supabase";
 import { MOCK_ORG, type MockOrg } from "@/lib/mock-data";
-import type { ArchetypeKey } from "@/lib/archetypes";
 
 export const isLiveMode = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 );
+
+const KNOWN_ARCHETYPES = new Set([
+  // Old 6 (mock data + legacy assessments)
+  "carrier", "burner", "fixer", "guard", "giver", "racer",
+  // BurnoutIQ scoring engine outputs (8)
+  "STEADY", "DEPLETED", "DETACHED", "FOGGY", "VOLATILE", "DOUBTER", "STRANDED", "SMOLDERING",
+]);
 
 export async function getOrgOverview(): Promise<MockOrg> {
   if (!isLiveMode) return MOCK_ORG;
@@ -29,6 +38,8 @@ export async function getOrgOverview(): Promise<MockOrg> {
 
     const orgId = membership.org_id as string;
     const orgRow = (membership as unknown as { orgs: { name: string; headcount: number | null } }).orgs;
+    const orgName = orgRow?.name ?? "Your organization";
+    const headcount = orgRow?.headcount ?? 0;
 
     type AssessmentRow = {
       archetype: string | null;
@@ -44,47 +55,74 @@ export async function getOrgOverview(): Promise<MockOrg> {
 
     const rows: AssessmentRow[] = (assessments ?? []) as AssessmentRow[];
     const total = rows.length;
-    const dist: Record<ArchetypeKey, number> = {
-      carrier: 0, burner: 0, fixer: 0, guard: 0, giver: 0, racer: 0,
-    };
+
+    // ─── Empty-state guard ─────────────────────────────────────
+    // A real org with zero assessments should NOT see Acme Health
+    // System data. Show a guidance state with their actual headcount
+    // + invitation-pending count.
+    if (total === 0) {
+      const { count: pendingInvites } = await supabase
+        .from("invitations")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", orgId)
+        .in("status", ["sent", "opened"]);
+
+      return {
+        name: orgName,
+        headcount: headcount,
+        assessmentsCompleted: 0,
+        participationRate: 0,
+        burnoutRisk: 0,
+        archetypeDistribution: {},
+        departments: [],
+        trend: [],
+        driverConcerns: [],
+        isEmpty: true,
+        pendingInvites: pendingInvites ?? 0,
+      };
+    }
+
+    // ─── Archetype distribution ────────────────────────────────
+    // Build dynamically. Counts whatever archetype strings appear in
+    // the data — supports both old 6-key and new 8-key BIQ archetypes.
+    const archetypeCounts: Record<string, number> = {};
     let riskSum = 0;
     let riskN = 0;
     for (const a of rows) {
-      const k = (a.archetype ?? "") as ArchetypeKey;
-      if (k in dist) dist[k]++;
+      const k = a.archetype || "";
+      if (KNOWN_ARCHETYPES.has(k)) {
+        archetypeCounts[k] = (archetypeCounts[k] || 0) + 1;
+      }
       if (typeof a.burnout_risk === "number") {
         riskSum += a.burnout_risk;
         riskN++;
       }
     }
-    const archetypeDistribution = Object.fromEntries(
-      Object.entries(dist).map(([k, v]) => [k, total === 0 ? 0 : Math.round((v / total) * 100)]),
-    ) as Record<ArchetypeKey, number>;
+    const archetypeDistribution: Record<string, number> = {};
+    for (const [k, v] of Object.entries(archetypeCounts)) {
+      archetypeDistribution[k] = Math.round((v / total) * 100);
+    }
 
-    // ─── Department aggregation ─────────────────────────────────
-    // Group assessments by department. For each, compute mean burnout
-    // risk + dominant archetype. Privacy floor: never report depts
-    // with < 5 respondents (matches BurnoutIQ methodology v0.1 §5.1).
+    // ─── Department aggregation (n>=5 privacy floor) ───────────
     const MIN_DEPT_SIZE = 5;
     const byDept: Record<
       string,
-      { count: number; riskSum: number; archetypeCounts: Partial<Record<ArchetypeKey, number>> }
+      { count: number; riskSum: number; archetypeCounts: Record<string, number> }
     > = {};
     for (const a of rows) {
       const dept = a.department || "Unassigned";
       const bucket = (byDept[dept] ||= { count: 0, riskSum: 0, archetypeCounts: {} });
       bucket.count++;
       if (typeof a.burnout_risk === "number") bucket.riskSum += a.burnout_risk;
-      if (a.archetype && (a.archetype as ArchetypeKey) in dist) {
-        const k = a.archetype as ArchetypeKey;
-        bucket.archetypeCounts[k] = (bucket.archetypeCounts[k] ?? 0) + 1;
+      if (a.archetype && KNOWN_ARCHETYPES.has(a.archetype)) {
+        bucket.archetypeCounts[a.archetype] = (bucket.archetypeCounts[a.archetype] || 0) + 1;
       }
     }
     const departments = Object.entries(byDept)
       .filter(([, v]) => v.count >= MIN_DEPT_SIZE)
       .map(([name, v]) => {
         const dominantArchetype = Object.entries(v.archetypeCounts)
-          .sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0] as ArchetypeKey ?? "carrier";
+          .sort((a, b) => b[1] - a[1])[0]?.[0] || "STEADY";
         return {
           name,
           archetype: dominantArchetype,
@@ -94,8 +132,7 @@ export async function getOrgOverview(): Promise<MockOrg> {
       })
       .sort((a, b) => b.risk - a.risk);
 
-    // ─── Quarter-over-quarter trend ─────────────────────────────
-    // Bucket the last 4 quarters (relative to today) and compute mean risk.
+    // ─── Quarter-over-quarter trend ────────────────────────────
     const now = new Date();
     const quarters: { quarter: string; risk: number }[] = [];
     for (let i = 3; i >= 0; i--) {
@@ -115,9 +152,7 @@ export async function getOrgOverview(): Promise<MockOrg> {
       quarters.push({ quarter: qLabel, risk: mean });
     }
 
-    // ─── Driver concerns ────────────────────────────────────────
-    // Aggregate subscales from scores_json. driver scores in scores_json
-    // are 0-100 (% at-risk). Mean across all assessments per driver.
+    // ─── Driver concerns ───────────────────────────────────────
     const DRIVERS = ["workload", "control", "reward", "community", "fairness", "values"] as const;
     const driverConcerns = DRIVERS.map((d) => {
       let sum = 0;
@@ -139,20 +174,16 @@ export async function getOrgOverview(): Promise<MockOrg> {
     }).sort((a, b) => b.meanPct - a.meanPct);
 
     return {
-      name: orgRow?.name ?? "Your organization",
-      headcount: orgRow?.headcount ?? total,
+      name: orgName,
+      headcount: headcount || total,
       assessmentsCompleted: total,
       participationRate:
-        orgRow?.headcount && orgRow.headcount > 0
-          ? Math.round((total / orgRow.headcount) * 100)
-          : 0,
+        headcount > 0 ? Math.round((total / headcount) * 100) : 0,
       burnoutRisk: riskN === 0 ? 0 : Math.round(riskSum / riskN),
       archetypeDistribution,
-      departments: departments.length > 0 ? departments : MOCK_ORG.departments,
-      trend: quarters.some((q) => q.risk > 0) ? quarters : MOCK_ORG.trend,
-      driverConcerns: driverConcerns.some((d) => d.meanPct > 0)
-        ? driverConcerns
-        : MOCK_ORG.driverConcerns,
+      departments,         // empty if no dept reaches n>=5 — UI handles
+      trend: quarters,
+      driverConcerns,
     };
   } catch (err) {
     console.error("[data] live query failed, falling back to mock", err);

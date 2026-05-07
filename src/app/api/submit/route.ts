@@ -259,10 +259,17 @@ export async function POST(req: NextRequest) {
         const admin = supabaseAdmin();
         const { data: invite } = await admin
           .from("invitations")
-          .select("id, org_id, department, status, expires_at")
+          .select("id, org_id, department, status, expires_at, pulse_id")
           .eq("token", body.orgToken)
           .maybeSingle();
         if (invite && new Date(invite.expires_at) > new Date()) {
+          const scoresJson = {
+            subscales: body.subscales,
+            topDrivers: body.topDrivers,
+            openResponses: body.openResponses,
+            sector: body.sector,
+            role: body.role,
+          };
           await admin.from("assessments").insert({
             org_id: invite.org_id,
             invitation_id: invite.id,
@@ -272,14 +279,18 @@ export async function POST(req: NextRequest) {
             department: invite.department,
             archetype: body.archetype,
             burnout_risk: body.composite,
-            scores_json: {
-              subscales: body.subscales,
-              topDrivers: body.topDrivers,
-              openResponses: body.openResponses,
-              sector: body.sector,
-              role: body.role,
-            },
+            scores_json: scoresJson,
           });
+          // Pulse path: also insert a pulse_responses row so the
+          // /dashboard/pulse counters tick up live.
+          if (invite.pulse_id) {
+            await admin.from("pulse_responses").insert({
+              pulse_id: invite.pulse_id,
+              archetype: body.archetype,
+              burnout_risk: body.composite,
+              responses_json: scoresJson,
+            });
+          }
           await admin
             .from("invitations")
             .update({ status: "completed", completed_at: new Date().toISOString() })
