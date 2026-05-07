@@ -34,11 +34,8 @@ export async function GET(req: NextRequest) {
   if (new Date(data.expires_at) < new Date()) {
     return NextResponse.json({ valid: false, error: "Invitation expired" });
   }
-  if (data.status === "completed") {
-    return NextResponse.json({ valid: false, error: "Already completed" });
-  }
 
-  // Mark as opened (best-effort).
+  // Mark as opened (best-effort, only on first open).
   if (data.status === "sent") {
     admin
       .from("invitations")
@@ -57,5 +54,6 @@ export async function GET(req: NextRequest) {
     lastName: data.last_name,
     department: data.department,
     organization: orgName,
+    completed: data.status === "completed",
   });
 }

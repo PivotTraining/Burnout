@@ -141,14 +141,26 @@ function renderUserEmail(p: SubmitPayload): string {
 
     ${renderLeadershipBriefingHtml(highSubscales, leadershipNote)}
 
+    ${p.orgToken ? `
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:700;color:#E85C3A;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Two private channels for you</div>
+      <div style="margin-bottom:12px;">
+        <a href="https://www.burnoutiqtest.com/me?token=${encodeURIComponent(p.orgToken)}" style="font-size:14px;font-weight:700;color:#1A1A2E;text-decoration:none;">Your private trend →</a>
+        <div style="font-size:12px;color:#6b7280;margin-top:2px;">See how your reading changes over time. Only you see this page.</div>
+      </div>
+      <div>
+        <a href="https://www.burnoutiqtest.com/voice?token=${encodeURIComponent(p.orgToken)}" style="font-size:14px;font-weight:700;color:#1A1A2E;text-decoration:none;">Send anonymous feedback →</a>
+        <div style="font-size:12px;color:#6b7280;margin-top:2px;">Leadership only sees text once 5+ people have submitted in the same category.</div>
+      </div>
+    </div>` : `
     <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:18px;margin-bottom:24px;">
-      <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:6px;">What’s next?</div>
+      <div style="font-size:14px;font-weight:700;color:#1A1A2E;margin-bottom:6px;">What's next?</div>
       <div style="font-size:13px;color:#6b7280;margin-bottom:14px;">
         BurnoutIQ Pro turns this snapshot into a 90-day plan with a 12-week nudge series. $19 one-time. Or subscribe to Continuum for $9/mo and track this over time.
       </div>
       <a href="https://www.burnoutiqtest.com/pro" style="display:inline-block;background:#E85C3A;color:#fff;font-weight:700;font-size:14px;padding:10px 20px;border-radius:8px;text-decoration:none;margin-right:8px;">Get Pro — $19</a>
       <a href="https://www.burnoutiqtest.com/continuum" style="display:inline-block;background:#1A1A2E;color:#fff;font-weight:700;font-size:14px;padding:10px 20px;border-radius:8px;text-decoration:none;">Continuum — $9/mo</a>
-    </div>
+    </div>`}
 
     <div style="font-size:12px;color:#9ca3af;text-align:center;padding-bottom:8px;">
       Powered by <a href="https://www.burnoutiqtest.com" style="color:#E85C3A;text-decoration:none;">BurnoutIQ</a> · Built by Pivot Training &amp; Development

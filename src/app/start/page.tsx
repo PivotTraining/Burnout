@@ -472,6 +472,31 @@ export default function StartPage() {
             role={role}
           />
 
+          {orgToken && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <a
+                href={`/me?token=${encodeURIComponent(orgToken)}`}
+                className="block rounded-2xl bg-white border-2 border-ember/30 hover:border-ember p-5 transition-colors"
+              >
+                <p className="text-ember text-[10px] font-bold uppercase tracking-widest mb-1">Private trend</p>
+                <p className="text-navy font-bold mb-1 text-sm">See how you change over time</p>
+                <p className="text-navy/50 text-xs leading-relaxed">
+                  Bookmark this link. Come back anytime to see your trajectory.
+                </p>
+              </a>
+              <a
+                href={`/voice?token=${encodeURIComponent(orgToken)}`}
+                className="block rounded-2xl bg-white border border-border-gray hover:border-navy/40 p-5 transition-colors"
+              >
+                <p className="text-ember text-[10px] font-bold uppercase tracking-widest mb-1">Voice — anonymous</p>
+                <p className="text-navy font-bold mb-1 text-sm">Send leadership a note</p>
+                <p className="text-navy/50 text-xs leading-relaxed">
+                  Aggregated. Only shown to admins after 5+ submissions in the same category.
+                </p>
+              </a>
+            </div>
+          )}
+
           {pulseLinked && pulseCode && (
             <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#0B1220]">
               <div className="px-5 py-4">
