@@ -5,6 +5,10 @@ import { ARCHETYPES, type ArchetypeKey } from "@/lib/archetypes";
 
 import type { DriverKey } from "@/lib/console-content";
 import type { Trajectory } from "@/lib/algo-types";
+import type {
+  InterventionRecommendation,
+  SafetyOverride,
+} from "@/lib/interventions";
 
 export interface DriverConcern {
   driver: DriverKey;
@@ -39,6 +43,11 @@ export interface MockOrg {
   pendingInvites?: number;
   /** Phase 1 longitudinal — present on populated orgs. */
   longitudinal?: LongitudinalOrg;
+  /** Phase 3 — matched intervention recommendations + safety override.
+   *  When `safetyOverride` is non-null, the dashboard pins clinical
+   *  referral as priority #1 regardless of the matched scores. */
+  recommendations?: InterventionRecommendation[];
+  safetyOverride?: SafetyOverride | null;
 }
 
 export const MOCK_ORG: MockOrg = {

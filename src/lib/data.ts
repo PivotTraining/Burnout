@@ -17,7 +17,16 @@ import {
   severeZoneAlertCount,
   sixMonthSparkline,
 } from "@/lib/longitudinal-org";
-import type { DimKey } from "@/lib/algo-types";
+import type { DimKey, BandKey } from "@/lib/algo-types";
+import { bandFor } from "@/lib/console-content";
+import {
+  type Intervention,
+  type UserContext,
+  matchInterventions,
+  safetyOverrideCheck,
+  DEFAULT_USER_CONTEXT_FLAGS,
+} from "@/lib/interventions";
+import { INTERVENTION_LIBRARY } from "@/lib/intervention-library";
 
 export const isLiveMode = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -31,12 +40,12 @@ const KNOWN_ARCHETYPES = new Set([
 ]);
 
 export async function getOrgOverview(): Promise<MockOrg> {
-  if (!isLiveMode) return MOCK_ORG;
+  if (!isLiveMode) return enrichWithRecommendations(MOCK_ORG);
 
   try {
     const supabase = await supabaseServer();
     const { data: userResp } = await supabase.auth.getUser();
-    if (!userResp.user) return MOCK_ORG;
+    if (!userResp.user) return enrichWithRecommendations(MOCK_ORG);
 
     // Find first org the user belongs to.
     const { data: membership } = await supabase
@@ -45,7 +54,7 @@ export async function getOrgOverview(): Promise<MockOrg> {
       .eq("user_id", userResp.user.id)
       .limit(1)
       .single();
-    if (!membership) return MOCK_ORG;
+    if (!membership) return enrichWithRecommendations(MOCK_ORG);
 
     const orgId = membership.org_id as string;
     const orgRow = (membership as unknown as { orgs: { name: string; headcount: number | null } }).orgs;
@@ -213,6 +222,21 @@ export async function getOrgOverview(): Promise<MockOrg> {
         }
       : undefined;
 
+    // ─── Phase 3: intervention matching ────────────────────────
+    const compositeBand: BandKey = bandFor(riskN === 0 ? 0 : Math.round(riskSum / riskN)).key;
+    const userContext: UserContext = {
+      primaryDriver: (driverConcerns[0]?.driver as DimKey) ?? null,
+      secondaryDrivers: driverConcerns
+        .slice(1, 3)
+        .map((d) => d.driver as DimKey),
+      band: compositeBand,
+      trajectory: longitudinal?.trajectory ?? "stable",
+      ...DEFAULT_USER_CONTEXT_FLAGS,
+    };
+    const library = await fetchInterventionLibrary(supabase);
+    const recommendations = matchInterventions(userContext, library, 5);
+    const safetyOverride = safetyOverrideCheck(userContext);
+
     return {
       name: orgName,
       headcount: headcount || total,
@@ -225,9 +249,89 @@ export async function getOrgOverview(): Promise<MockOrg> {
       trend: quarters,
       driverConcerns,
       longitudinal,
+      recommendations,
+      safetyOverride,
     };
   } catch (err) {
     console.error("[data] live query failed, falling back to mock", err);
-    return MOCK_ORG;
+    return enrichWithRecommendations(MOCK_ORG);
   }
+}
+
+/** Compute recommendations + safety override from MockOrg fields so the
+ *  demo path renders the same way as the live path. Idempotent. */
+function enrichWithRecommendations(mock: MockOrg): MockOrg {
+  if (mock.recommendations) return mock;
+  const compositeBand: BandKey = bandFor(mock.burnoutRisk).key;
+  const userContext: UserContext = {
+    primaryDriver: (mock.driverConcerns[0]?.driver as DimKey) ?? null,
+    secondaryDrivers: mock.driverConcerns
+      .slice(1, 3)
+      .map((d) => d.driver as DimKey),
+    band: compositeBand,
+    trajectory: mock.longitudinal?.trajectory ?? "stable",
+    ...DEFAULT_USER_CONTEXT_FLAGS,
+  };
+  const recommendations = matchInterventions(userContext, INTERVENTION_LIBRARY, 5);
+  const safetyOverride = safetyOverrideCheck(userContext);
+  return { ...mock, recommendations, safetyOverride };
+}
+
+// ─── Intervention library fetch ─────────────────────────────────────────
+
+type InterventionRow = {
+  id: string;
+  name: string;
+  description: string;
+  target_dimensions: string[];
+  appropriate_bands: string[];
+  modality: string;
+  duration: string;
+  source: string;
+  pivot_program_code: string | null;
+  requires_manager_buy_in: boolean;
+  requires_org_buy_in: boolean;
+  estimated_cost_per_user: number;
+  historical_efficacy_score: number | null;
+  sample_size: number;
+  active: boolean;
+};
+
+async function fetchInterventionLibrary(
+  supabase: Awaited<ReturnType<typeof supabaseServer>>,
+): Promise<Intervention[]> {
+  try {
+    const { data } = await supabase
+      .from("interventions")
+      .select(
+        "id, name, description, target_dimensions, appropriate_bands, modality, duration, source, pivot_program_code, requires_manager_buy_in, requires_org_buy_in, estimated_cost_per_user, historical_efficacy_score, sample_size, active",
+      )
+      .eq("active", true);
+    if (data && data.length > 0) {
+      return (data as InterventionRow[]).map(rowToIntervention);
+    }
+  } catch (err) {
+    console.warn("[data] interventions fetch failed; using seed library", err);
+  }
+  return INTERVENTION_LIBRARY;
+}
+
+function rowToIntervention(r: InterventionRow): Intervention {
+  return {
+    id: r.id,
+    name: r.name,
+    description: r.description,
+    targetDimensions: r.target_dimensions as Intervention["targetDimensions"],
+    appropriateBands: r.appropriate_bands as Intervention["appropriateBands"],
+    modality: r.modality as Intervention["modality"],
+    duration: r.duration as Intervention["duration"],
+    source: r.source as Intervention["source"],
+    pivotProgramCode: r.pivot_program_code ?? undefined,
+    requiresManagerBuyIn: r.requires_manager_buy_in,
+    requiresOrgBuyIn: r.requires_org_buy_in,
+    estimatedCostPerUser: Number(r.estimated_cost_per_user),
+    historicalEfficacyScore: r.historical_efficacy_score ?? undefined,
+    sampleSize: r.sample_size,
+    active: r.active,
+  };
 }

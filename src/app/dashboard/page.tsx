@@ -8,6 +8,12 @@ import {
   type DriverKey,
 } from "@/lib/console-content";
 import {
+  MODALITY_LABEL,
+  DURATION_LABEL,
+  type InterventionRecommendation,
+  type SafetyOverride,
+} from "@/lib/interventions";
+import {
   archetypeName,
   archetypeAccent,
   distributionRows,
@@ -153,41 +159,37 @@ export default async function DashboardOverview() {
         />
       </div>
 
-      {/* Action plan */}
-      <section className="rounded-2xl border-2 border-navy bg-navy text-white p-6 mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <AlertCircle className="w-4 h-4 text-ember" />
-          <h2 className="text-[10px] uppercase tracking-widest font-bold text-ember">
-            Recommended action plan
-          </h2>
-        </div>
-        <p className="text-sm text-white/60 mb-5">
-          Heuristic priority order, derived from your band, top drivers, and dominant archetype.
-          This is Pivot's playbook for reading a heatmap, not a statistical model.
-        </p>
-        <div className="space-y-4">
-          {actionPlan.map((p) => (
-            <div key={p.rank} className="bg-white/5 rounded-xl p-5 border border-white/10">
-              <div className="flex items-baseline gap-3 mb-2">
-                <span className="text-ember font-extrabold tabular-nums">{p.rank}.</span>
-                <h3 className="font-bold text-base flex-1">{p.title}</h3>
-                <span className="text-[10px] uppercase tracking-widest font-bold text-white/40 whitespace-nowrap">
-                  {p.timeframe}
-                </span>
-              </div>
-              <p className="text-sm text-white/70 mb-3 leading-relaxed pl-6">{p.rationale}</p>
-              <ul className="space-y-1.5 pl-6">
-                {p.steps.map((s, i) => (
-                  <li key={i} className="text-sm text-white/85 leading-relaxed flex gap-2">
-                    <span className="text-ember flex-shrink-0">→</span>
-                    <span>{s}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Safety override — always pinned above other content when active */}
+      {org.safetyOverride && <SafetyOverrideBanner override={org.safetyOverride} />}
+
+      {/* Recommended interventions — Phase 3 matching engine */}
+      {(org.recommendations?.length ?? 0) > 0 ? (
+        <section className="rounded-2xl border-2 border-navy bg-navy text-white p-6 mb-8">
+          <div className="flex items-center gap-2 mb-1">
+            <AlertCircle className="w-4 h-4 text-ember" />
+            <h2 className="text-[10px] uppercase tracking-widest font-bold text-ember">
+              Recommended interventions
+            </h2>
+          </div>
+          <p className="text-sm text-white/60 mb-5">
+            Matched to your band, top drivers, and dominant archetype using the BurnoutIQ
+            intervention library. Scoring: +40 primary driver · +15 per secondary · +20 band fit ·
+            -50 per blocked constraint. Constraint flags are visible so you know what to unblock.
+          </p>
+          <div className="space-y-4">
+            {org.recommendations!.map((r, i) => (
+              <RecommendationCard key={r.intervention.id} rec={r} rank={i + 1} />
+            ))}
+          </div>
+        </section>
+      ) : (
+        // Fallback for the empty / pre-data state — keeps the heuristic
+        // playbook so the dashboard still has guidance when no
+        // interventions have been matched yet.
+        <FallbackActionPlan
+          actionPlan={actionPlan}
+        />
+      )}
 
       {/* Driver concerns */}
       {org.driverConcerns.length > 0 && (
@@ -591,6 +593,159 @@ function Sparkline({ points }: { points: { date: string; cbs: number }[] }) {
         ))}
       </div>
     </div>
+  );
+}
+
+// ─── Phase 3: recommendation card + safety override banner ─────────────
+
+function RecommendationCard({
+  rec,
+  rank,
+}: {
+  rec: InterventionRecommendation;
+  rank: number;
+}) {
+  const isBlocked = rec.constraints.length > 0 || rec.relevanceScore < 30;
+  return (
+    <div
+      className={`rounded-xl p-5 border ${
+        isBlocked ? "bg-white/3 border-white/8 opacity-90" : "bg-white/5 border-white/10"
+      }`}
+    >
+      <div className="flex items-baseline gap-3 mb-2">
+        <span className="text-ember font-extrabold tabular-nums">{rank}.</span>
+        <h3 className="font-bold text-base flex-1">{rec.intervention.name}</h3>
+        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40 tabular-nums whitespace-nowrap">
+          Score {rec.relevanceScore.toFixed(0)}
+        </span>
+      </div>
+
+      {/* Modality + duration + program code badges */}
+      <div className="flex flex-wrap items-center gap-2 pl-6 mb-3">
+        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40 bg-white/5 px-2 py-0.5 rounded">
+          {MODALITY_LABEL[rec.intervention.modality]}
+        </span>
+        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40 bg-white/5 px-2 py-0.5 rounded">
+          {DURATION_LABEL[rec.intervention.duration]}
+        </span>
+        {rec.intervention.pivotProgramCode && (
+          <span className="text-[10px] font-mono text-ember/70 px-2 py-0.5 rounded">
+            {rec.intervention.pivotProgramCode}
+          </span>
+        )}
+        {rec.intervention.estimatedCostPerUser > 0 && (
+          <span className="text-[10px] uppercase tracking-widest font-bold text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded">
+            ${rec.intervention.estimatedCostPerUser.toLocaleString()}/user
+          </span>
+        )}
+      </div>
+
+      <p className="text-sm text-white/70 leading-relaxed pl-6 mb-3">
+        {rec.intervention.description}
+      </p>
+
+      <div className="pl-6 space-y-1.5">
+        <div className="flex gap-2 text-sm">
+          <span className="text-ember flex-shrink-0">→</span>
+          <span className="text-white/70">
+            <strong className="text-white/90">Why this:</strong> {rec.rationale}
+          </span>
+        </div>
+        {rec.constraints.length > 0 && (
+          <div className="flex gap-2 text-sm">
+            <span className="text-orange-300 flex-shrink-0">⚠</span>
+            <span className="text-orange-200/80">
+              <strong className="text-orange-200">Blocked by:</strong> {rec.constraints.join(" · ")}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SafetyOverrideBanner({ override }: { override: SafetyOverride }) {
+  const isUrgent = override.reason === "severe_band";
+  return (
+    <section
+      className={`rounded-2xl p-6 mb-6 border-2 ${
+        isUrgent
+          ? "bg-red-50 border-red-300"
+          : "bg-amber-50 border-amber-300"
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <AlertTriangle
+          className={`w-6 h-6 mt-0.5 flex-shrink-0 ${
+            isUrgent ? "text-red-600" : "text-amber-600"
+          }`}
+        />
+        <div className="flex-1">
+          <p
+            className={`text-[10px] uppercase tracking-widest font-bold mb-1 ${
+              isUrgent ? "text-red-700" : "text-amber-700"
+            }`}
+          >
+            Safety override · {override.reason === "severe_band" ? "Severe band" : "Accelerating into severe"}
+          </p>
+          <h3 className={`text-lg font-bold mb-2 ${isUrgent ? "text-red-900" : "text-amber-900"}`}>
+            {isUrgent
+              ? "Clinical referral required before any other intervention."
+              : "Clinical consultation indicated within 2 weeks."}
+          </h3>
+          <p className={`text-sm leading-relaxed ${isUrgent ? "text-red-900/80" : "text-amber-900/80"}`}>
+            {override.message}
+          </p>
+          <p className="text-xs text-navy/50 mt-3 italic">
+            BurnoutIQ is a workforce intelligence platform, not a clinical tool. The matching engine
+            will continue to surface lower-priority interventions below — but this referral takes precedence.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FallbackActionPlan({
+  actionPlan,
+}: {
+  actionPlan: ReturnType<typeof buildActionPlan>;
+}) {
+  return (
+    <section className="rounded-2xl border-2 border-navy bg-navy text-white p-6 mb-8">
+      <div className="flex items-center gap-2 mb-1">
+        <AlertCircle className="w-4 h-4 text-ember" />
+        <h2 className="text-[10px] uppercase tracking-widest font-bold text-ember">
+          Recommended action plan
+        </h2>
+      </div>
+      <p className="text-sm text-white/60 mb-5">
+        Heuristic priority order, derived from your band, top drivers, and dominant archetype.
+        This is Pivot&apos;s playbook for reading a heatmap, not a statistical model.
+      </p>
+      <div className="space-y-4">
+        {actionPlan.map((p) => (
+          <div key={p.rank} className="bg-white/5 rounded-xl p-5 border border-white/10">
+            <div className="flex items-baseline gap-3 mb-2">
+              <span className="text-ember font-extrabold tabular-nums">{p.rank}.</span>
+              <h3 className="font-bold text-base flex-1">{p.title}</h3>
+              <span className="text-[10px] uppercase tracking-widest font-bold text-white/40 whitespace-nowrap">
+                {p.timeframe}
+              </span>
+            </div>
+            <p className="text-sm text-white/70 mb-3 leading-relaxed pl-6">{p.rationale}</p>
+            <ul className="space-y-1.5 pl-6">
+              {p.steps.map((s, i) => (
+                <li key={i} className="text-sm text-white/85 leading-relaxed flex gap-2">
+                  <span className="text-ember flex-shrink-0">→</span>
+                  <span>{s}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
