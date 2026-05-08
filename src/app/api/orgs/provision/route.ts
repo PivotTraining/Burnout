@@ -111,7 +111,13 @@ export async function POST(req: NextRequest) {
       email: ownerEmail,
       options: { redirectTo: `${origin}/auth/callback?next=/dashboard` },
     });
-    const url = ul?.properties?.action_link;
+    // Build a same-origin link that hits our callback with the token_hash
+    // directly. This bypasses Supabase's /auth/v1/verify redirect, which
+    // sets cookies on supabase.co (cross-domain — invisible to us).
+    const tokenHash = ul?.properties?.hashed_token;
+    const url = tokenHash
+      ? `${origin}/auth/callback?token_hash=${encodeURIComponent(tokenHash)}&type=magiclink&next=/dashboard`
+      : ul?.properties?.action_link;
     if (linkErr) warning = linkErr.message;
     if (url) {
       await resend.emails.send({
