@@ -48,6 +48,19 @@ export interface MockOrg {
    *  referral as priority #1 regardless of the matched scores. */
   recommendations?: InterventionRecommendation[];
   safetyOverride?: SafetyOverride | null;
+  /** Phase 2 — outcome rollup for the current reporting window. */
+  outcomes?: OrgOutcomes;
+}
+
+export interface OrgOutcomes {
+  reportingDays: number;             // window length (e.g. 90, 365)
+  totalEnrollments: number;
+  totalCompletions: number;
+  completionRate: number;            // 0-1
+  aggregateCbsChange: number;        // negative = org improved
+  estimatedTotalDollarValue: number;
+  topPerforming: { interventionId: string; meanImprovement: number; sampleSize: number }[];
+  underperforming: { interventionId: string; meanImprovement: number; sampleSize: number }[];
 }
 
 export const MOCK_ORG: MockOrg = {
@@ -100,6 +113,22 @@ export const MOCK_ORG: MockOrg = {
       { date: "2026-03-15", cbs: 44 },
       { date: "2026-04-15", cbs: 42 },
       { date: "2026-05-15", cbs: 41 },
+    ],
+  },
+  outcomes: {
+    reportingDays: 365,
+    totalEnrollments: 488,
+    totalCompletions: 392,
+    completionRate: 0.803,
+    aggregateCbsChange: -14.6,
+    estimatedTotalDollarValue: 1827500,  // ~$1.83M recovered
+    topPerforming: [
+      { interventionId: "rm_wkl_001", meanImprovement: -18.4, sampleSize: 142 },
+      { interventionId: "rm_exh_001", meanImprovement: -16.2, sampleSize: 38 },
+      { interventionId: "rm_ctl_001", meanImprovement: -12.1, sampleSize: 87 },
+    ],
+    underperforming: [
+      { interventionId: "rm_fair_001", meanImprovement: -1.8, sampleSize: 24 },
     ],
   },
 };

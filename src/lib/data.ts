@@ -27,6 +27,13 @@ import {
   DEFAULT_USER_CONTEXT_FLAGS,
 } from "@/lib/interventions";
 import { INTERVENTION_LIBRARY } from "@/lib/intervention-library";
+import {
+  type InterventionEnrollment,
+} from "@/lib/outcome";
+import {
+  generateOrgRoiReport,
+  computeInterventionEfficacy,
+} from "@/lib/outcome-org";
 
 export const isLiveMode = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -237,6 +244,9 @@ export async function getOrgOverview(): Promise<MockOrg> {
     const recommendations = matchInterventions(userContext, library, 5);
     const safetyOverride = safetyOverrideCheck(userContext);
 
+    // ─── Phase 2: outcome rollup ───────────────────────────────
+    const outcomes = await fetchOutcomesRollup(supabase, orgId);
+
     return {
       name: orgName,
       headcount: headcount || total,
@@ -251,6 +261,7 @@ export async function getOrgOverview(): Promise<MockOrg> {
       longitudinal,
       recommendations,
       safetyOverride,
+      outcomes,
     };
   } catch (err) {
     console.error("[data] live query failed, falling back to mock", err);
@@ -314,6 +325,93 @@ async function fetchInterventionLibrary(
     console.warn("[data] interventions fetch failed; using seed library", err);
   }
   return INTERVENTION_LIBRARY;
+}
+
+// ─── Phase 2: outcomes rollup fetch ─────────────────────────────────────
+
+type EnrollmentRow = {
+  id: string;
+  org_id: string;
+  intervention_id: string;
+  email: string;
+  started_at: string;
+  completed_at: string | null;
+  abandoned_at: string | null;
+  status: "not_started" | "in_progress" | "completed" | "abandoned";
+  baseline_cbs: number;
+  completion_cbs: number | null;
+};
+
+async function fetchOutcomesRollup(
+  supabase: Awaited<ReturnType<typeof supabaseServer>>,
+  orgId: string,
+) {
+  try {
+    const { data } = await supabase
+      .from("intervention_enrollments")
+      .select(
+        "id, org_id, intervention_id, email, started_at, completed_at, abandoned_at, status, baseline_cbs, completion_cbs",
+      )
+      .eq("org_id", orgId);
+    const rows = (data ?? []) as EnrollmentRow[];
+    if (rows.length === 0) return undefined;
+
+    const enrollments: InterventionEnrollment[] = rows.map((r) => ({
+      id: r.id,
+      orgId: r.org_id,
+      interventionId: r.intervention_id,
+      email: r.email,
+      startedAt: new Date(r.started_at),
+      completedAt: r.completed_at ? new Date(r.completed_at) : null,
+      abandonedAt: r.abandoned_at ? new Date(r.abandoned_at) : null,
+      status: r.status,
+      baselineCbs: Number(r.baseline_cbs),
+      completionCbs: r.completion_cbs === null ? null : Number(r.completion_cbs),
+    }));
+
+    const periodEnd = new Date();
+    const periodStart = new Date(periodEnd.getTime() - 365 * 86_400_000);
+    const sustained = new Map<string, boolean>(); // empty for v1; populated when follow-up assessments exist
+
+    const rollup = generateOrgRoiReport(enrollments, sustained, periodStart, periodEnd);
+
+    // Per-intervention efficacy for top/bottom listing
+    const interventionIds = [...new Set(enrollments.map((e) => e.interventionId))];
+    const efficacies = interventionIds
+      .map((id) => ({
+        id,
+        eff: computeInterventionEfficacy(id, enrollments, sustained),
+      }))
+      .filter((x) => x.eff !== null) as Array<{
+        id: string;
+        eff: NonNullable<ReturnType<typeof computeInterventionEfficacy>>;
+      }>;
+    efficacies.sort((a, b) => a.eff.meanCbsImprovement - b.eff.meanCbsImprovement);
+
+    return {
+      reportingDays: 365,
+      totalEnrollments: rollup.totalEnrollments,
+      totalCompletions: rollup.totalCompletions,
+      completionRate: rollup.completionRate,
+      aggregateCbsChange: rollup.aggregateCbsChange,
+      estimatedTotalDollarValue: rollup.estimatedTotalDollarValue,
+      topPerforming: efficacies.slice(0, 3).map((x) => ({
+        interventionId: x.id,
+        meanImprovement: x.eff.meanCbsImprovement,
+        sampleSize: x.eff.sampleSize,
+      })),
+      underperforming: efficacies
+        .filter((x) => x.eff.meanCbsImprovement > -3)
+        .map((x) => ({
+          interventionId: x.id,
+          meanImprovement: x.eff.meanCbsImprovement,
+          sampleSize: x.eff.sampleSize,
+        })),
+    };
+  } catch (err) {
+    console.warn("[data] outcomes fetch failed", err);
+    return undefined;
+  }
 }
 
 function rowToIntervention(r: InterventionRow): Intervention {

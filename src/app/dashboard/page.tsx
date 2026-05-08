@@ -13,6 +13,8 @@ import {
   type InterventionRecommendation,
   type SafetyOverride,
 } from "@/lib/interventions";
+import type { OrgOutcomes } from "@/lib/mock-data";
+import { Sparkles, DollarSign, CheckCircle2, BarChart3 } from "lucide-react";
 import {
   archetypeName,
   archetypeAccent,
@@ -351,6 +353,9 @@ export default async function DashboardOverview() {
           </table>
         )}
       </section>
+
+      {/* Phase 2 — Outcomes rollup (the CHRO renewal artifact) */}
+      {org.outcomes && <OutcomesSection outcomes={org.outcomes} />}
 
       {/* Trend */}
       {org.trend.length > 0 && (
@@ -747,6 +752,157 @@ function FallbackActionPlan({
       </div>
     </section>
   );
+}
+
+// ─── Phase 2: Outcomes rollup section ───────────────────────────────────
+
+function OutcomesSection({ outcomes }: { outcomes: OrgOutcomes }) {
+  const usd = (n: number) =>
+    n.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    });
+  const direction = outcomes.aggregateCbsChange < -2 ? "improvement" : outcomes.aggregateCbsChange > 2 ? "regression" : "flat";
+  return (
+    <section className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/40 p-6 mb-8">
+      <div className="flex items-center gap-2 mb-1">
+        <Sparkles className="w-4 h-4 text-emerald-600" />
+        <h2 className="text-[10px] uppercase tracking-widest font-bold text-emerald-700">
+          Outcomes rollup · last {outcomes.reportingDays} days
+        </h2>
+      </div>
+      <p className="text-sm text-navy/60 mb-5">
+        The artifact that drives renewals. Aggregate change, completion rate, and dollar value
+        across every intervention enrollment in the window. Heuristic ROI based on band-cost
+        ratios from published burnout cost research; refines with each engagement&apos;s data.
+      </p>
+
+      {/* KPI quad */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <OutcomeKpi
+          icon={BarChart3}
+          label="Aggregate CBS change"
+          value={
+            outcomes.aggregateCbsChange === 0
+              ? "—"
+              : `${outcomes.aggregateCbsChange > 0 ? "+" : ""}${outcomes.aggregateCbsChange}`
+          }
+          sub={direction === "improvement" ? "org improved" : direction === "regression" ? "org worsened" : "stable"}
+          tone={direction === "improvement" ? "good" : direction === "regression" ? "warn" : "neutral"}
+        />
+        <OutcomeKpi
+          icon={CheckCircle2}
+          label="Completion rate"
+          value={`${Math.round(outcomes.completionRate * 100)}%`}
+          sub={`${outcomes.totalCompletions.toLocaleString()} of ${outcomes.totalEnrollments.toLocaleString()}`}
+          tone={outcomes.completionRate >= 0.7 ? "good" : "warn"}
+        />
+        <OutcomeKpi
+          icon={DollarSign}
+          label="Estimated value recovered"
+          value={usd(outcomes.estimatedTotalDollarValue)}
+          sub="annualized"
+          tone="good"
+        />
+        <OutcomeKpi
+          icon={Sparkles}
+          label="Top intervention"
+          value={
+            outcomes.topPerforming[0]
+              ? formatProgramCode(outcomes.topPerforming[0].interventionId)
+              : "—"
+          }
+          sub={
+            outcomes.topPerforming[0]
+              ? `${outcomes.topPerforming[0].meanImprovement} pts mean (n=${outcomes.topPerforming[0].sampleSize})`
+              : "needs n≥10 to rank"
+          }
+        />
+      </div>
+
+      {/* Top + bottom intervention lists */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="rounded-xl bg-white border border-emerald-200 p-4">
+          <p className="text-[10px] uppercase tracking-widest font-bold text-emerald-700 mb-2">
+            Top performing
+          </p>
+          {outcomes.topPerforming.length === 0 ? (
+            <p className="text-xs text-navy/50">No interventions yet at the n≥10 sample floor.</p>
+          ) : (
+            <ul className="space-y-2">
+              {outcomes.topPerforming.map((p) => (
+                <li key={p.interventionId} className="flex items-center justify-between text-sm">
+                  <span className="font-mono text-xs text-emerald-800">
+                    {formatProgramCode(p.interventionId)}
+                  </span>
+                  <span className="text-navy/70 text-xs">
+                    <strong className="text-emerald-700">{p.meanImprovement}</strong> mean (n=
+                    {p.sampleSize})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="rounded-xl bg-white border border-amber-200 p-4">
+          <p className="text-[10px] uppercase tracking-widest font-bold text-amber-700 mb-2">
+            Underperforming · review
+          </p>
+          {outcomes.underperforming.length === 0 ? (
+            <p className="text-xs text-navy/50">All measured interventions clearing the -3 pt threshold.</p>
+          ) : (
+            <ul className="space-y-2">
+              {outcomes.underperforming.map((p) => (
+                <li key={p.interventionId} className="flex items-center justify-between text-sm">
+                  <span className="font-mono text-xs text-amber-800">
+                    {formatProgramCode(p.interventionId)}
+                  </span>
+                  <span className="text-navy/70 text-xs">
+                    <strong className="text-amber-700">{p.meanImprovement}</strong> mean (n=
+                    {p.sampleSize})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function OutcomeKpi({
+  icon: Icon,
+  label,
+  value,
+  sub,
+  tone = "neutral",
+}: {
+  icon: typeof BarChart3;
+  label: string;
+  value: string;
+  sub: string;
+  tone?: "good" | "warn" | "neutral";
+}) {
+  const valueColor =
+    tone === "good" ? "text-emerald-700" : tone === "warn" ? "text-orange-700" : "text-navy";
+  return (
+    <div className="rounded-xl bg-white border border-emerald-200 p-3">
+      <div className="flex items-center gap-1.5 mb-1">
+        <Icon className="w-3 h-3 text-emerald-700" />
+        <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold">{label}</p>
+      </div>
+      <p className={`text-xl font-extrabold tabular-nums ${valueColor}`}>{value}</p>
+      <p className="text-[11px] text-navy/50 mt-0.5">{sub}</p>
+    </div>
+  );
+}
+
+/** Translate the intervention ID slugs into a friendlier short code.
+ *  rm_wkl_001 → RM-WKL-001 etc. */
+function formatProgramCode(id: string): string {
+  return id.toUpperCase().replace(/_/g, "-");
 }
 
 function SevereZoneBadge({ count }: { count: number }) {
