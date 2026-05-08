@@ -71,13 +71,25 @@ export default function TeamsTier() {
             <Stat label="Buyer" value="VP HR · CHRO · COO" />
             <Stat label="Audience" value="50–250 employees" />
           </div>
-          <Link
-            href="/briefing"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-bold"
-          >
-            Schedule a 20-min Briefing
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/briefing"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-bold"
+            >
+              Schedule a 20-min Briefing
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/demo"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white border border-navy/20 hover:border-navy/40 text-navy font-semibold"
+            >
+              Preview the live console →
+            </Link>
+          </div>
+          <p className="text-xs text-navy/40 mt-3 max-w-xl">
+            The preview opens the console with sample-org data (Acme Health System, 1,240 employees).
+            No login required. Real customer data is never shown.
+          </p>
         </section>
 
         {/* Pricing bands */}
@@ -191,9 +203,15 @@ export default function TeamsTier() {
             </p>
             <Link
               href="/briefing"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-bold"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-bold mr-3"
             >
               Schedule a Briefing <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="/demo"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white border border-navy/20 hover:border-navy/40 text-navy font-semibold"
+            >
+              Preview the console →
             </Link>
           </div>
         </section>

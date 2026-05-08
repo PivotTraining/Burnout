@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Check } from "lucide-react";
@@ -53,6 +54,23 @@ export default function Briefing() {
                 </a>
                 .
               </p>
+
+              <div className="mt-6 rounded-xl border border-border-gray bg-cream p-5">
+                <p className="text-xs font-bold uppercase tracking-widest text-ember mb-1">
+                  Want a peek before our call?
+                </p>
+                <p className="text-sm text-navy/70 leading-relaxed mb-3">
+                  Preview the live BurnoutIQ Console with sample-org data. Same surfaces a real
+                  customer sees: org-level Burnout Risk Index, department heatmap, archetype
+                  distribution, recommended interventions, anonymous Voices feed.
+                </p>
+                <Link
+                  href="/demo"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-ember hover:underline"
+                >
+                  Preview the console →
+                </Link>
+              </div>
             </div>
           </div>
         </section>

@@ -487,6 +487,12 @@ function Pricing() {
                 See Teams
                 <ArrowRight size={14} />
               </Link>
+              <Link
+                href="/demo"
+                className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 text-white font-medium px-5 py-2 rounded-lg text-xs whitespace-nowrap"
+              >
+                Preview the console →
+              </Link>
               <span className="text-[11px] text-white/40 text-center">Quoted engagement · 50–250 employees</span>
             </div>
           </div>
