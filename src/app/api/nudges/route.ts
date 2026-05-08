@@ -19,6 +19,7 @@ import { isLiveMode } from "@/lib/data";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";
+const REPLY_TO = process.env.RESEND_REPLY_TO || undefined;
 const DEMO_PASSWORD = process.env.DASHBOARD_DEMO_PASSWORD;
 const DEMO_COOKIE = "biq-demo-pass";
 
@@ -139,6 +140,7 @@ export async function POST(req: NextRequest) {
       await resend.emails.send({
         from: FROM,
         to: [r.email],
+        ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
         subject,
         html: nudgeEmailHtml({ orgName, subject, body: messageBody }),
       });

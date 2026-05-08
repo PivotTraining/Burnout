@@ -21,6 +21,7 @@ const SUPABASE_LIVE = Boolean(
 );
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";
+const REPLY_TO = process.env.RESEND_REPLY_TO || undefined;
 
 interface Invitee {
   email: string;
@@ -101,6 +102,7 @@ export async function POST(req: NextRequest) {
       await resend.emails.send({
         from: FROM,
         to: [inv.email],
+        ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
         subject: `Take the BurnoutIQ assessment — ${orgName}`,
         html: inviteEmailHtml({
           firstName: inv.firstName,
