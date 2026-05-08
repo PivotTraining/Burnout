@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, TrendingDown, TrendingUp, Minus, MessageSquare } from "lucide-react";
+import { ArrowRight, TrendingDown, TrendingUp, Minus, MessageSquare, AlertTriangle, Sparkles } from "lucide-react";
 import BurnoutLogo from "@/components/BurnoutLogo";
 
 interface Assessment {
@@ -12,6 +12,28 @@ interface Assessment {
   archetype: string | null;
   burnout_risk: number | null;
   scores_json: { subscales?: Record<string, number>; topDrivers?: string[] } | null;
+}
+
+type Trajectory = "recovering" | "stable" | "degrading" | "accelerating";
+
+interface Snapshot {
+  trajectory: Trajectory;
+  slopePerDay: number;
+  totalChangeOver90d: number;
+  volatility: number;
+  primaryDriver: { dim: string; label: string; level: number; drift: number } | null;
+  alert: {
+    trigger: "severe_band" | "accelerating_to_severe" | "high_volatility";
+    severity: "urgent" | "high" | "moderate";
+    message: string;
+  } | null;
+  recovery: {
+    signal: "recovery";
+    peakCbs: number;
+    currentCbs: number;
+    improvement: number;
+    message: string;
+  } | null;
 }
 
 interface MeData {
@@ -26,8 +48,16 @@ interface MeData {
     previous: Assessment | null;
     deltaPct: number | null;
   } | null;
+  snapshot?: Snapshot | null;
   error?: string;
 }
+
+const TRAJ_LABEL: Record<Trajectory, string> = {
+  recovering: "Recovering",
+  stable: "Stable",
+  degrading: "Degrading",
+  accelerating: "Accelerating",
+};
 
 function bandFor(pct: number | null | undefined): { label: string; color: string } {
   if (pct === null || pct === undefined) return { label: "—", color: "#999" };
@@ -120,7 +150,18 @@ function MeContent() {
         </div>
       )}
 
-      {trend?.latest && <LatestCard latest={trend.latest} previous={trend.previous} delta={trend.deltaPct} />}
+      {trend?.latest && (
+        <LatestCard
+          latest={trend.latest}
+          previous={trend.previous}
+          delta={trend.deltaPct}
+          snapshot={data.snapshot ?? null}
+        />
+      )}
+
+      {/* Phase 1 — soft severe-zone notice + recovery signal */}
+      {data.snapshot?.alert && <AlertNotice alert={data.snapshot.alert} />}
+      {data.snapshot?.recovery && <RecoveryNotice recovery={data.snapshot.recovery} />}
 
       {assessments.length > 1 && <TrendList rows={assessments} />}
 
@@ -158,10 +199,12 @@ function LatestCard({
   latest,
   previous,
   delta,
+  snapshot,
 }: {
   latest: Assessment;
   previous: Assessment | null;
   delta: number | null;
+  snapshot: Snapshot | null;
 }) {
   const band = bandFor(latest.burnout_risk);
   const date = new Date(latest.taken_at).toLocaleDateString(undefined, {
@@ -211,6 +254,93 @@ function LatestCard({
             {new Date(previous.taken_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })})
           </span>
         )}
+      </div>
+
+      {/* Phase 1 — trajectory chip on the latest reading card */}
+      {snapshot && (
+        <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2">
+          <PersonalTrajectoryChip
+            trajectory={snapshot.trajectory}
+            totalChange={snapshot.totalChangeOver90d}
+          />
+          {snapshot.volatility > 20 && (
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded bg-amber-500/15 text-amber-300">
+              Volatility {snapshot.volatility.toFixed(1)} · unstable
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PersonalTrajectoryChip({
+  trajectory,
+  totalChange,
+}: {
+  trajectory: Trajectory;
+  totalChange: number;
+}) {
+  const palette: Record<Trajectory, { bg: string; fg: string; Icon: typeof TrendingDown }> = {
+    recovering:   { bg: "rgba(16,185,129,0.15)", fg: "#10B981", Icon: TrendingDown },
+    stable:       { bg: "rgba(255,255,255,0.08)", fg: "#A8A8B8", Icon: Minus },
+    degrading:    { bg: "rgba(234,88,12,0.15)", fg: "#F97316", Icon: TrendingUp },
+    accelerating: { bg: "rgba(220,38,38,0.18)", fg: "#F87171", Icon: TrendingUp },
+  };
+  const cfg = palette[trajectory];
+  const sign = totalChange >= 0 ? "+" : "";
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded"
+      style={{ backgroundColor: cfg.bg, color: cfg.fg }}
+    >
+      <cfg.Icon className="w-3 h-3" />
+      {TRAJ_LABEL[trajectory]} · {sign}{totalChange} pts (90d)
+    </span>
+  );
+}
+
+function AlertNotice({ alert }: { alert: NonNullable<Snapshot["alert"]> }) {
+  // Soft language per the agreed spec — clinical pointer without alarm.
+  const heading =
+    alert.trigger === "severe_band"
+      ? "Your reading is in the Severe band."
+      : alert.trigger === "accelerating_to_severe"
+        ? "Your trajectory is climbing fast."
+        : "Your readings have been swinging widely.";
+  return (
+    <div className="rounded-2xl bg-orange-500/10 border border-orange-500/30 p-5 mb-6">
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="w-5 h-5 text-orange-400 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-white font-bold mb-1">{heading}</p>
+          <p className="text-white/70 text-sm leading-relaxed">{alert.message}</p>
+          <p className="text-white/40 text-xs mt-2">
+            BurnoutIQ is a screening tool, not a clinical service. This page is for you only —
+            your manager doesn&apos;t see this notice.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RecoveryNotice({ recovery }: { recovery: NonNullable<Snapshot["recovery"]> }) {
+  return (
+    <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-5 mb-6">
+      <div className="flex items-start gap-3">
+        <Sparkles className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-white font-bold mb-1">Your trajectory shows recovery.</p>
+          <p className="text-white/70 text-sm leading-relaxed">
+            {recovery.message} Peak in the last 6 months was {recovery.peakCbs}; current is{" "}
+            {recovery.currentCbs} — that&apos;s {recovery.improvement} points of improvement.
+          </p>
+          <p className="text-white/40 text-xs mt-2">
+            Whatever changed in your routine, environment, or load during this window is worth
+            protecting.
+          </p>
+        </div>
       </div>
     </div>
   );

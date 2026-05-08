@@ -16,6 +16,12 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import {
+  type Assessment as LongAssessment,
+  profileFromRows,
+  longitudinalSnapshot,
+} from "@/lib/longitudinal";
+import type { DimKey } from "@/lib/algo-types";
 
 const SUPABASE_LIVE = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -56,6 +62,21 @@ export async function GET(req: NextRequest) {
   const orgName =
     (invite as unknown as { orgs?: { name?: string } }).orgs?.name || "your organization";
 
+  // ─── Phase 1: longitudinal snapshot ──────────────────────────────────
+  // Build a profile from this person's assessments and compute trajectory,
+  // alert (if any), and recovery signal (if any). Sent down to /me page.
+  const longRows: LongAssessment[] = assessments
+    .filter((a) => typeof a.burnout_risk === "number" && a.taken_at)
+    .map((a) => ({
+      email: invite.email,
+      orgId: invite.org_id,
+      takenAt: new Date(a.taken_at as string),
+      burnoutRisk: a.burnout_risk as number,
+      subscales: ((a.scores_json as { subscales?: Record<string, number> } | null)?.subscales ?? {}) as Partial<Record<DimKey, number>>,
+    }));
+  const profile = profileFromRows(invite.email, invite.org_id, longRows);
+  const snapshot = profile.assessments.length >= 2 ? longitudinalSnapshot(profile) : null;
+
   return NextResponse.json({
     ok: true,
     email: invite.email,
@@ -64,5 +85,6 @@ export async function GET(req: NextRequest) {
     organization: orgName,
     assessments,
     trend: latest ? { latest, previous, deltaPct } : null,
+    snapshot,
   });
 }

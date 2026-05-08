@@ -4,11 +4,21 @@
 import { ARCHETYPES, type ArchetypeKey } from "@/lib/archetypes";
 
 import type { DriverKey } from "@/lib/console-content";
+import type { Trajectory } from "@/lib/algo-types";
 
 export interface DriverConcern {
   driver: DriverKey;
   meanPct: number;     // mean % at-risk across the org
   atRiskCount: number; // employees whose driver score is in the High/Severe band
+}
+
+/** Phase 1 longitudinal additions — always present, may be all-zero. */
+export interface LongitudinalOrg {
+  trajectory: Trajectory;
+  totalChangeOver90d: number;     // CBS pts over the trailing 90 days
+  volatility: number;
+  severeAlertCount: number;       // # of users currently in severe-zone alert state
+  sparkline6mo: { date: string; cbs: number }[]; // ISO-day strings; up to 6 points
 }
 
 export interface MockOrg {
@@ -27,6 +37,8 @@ export interface MockOrg {
   isEmpty?: boolean;
   /** When isEmpty, how many invited employees haven't completed yet. */
   pendingInvites?: number;
+  /** Phase 1 longitudinal — present on populated orgs. */
+  longitudinal?: LongitudinalOrg;
 }
 
 export const MOCK_ORG: MockOrg = {
@@ -67,6 +79,20 @@ export const MOCK_ORG: MockOrg = {
     { driver: "community", meanPct: 31, atRiskCount: 152 },
     { driver: "values", meanPct: 27, atRiskCount: 119 },
   ],
+  longitudinal: {
+    trajectory: "recovering",
+    totalChangeOver90d: -12,
+    volatility: 8.2,
+    severeAlertCount: 14,
+    sparkline6mo: [
+      { date: "2025-12-15", cbs: 53 },
+      { date: "2026-01-15", cbs: 51 },
+      { date: "2026-02-15", cbs: 47 },
+      { date: "2026-03-15", cbs: 44 },
+      { date: "2026-04-15", cbs: 42 },
+      { date: "2026-05-15", cbs: 41 },
+    ],
+  },
 };
 
 export function archetypeName(key: ArchetypeKey) {

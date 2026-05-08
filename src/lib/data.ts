@@ -7,6 +7,17 @@
 
 import { supabaseServer } from "@/lib/supabase";
 import { MOCK_ORG, type MockOrg } from "@/lib/mock-data";
+import {
+  type Assessment as LongAssessment,
+  type LongitudinalProfile,
+} from "@/lib/longitudinal";
+import {
+  profilesByEmail,
+  orgTrajectory,
+  severeZoneAlertCount,
+  sixMonthSparkline,
+} from "@/lib/longitudinal-org";
+import type { DimKey } from "@/lib/algo-types";
 
 export const isLiveMode = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -42,6 +53,7 @@ export async function getOrgOverview(): Promise<MockOrg> {
     const headcount = orgRow?.headcount ?? 0;
 
     type AssessmentRow = {
+      email: string | null;
       archetype: string | null;
       burnout_risk: number | null;
       department: string | null;
@@ -50,7 +62,7 @@ export async function getOrgOverview(): Promise<MockOrg> {
     };
     const { data: assessments } = await supabase
       .from("assessments")
-      .select("archetype, burnout_risk, department, taken_at, scores_json")
+      .select("email, archetype, burnout_risk, department, taken_at, scores_json")
       .eq("org_id", orgId);
 
     const rows: AssessmentRow[] = (assessments ?? []) as AssessmentRow[];
@@ -173,6 +185,34 @@ export async function getOrgOverview(): Promise<MockOrg> {
       };
     }).sort((a, b) => b.meanPct - a.meanPct);
 
+    // ─── Longitudinal layer (Phase 1) ──────────────────────────
+    // Build per-user profiles; compute org trajectory, severe-zone
+    // alert count, and 6-month sparkline. Privacy floor (n>=5) is
+    // enforced inside each helper.
+    const longRows: LongAssessment[] = rows
+      .filter((r) => r.email && r.taken_at && typeof r.burnout_risk === "number")
+      .map<LongAssessment>((r) => ({
+        email: (r.email ?? "").toLowerCase(),
+        orgId,
+        takenAt: new Date(r.taken_at as string),
+        burnoutRisk: r.burnout_risk as number,
+        subscales: (r.scores_json?.subscales ?? {}) as Partial<Record<DimKey, number>>,
+      }));
+    const profileMap: Map<string, LongitudinalProfile> = profilesByEmail(longRows);
+    const orgTraj = orgTrajectory(profileMap);
+    const longitudinal = orgTraj
+      ? {
+          trajectory: orgTraj.trajectory,
+          totalChangeOver90d: orgTraj.totalChangeOver90d,
+          volatility: orgTraj.volatility,
+          severeAlertCount: severeZoneAlertCount(profileMap),
+          sparkline6mo: sixMonthSparkline(profileMap).map((p) => ({
+            date: p.date.toISOString().slice(0, 10),
+            cbs: p.cbs,
+          })),
+        }
+      : undefined;
+
     return {
       name: orgName,
       headcount: headcount || total,
@@ -184,6 +224,7 @@ export async function getOrgOverview(): Promise<MockOrg> {
       departments,         // empty if no dept reaches n>=5 — UI handles
       trend: quarters,
       driverConcerns,
+      longitudinal,
     };
   } catch (err) {
     console.error("[data] live query failed, falling back to mock", err);

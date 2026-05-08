@@ -19,10 +19,13 @@ import {
   TrendingUp,
   Minus,
   AlertCircle,
+  AlertTriangle,
+  Activity,
   ArrowRight,
   Send,
   Inbox,
 } from "lucide-react";
+import { TRAJECTORY_LABEL } from "@/lib/algo-types";
 
 export const metadata = { title: "Org overview · BurnoutIQ Console" };
 
@@ -97,6 +100,20 @@ export default async function DashboardOverview() {
             <p className="text-sm text-navy/80"><strong>What to do:</strong> {band.urgency}</p>
           </div>
         </div>
+
+        {/* Phase 1 — trajectory + volatility + severe-zone alert ─────── */}
+        {org.longitudinal && (
+          <div className="mt-5 pt-5 border-t border-navy/15 flex flex-wrap items-center gap-3">
+            <TrajectoryChip
+              trajectory={org.longitudinal.trajectory}
+              totalChange={org.longitudinal.totalChangeOver90d}
+            />
+            <VolatilityChip volatility={org.longitudinal.volatility} />
+            {org.longitudinal.severeAlertCount > 0 && (
+              <SevereZoneBadge count={org.longitudinal.severeAlertCount} />
+            )}
+          </div>
+        )}
       </section>
 
       {/* KPI quad */}
@@ -344,6 +361,20 @@ export default async function DashboardOverview() {
             </span>
           </div>
           <p className="text-sm text-navy/50 mb-5">{trend.message}</p>
+
+          {/* 6-month rolling sparkline (Phase 1) */}
+          {org.longitudinal && org.longitudinal.sparkline6mo.length >= 2 && (
+            <div className="mb-6">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-navy/40 mb-2">
+                6-month rolling — org-median CBS
+              </p>
+              <Sparkline points={org.longitudinal.sparkline6mo} />
+            </div>
+          )}
+
+          <p className="text-[10px] uppercase tracking-widest font-bold text-navy/40 mb-2">
+            Quarterly aggregate
+          </p>
           <div className="flex items-end gap-3 h-32">
             {org.trend.map((p) => {
               const qBand = bandFor(p.risk);
@@ -468,5 +499,110 @@ function Kpi({
       <p className="text-2xl font-extrabold text-navy mt-1">{value}</p>
       <p className={`text-xs mt-1 ${deltaColor}`}>{delta}</p>
     </div>
+  );
+}
+
+// ─── Phase 1 chips ──────────────────────────────────────────────────────
+
+function TrajectoryChip({
+  trajectory,
+  totalChange,
+}: {
+  trajectory: import("@/lib/algo-types").Trajectory;
+  totalChange: number;
+}) {
+  const palette: Record<typeof trajectory, { bg: string; fg: string; Icon: typeof TrendingDown }> = {
+    recovering:   { bg: "#DCFCE7", fg: "#16A34A", Icon: TrendingDown },
+    stable:       { bg: "#F1F5F9", fg: "#475569", Icon: Minus },
+    degrading:    { bg: "#FED7AA", fg: "#EA580C", Icon: TrendingUp },
+    accelerating: { bg: "#FEE2E2", fg: "#DC2626", Icon: TrendingUp },
+  };
+  const cfg = palette[trajectory];
+  const sign = totalChange >= 0 ? "+" : "";
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded"
+      style={{ backgroundColor: cfg.bg, color: cfg.fg }}
+      title={`${TRAJECTORY_LABEL[trajectory]} — total change over the trailing 90 days`}
+    >
+      <cfg.Icon className="w-3 h-3" />
+      {TRAJECTORY_LABEL[trajectory]} · {sign}{totalChange} pts (90d)
+    </span>
+  );
+}
+
+function VolatilityChip({ volatility }: { volatility: number }) {
+  const isHigh = volatility > 20;
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded"
+      style={{
+        backgroundColor: isHigh ? "#FEF3C7" : "#F1F5F9",
+        color: isHigh ? "#D97706" : "#475569",
+      }}
+      title={isHigh ? "High volatility — chaotic state, underlying driver likely unaddressed" : "Stable state"}
+    >
+      <Activity className="w-3 h-3" />
+      Volatility {volatility.toFixed(1)}{isHigh ? " · unstable" : ""}
+    </span>
+  );
+}
+
+function Sparkline({ points }: { points: { date: string; cbs: number }[] }) {
+  // Simple inline SVG sparkline. 6 monthly points => smooth read of trajectory.
+  const w = 600;
+  const h = 60;
+  const padX = 8;
+  const padY = 6;
+  const max = Math.max(...points.map((p) => p.cbs), 50);
+  const min = Math.min(...points.map((p) => p.cbs), 0);
+  const range = Math.max(1, max - min);
+  const xStep = (w - 2 * padX) / Math.max(1, points.length - 1);
+
+  const path = points
+    .map((p, i) => {
+      const x = padX + i * xStep;
+      const y = h - padY - ((p.cbs - min) / range) * (h - 2 * padY);
+      return `${i === 0 ? "M" : "L"}${x},${y}`;
+    })
+    .join(" ");
+
+  // Direction-aware color: improving = emerald, worsening = orange, flat = navy
+  const first = points[0].cbs;
+  const last = points[points.length - 1].cbs;
+  const delta = last - first;
+  const stroke = delta < -2 ? "#16A34A" : delta > 2 ? "#EA580C" : "#1A1A2E";
+
+  return (
+    <div className="relative">
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-16" role="img" aria-label="6-month CBS sparkline">
+        <path d={path} fill="none" stroke={stroke} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        {points.map((p, i) => {
+          const x = padX + i * xStep;
+          const y = h - padY - ((p.cbs - min) / range) * (h - 2 * padY);
+          return <circle key={i} cx={x} cy={y} r={2.5} fill={stroke} />;
+        })}
+      </svg>
+      <div className="flex justify-between text-[10px] font-mono text-navy/40 mt-1 px-2">
+        {points.map((p) => (
+          <span key={p.date}>
+            {new Date(p.date).toLocaleDateString(undefined, { month: "short" })}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SevereZoneBadge({ count }: { count: number }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded"
+      style={{ backgroundColor: "#FEE2E2", color: "#DC2626" }}
+      title="Number of users currently flagged in the Severe-zone alert state"
+    >
+      <AlertTriangle className="w-3 h-3" />
+      {count.toLocaleString()} {count === 1 ? "user" : "users"} in severe-zone alert
+    </span>
   );
 }
