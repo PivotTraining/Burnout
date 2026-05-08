@@ -50,6 +50,34 @@ export interface MockOrg {
   safetyOverride?: SafetyOverride | null;
   /** Phase 2 — outcome rollup for the current reporting window. */
   outcomes?: OrgOutcomes;
+  /** Phase 4 — manager effectiveness scores + team outliers.
+   *  ALL FIELDS SUBJECT TO STRICT VISIBILITY RULES (org admin only). */
+  managers?: ManagerScoreSummary[];
+  teamOutliers?: TeamOutlierSummary[];
+}
+
+/** Surface-friendly projection of ManagerScore for the dashboard. */
+export interface ManagerScoreSummary {
+  managerId: string;
+  managerName: string;          // display only — no email exposed in list view
+  teamLabel: string;            // e.g. "Emergency · 14 reports"
+  directReportCount: number;
+  aggregateTeamCbs: number;
+  orgBaselineCbs: number;
+  deviationFromBaseline: number;
+  trajectoryUnderManagement: Trajectory;
+  isMeaningful: boolean;
+  /** Reason isMeaningful=false ("needs 5+ direct reports", etc.). */
+  gatingReason: string | null;
+  flaggedPatterns: string[];
+}
+
+export interface TeamOutlierSummary {
+  teamLabel: string;
+  cbs: number;
+  zScore: number;
+  deviationType: "high_burnout_outlier" | "low_burnout_outlier";
+  interpretation: string;
 }
 
 export interface OrgOutcomes {
@@ -131,6 +159,114 @@ export const MOCK_ORG: MockOrg = {
       { interventionId: "rm_fair_001", meanImprovement: -1.8, sampleSize: 24 },
     ],
   },
+  managers: [
+    // Strong signal — team materially below org baseline + recovering.
+    {
+      managerId: "mgr_001",
+      managerName: "M. Alvarez",
+      teamLabel: "Outpatient Clinics South · 14 reports",
+      directReportCount: 14,
+      aggregateTeamCbs: 29,
+      orgBaselineCbs: 41,
+      deviationFromBaseline: -12,
+      trajectoryUnderManagement: "recovering",
+      isMeaningful: true,
+      gatingReason: null,
+      flaggedPatterns: ["team_below_org_baseline_and_recovering"],
+    },
+    // Neutral — team in line with org.
+    {
+      managerId: "mgr_002",
+      managerName: "J. Patel",
+      teamLabel: "Med-Surg North · 9 reports",
+      directReportCount: 9,
+      aggregateTeamCbs: 43,
+      orgBaselineCbs: 41,
+      deviationFromBaseline: 2,
+      trajectoryUnderManagement: "stable",
+      isMeaningful: true,
+      gatingReason: null,
+      flaggedPatterns: [],
+    },
+    {
+      managerId: "mgr_003",
+      managerName: "R. Chen",
+      teamLabel: "ICU · 8 reports",
+      directReportCount: 8,
+      aggregateTeamCbs: 47,
+      orgBaselineCbs: 41,
+      deviationFromBaseline: 6,
+      trajectoryUnderManagement: "stable",
+      isMeaningful: true,
+      gatingReason: null,
+      flaggedPatterns: [],
+    },
+    // Borderline — moderately above.
+    {
+      managerId: "mgr_004",
+      managerName: "S. Okafor",
+      teamLabel: "Med-Surg South · 11 reports",
+      directReportCount: 11,
+      aggregateTeamCbs: 52,
+      orgBaselineCbs: 41,
+      deviationFromBaseline: 11,
+      trajectoryUnderManagement: "degrading",
+      isMeaningful: true,
+      gatingReason: null,
+      flaggedPatterns: [
+        "team_moderately_above_org_burnout",
+        "team_trajectory_degrading_under_management",
+      ],
+    },
+    // Concerning — significantly above + accelerating + IC-leader gap.
+    {
+      managerId: "mgr_005",
+      managerName: "T. Brennan",
+      teamLabel: "Emergency Department · 12 reports",
+      directReportCount: 12,
+      aggregateTeamCbs: 65,
+      orgBaselineCbs: 41,
+      deviationFromBaseline: 24,
+      trajectoryUnderManagement: "accelerating",
+      isMeaningful: true,
+      gatingReason: null,
+      flaggedPatterns: [
+        "team_significantly_above_org_burnout",
+        "team_trajectory_accelerating_under_management",
+        "concentration_risk_ic_leader_disconnect",
+      ],
+    },
+    // Below threshold — tenure < 180 days.
+    {
+      managerId: "mgr_006",
+      managerName: "L. Nakamura",
+      teamLabel: "Oncology · 7 reports",
+      directReportCount: 7,
+      aggregateTeamCbs: 0,
+      orgBaselineCbs: 41,
+      deviationFromBaseline: 0,
+      trajectoryUnderManagement: "stable",
+      isMeaningful: false,
+      gatingReason: "Manager tenure under 180 days — score not yet meaningful.",
+      flaggedPatterns: [],
+    },
+  ],
+  teamOutliers: [
+    {
+      teamLabel: "Emergency Department",
+      cbs: 68,
+      zScore: 1.92,
+      deviationType: "high_burnout_outlier",
+      interpretation: "Investigate drivers — possible team-specific stressor or manager pattern.",
+    },
+    {
+      teamLabel: "Outpatient Clinics South",
+      cbs: 22,
+      zScore: -1.74,
+      deviationType: "low_burnout_outlier",
+      interpretation: "Investigate practices — possible positive pattern to propagate org-wide.",
+    },
+  ],
 };
 
 export function archetypeName(key: ArchetypeKey) {

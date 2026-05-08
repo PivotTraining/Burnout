@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { LayoutDashboard, BarChart3, Send, MessageSquare, Users, Settings } from "lucide-react";
+import { LayoutDashboard, BarChart3, Send, MessageSquare, Users, UserCog, Settings } from "lucide-react";
 
 const items = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/pulse", label: "Pulse Surveys", icon: BarChart3 },
   { href: "/dashboard/nudges", label: "Manager Nudges", icon: Send },
+  { href: "/dashboard/managers", label: "Managers", icon: UserCog },
   { href: "/dashboard/voices", label: "Voices", icon: MessageSquare },
   { href: "/dashboard/members", label: "Members", icon: Users },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
