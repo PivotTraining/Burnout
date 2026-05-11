@@ -1,7 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
+import { Resend } from "resend";
 import { requireStripe } from "@/lib/stripe";
 import { supabaseAdmin } from "@/lib/supabase";
+import {
+  generatePremiumReportPDF,
+  premiumReportEmailHtml,
+} from "@/lib/premium-report-delivery";
+import type { ArchetypeKey } from "@/lib/archetype-content";
+
+const PREMIUM_PRODUCT_TAG = "burnoutiq_premium_report_v1";
+const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";
+const REPLY_TO = process.env.RESEND_REPLY_TO || undefined;
 
 export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
@@ -24,6 +34,56 @@ export async function POST(req: NextRequest) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
+
+      // ─── Premium Report (one-time) — discriminated by metadata.product ─
+      if (session.metadata?.product === PREMIUM_PRODUCT_TAG) {
+        const archetype = session.metadata.archetype as ArchetypeKey | undefined;
+        const burnoutScore = Number.parseInt(session.metadata.burnoutScore || "0", 10);
+        const customerEmail =
+          session.customer_details?.email || session.customer_email || null;
+        const customerName = session.customer_details?.name || "";
+
+        if (!customerEmail || !archetype) {
+          console.error("[stripe webhook] premium-report missing email or archetype", session.id);
+          return NextResponse.json({ error: "Missing data" }, { status: 400 });
+        }
+        if (!process.env.RESEND_API_KEY) {
+          console.error("[stripe webhook] RESEND_API_KEY not configured");
+          return NextResponse.json({ error: "Resend not configured" }, { status: 500 });
+        }
+        try {
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          const pdfBuffer = await generatePremiumReportPDF({
+            archetype,
+            burnoutScore,
+            customerName,
+            customerEmail,
+            purchaseDate: new Date(),
+          });
+          await resend.emails.send({
+            from: FROM,
+            to: customerEmail,
+            ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+            subject: "Your BurnoutIQ Premium Report is ready",
+            html: premiumReportEmailHtml(archetype, customerName),
+            attachments: [
+              {
+                filename: `BurnoutIQ-Premium-Report-${archetype}.pdf`,
+                content: pdfBuffer,
+              },
+            ],
+          });
+          return NextResponse.json({ received: true, delivered: true });
+        } catch (err) {
+          console.error("[stripe webhook] premium-report delivery failed", err);
+          return NextResponse.json(
+            { error: err instanceof Error ? err.message : "delivery failed" },
+            { status: 500 },
+          );
+        }
+      }
+
+      // ─── Existing subscription completion path ─────────────────────────
       const subId = session.subscription as string | null;
       const customerId = session.customer as string | null;
       if (subId && customerId) {
