@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { TRAJECTORY_LABEL } from "@/lib/algo-types";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Org overview · BurnoutIQ Console" };
 
 export default async function DashboardOverview() {
