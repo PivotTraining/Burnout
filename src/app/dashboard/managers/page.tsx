@@ -13,6 +13,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Managers · BurnoutIQ Console" };
 
 const FLAG_LABEL: Record<string, { label: string; tone: "warn" | "danger" | "good" }> = {
