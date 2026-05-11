@@ -89,6 +89,16 @@ function Hero() {
                 For Teams
               </Link>
             </div>
+            <div className="flex items-center gap-2 text-sm text-white/45 -mt-10 mb-16">
+              <span>Already know your archetype?</span>
+              <Link
+                href="/premium"
+                className="inline-flex items-center gap-1 text-ember hover:text-white transition-colors font-semibold"
+              >
+                Read about the Premium Report
+                <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
 
           <div className="fade-up" style={{ animationDelay: "600ms" }}>

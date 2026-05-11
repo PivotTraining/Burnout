@@ -40,6 +40,12 @@ export async function POST(req: NextRequest) {
     const siteUrl =
       process.env.NEXT_PUBLIC_SITE_URL || "https://burnoutiqtest.com";
 
+    // Stripe Tax requires explicit activation in the Stripe dashboard
+    // ("Tax → Get started"). Until then, leaving automatic_tax on would
+    // error with "Stripe Tax is not active." Gate via env var so we
+    // can turn it on once Stripe Tax is set up.
+    const taxEnabled = process.env.STRIPE_TAX_ENABLED === "true";
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card", "link"],
@@ -53,7 +59,7 @@ export async function POST(req: NextRequest) {
       customer_creation: email ? undefined : "always",
       success_url: `${siteUrl}/premium/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/`,
-      automatic_tax: { enabled: true },
+      ...(taxEnabled ? { automatic_tax: { enabled: true } } : {}),
       billing_address_collection: "auto",
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 min
     });
