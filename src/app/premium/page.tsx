@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import {
   ArrowRight,
   ShieldCheck,
@@ -134,12 +135,14 @@ const PRODUCT_JSONLD = {
 
 export default function PremiumLandingPage() {
   return (
-    <main className="min-h-screen bg-light-bg">
-      {/* SEO: product structured data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCT_JSONLD) }}
-      />
+    <>
+      <Navbar forceScrolled />
+      <main className="min-h-screen bg-light-bg pt-16">
+        {/* SEO: product structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCT_JSONLD) }}
+        />
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div
@@ -447,6 +450,7 @@ export default function PremiumLandingPage() {
           </p>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

@@ -14,7 +14,7 @@ When BurnoutIQ Teams is engaged by a CHRO, a benefits broker, or a clinical advi
 ### 1.1 Structure
 
 - 36 items, distributed evenly across 9 dimensions (4 items per dimension).
-- 7-point frequency response scale (0 = Never, 6 = Every day), aligned with MBI convention.
+- 6-point Likert frequency response scale (0 = Never, 5 = Always), with anchors Never, Rarely, Sometimes, Often, Very Often, Always.
 - Item ordering can be randomized per administration to mitigate position bias.
 
 ### 1.2 Dimensions

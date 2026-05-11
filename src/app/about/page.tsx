@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata = {
-  title: "About BurnoutIQ · The diagnostic firm behind the storefront | BurnoutIQ",
+  title: "About BurnoutIQ · The diagnostic firm behind the storefront",
   description:
     "BurnoutIQ is a Pivot product. Founded in 2021 by Chris and Jazmine Davis with a clinical bench. Behavioral science, six archetypes, three tiers.",
 };
@@ -20,7 +20,7 @@ const MILESTONES = [
 const VALUES = [
   { title: "Evidence over hype", desc: "Every program is grounded in psychology research — not corporate wellness buzzwords." },
   { title: "Diagnose before you prescribe", desc: "We don’t ship a workshop and call it a strategy. Archetype + burnout assessment runs first; intervention is calibrated to what the data says." },
-  { title: "Productized, not negotiated", desc: "Pulse, Core, Enterprise. Three tiers, transparent pricing. No more $3,500-to-$250,000 spreads that signal we don’t know what we’re selling." },
+  { title: "Productized, not negotiated", desc: "Teams, Core, Enterprise. Three tiers, transparent pricing. Every engagement is scoped, priced, and outcome-defined before kickoff — no surprises mid-deployment." },
   { title: "Impact over impressions", desc: "We measure success by behavioral change and P&L outcomes, not attendance numbers." },
 ];
 
@@ -81,7 +81,7 @@ export default function About() {
             forced-pair framework across four pressure domains.
           </p>
           <p className="text-xl text-navy/60 max-w-3xl leading-relaxed">
-            We sell three productized tiers (Pulse, Core, Enterprise) plus an always-on SaaS
+            We sell three productized tiers (Teams, Core, Enterprise) plus an always-on SaaS
             layer (Subscription). The methodology is the product.
           </p>
         </section>

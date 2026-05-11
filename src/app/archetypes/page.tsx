@@ -5,7 +5,7 @@ import { ARCHETYPES } from "@/lib/biq-archetypes";
 import { ArrowRight } from "lucide-react";
 
 export const metadata = {
-  title: "The 8 BurnoutIQ Archetypes | BurnoutIQ",
+  title: "The 8 BurnoutIQ Archetypes",
   description:
     "The eight burnout archetypes BurnoutIQ surfaces from your assessment: Steady, Depleted, Detached, Foggy, Volatile, Doubter, Stranded, and Smoldering. What each one means, what it predicts, and what to do.",
 };

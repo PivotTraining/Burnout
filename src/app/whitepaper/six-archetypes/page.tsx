@@ -4,7 +4,7 @@ import ArchetypeShowcase from "@/components/ArchetypeShowcase";
 import Link from "next/link";
 
 export const metadata = {
-  title: "The Six Archetypes of Burnout · Whitepaper | BurnoutIQ",
+  title: "The Six Archetypes of Burnout · Whitepaper",
   description:
     "The PressureIQ archetype framework underneath every BurnoutIQ engagement. Free whitepaper. Carrier, Burner, Fixer, Guard, Giver, Racer.",
 };

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ARCHETYPES } from "@/lib/archetypes";
 
 export const metadata = {
-  title: "BurnoutIQ Assessment | BurnoutIQ",
+  title: "BurnoutIQ Assessment",
   description:
     "Take a BurnoutIQ assessment. Three paths: archetype quick, full burnout risk, or PressureIQ deep dive.",
 };

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 
 export const metadata = {
-  title: "Burnout Resources · Free Library | BurnoutIQ",
+  title: "Burnout Resources · Free Library",
   description: "Free, curated external resources organized by burnout dimension and workplace driver — books, frameworks, tools, and articles to act on your BurnoutIQ results.",
 };
 

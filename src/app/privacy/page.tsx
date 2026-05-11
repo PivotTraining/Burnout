@@ -18,7 +18,7 @@ export default function PrivacyPage() {
         </Link>
 
         <h1 className="text-3xl md:text-4xl font-bold text-navy mb-2">Privacy Policy</h1>
-        <p className="text-sm text-navy/50 mb-10">Last updated: April 27, 2026</p>
+        <p className="text-sm text-navy/50 mb-10">Last updated: May 11, 2026</p>
 
         <div className="prose prose-slate max-w-none space-y-8 text-navy/80 leading-relaxed">
 
@@ -35,20 +35,28 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-navy mb-3">2. Information We Collect</h2>
             <h3 className="text-base font-semibold text-navy mb-2">Assessment Responses</h3>
             <p>
-              When you complete the BurnoutIQ assessment, your answers are processed entirely in your browser.
-              <strong> We do not transmit or store your individual question responses on our servers.</strong> Scores
-              are calculated locally using JavaScript and are stored only in your browser's localStorage if you use
-              the "Save & Continue Later" feature. This data stays on your device until you clear your browser data.
+              While you are taking the BurnoutIQ assessment, your in-progress answers are kept in your
+              browser's localStorage (the "Save &amp; Continue Later" feature) and are not transmitted to
+              our servers. When you finish and submit, your final scores, the open-ended responses you
+              chose to include, and your provided name, email, organization, sector, and role are
+              transmitted to our servers so we can (a) email you your reading and Leadership Briefing,
+              and (b) compute anonymized sector benchmarks across cohorts. Individual responses are
+              not published, sold, or shared with employers in any identifiable form.
             </p>
-            <h3 className="text-base font-semibold text-navy mt-4 mb-2">Email Address (Optional)</h3>
+            <h3 className="text-base font-semibold text-navy mt-4 mb-2">Contact Information</h3>
             <p>
-              If you choose to email your results to yourself, your device's native mail client opens a pre-composed
-              message. We do not receive, store, or process your email address.
+              We collect your name, email, organization (optional), sector, and role to deliver your
+              results, contact you about your reading, and group anonymized aggregates for sector
+              comparisons. You can request deletion at any time by emailing{" "}
+              <a href="mailto:hello@pivottraining.us" className="text-ember hover:underline">
+                hello@pivottraining.us
+              </a>.
             </p>
             <h3 className="text-base font-semibold text-navy mt-4 mb-2">Payment Information</h3>
             <p>
-              Pro and Professional tier purchases are processed by <strong>Stripe, Inc.</strong> We never receive
-              or store your credit card details. Stripe's privacy policy governs data collected during checkout.
+              Pro, Coach, Premium, and Subscription purchases are processed by <strong>Stripe, Inc.</strong>
+              We never receive or store your credit card details. Stripe's privacy policy governs data
+              collected during checkout.
             </p>
             <h3 className="text-base font-semibold text-navy mt-4 mb-2">Usage Data</h3>
             <p>

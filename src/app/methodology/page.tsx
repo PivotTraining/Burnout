@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata = {
-  title: "The Recharge Method™ · BurnoutIQ’s deployment framework | BurnoutIQ",
+  title: "The Recharge Method™ · BurnoutIQ’s deployment framework",
   description:
     "The Recharge Method™ is the eight-step framework that turns a BurnoutIQ assessment into lasting organizational change. RECHARGE: Recognize, Evaluate, Calibrate, Heal, Activate, Realign, Grow, Elevate.",
 };

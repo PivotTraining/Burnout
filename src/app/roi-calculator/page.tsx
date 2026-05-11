@@ -4,7 +4,7 @@ import Link from "next/link";
 import ROICalculator from "@/components/ROICalculator";
 
 export const metadata = {
-  title: "ROI Calculator | BurnoutIQ",
+  title: "ROI Calculator",
   description:
     "Headcount, average salary, turnover. Three inputs. See the annual cost of burnout in your organization and projected savings by tier.",
 };

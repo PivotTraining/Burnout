@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 
 export const metadata = {
-  title: "Case Studies | BurnoutIQ",
+  title: "Case Studies",
   description:
     "BurnoutIQ deployments at Johnson & Johnson, CUNY, Cleveland Metropolitan School District, and Head Start. Real metrics, real outcomes.",
 };
@@ -35,7 +35,7 @@ const CASES = [
     short: "CMSD",
     industry: "K-12 · Public school district",
     archetype: "Racer-dominant administrators, Giver-dominant educators",
-    tier: "BurnoutIQ Pulse → BurnoutIQ Core",
+    tier: "BurnoutIQ Teams → BurnoutIQ Core",
     challenge:
       "Educator burnout reaching crisis levels post-pandemic; teacher retention at historic lows.",
     solution:

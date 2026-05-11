@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import { Check } from "lucide-react";
 
 export const metadata = {
-  title: "Schedule a 20-min Burnout Briefing | BurnoutIQ",
+  title: "Schedule a 20-min Burnout Briefing",
   description:
     "Twenty minutes. We diagnose the archetype hypothesis for your team, walk your ROI math, and recommend the tier that fits.",
 };

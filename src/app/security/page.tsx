@@ -11,7 +11,7 @@ const pillars = [
   {
     icon: Shield,
     title: "Privacy-by-design",
-    body: "Your assessment answers never leave your device. All scoring calculations happen locally in your browser using JavaScript — no responses are transmitted to our servers.",
+    body: "Your in-progress answers stay in your browser during the assessment. When you finish, we only transmit your final scores, the open-ended notes you chose to include, and the contact details you entered — never raw item-level responses tied to identity beyond what you submitted.",
   },
   {
     icon: Lock,
@@ -41,7 +41,8 @@ export default function SecurityPage() {
           ← Back to BurnoutIQ
         </Link>
 
-        <h1 className="text-3xl md:text-4xl font-bold text-navy mb-3">Security &amp; Data Safety</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-navy mb-2">Security &amp; Data Safety</h1>
+        <p className="text-sm text-navy/50 mb-6">Last updated: May 11, 2026</p>
         <p className="text-navy/70 mb-12 text-lg">
           Your burnout data is sensitive. Here's exactly how we handle it.
         </p>

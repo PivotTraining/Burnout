@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata = {
-  title: "BurnoutIQ Methodology | BurnoutIQ",
+  title: "BurnoutIQ Methodology",
   description:
     "Technical reference for BurnoutIQ: 36-item instrument across 9 dimensions, scoring math, profile classification, the Burnout Risk Index (BRI), org aggregation, reliability targets, and roadmap. Built for data scientists, behavioral health PhDs, and clinical advisory partners.",
 };
@@ -68,8 +68,8 @@ export default function BurnoutIQMethodology() {
                 <ul>
                   <li>36 items, distributed evenly across 9 dimensions (4 items per dimension).</li>
                   <li>
-                    7-point frequency response scale (0 = Never, 6 = Every day), aligned
-                    with MBI convention.
+                    6-point Likert frequency response scale (0 = Never, 5 = Always),
+                    with anchors Never, Rarely, Sometimes, Often, Very Often, Always.
                   </li>
                   <li>Item ordering can be randomized per administration to mitigate position bias.</li>
                 </ul>

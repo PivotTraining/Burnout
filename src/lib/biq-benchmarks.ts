@@ -112,8 +112,19 @@ export function benchmarkSectorLabel(sector: Sector | null | undefined): string 
   }
 }
 
+function ordinalSuffix(n: number): string {
+  const v = n % 100;
+  if (v >= 11 && v <= 13) return "th";
+  switch (n % 10) {
+    case 1: return "st";
+    case 2: return "nd";
+    case 3: return "rd";
+    default: return "th";
+  }
+}
+
 export function percentilePhrase(percentile: number): string {
-  if (percentile >= 70) return `higher than ${percentile}%`;
-  if (percentile >= 50) return `at the ${percentile}th percentile of`;
-  return `lower than ${100 - percentile}%`;
+  if (percentile >= 70) return `higher than ${percentile}% of`;
+  if (percentile >= 50) return `at the ${percentile}${ordinalSuffix(percentile)} percentile of`;
+  return `lower than ${100 - percentile}% of`;
 }

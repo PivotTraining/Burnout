@@ -598,9 +598,9 @@ const footerLinks = {
     { label: "Contact", href: "mailto:hello@pivottraining.us", external: false },
   ],
   Legal: [
-    { label: "Privacy", href: "https://www.burnoutiqtest.com/privacy", external: true },
-    { label: "Terms", href: "https://www.burnoutiqtest.com/terms", external: true },
-    { label: "Security", href: "https://www.burnoutiqtest.com/security", external: true },
+    { label: "Privacy", href: "/privacy", external: false },
+    { label: "Terms", href: "/terms", external: false },
+    { label: "Security", href: "/security", external: false },
   ],
 };
 
@@ -662,7 +662,7 @@ function Footer() {
 
         <div className="mt-14 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/25">
-            &copy; 2024&ndash;2026 BurnoutIQ by Pivot Training &amp; Development.
+            &copy; 2024&ndash;{new Date().getFullYear()} BurnoutIQ by Pivot Training &amp; Development.
             All rights reserved.
           </p>
           <p className="text-xs text-white/25">hello@pivottraining.us</p>

@@ -26,7 +26,7 @@
  *
  * SCORING APPROACH
  * ----------------
- * - 7-point frequency scale (0–6), aligned with MBI convention.
+ * - 6-point Likert frequency scale (0–5: Never, Rarely, Sometimes, Often, Very Often, Always).
  * - Each dimension produces an INDEPENDENT score. Per Maslach et al., burnout is
  *   not a single construct; it is a profile across three symptom dimensions.
  *   We honor that distinction.

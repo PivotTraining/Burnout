@@ -69,12 +69,12 @@ export default function ResultsBreakdown({
       )}
 
       <div className="bg-white rounded-2xl border border-border-gray p-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-navy/30 mb-4">Burnout symptoms (Maslach)</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-navy/30 mb-4">Burnout symptoms</p>
         <SymptomBars subscales={results.subscales} sector={sector} />
       </div>
 
       <div className="bg-white rounded-2xl border border-border-gray p-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-navy/30 mb-4">Workplace drivers (Areas of Worklife)</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-navy/30 mb-4">Workplace drivers</p>
         <DriversChart subscales={results.subscales} highlight={results.topDrivers as string[]} sector={sector} />
       </div>
 
