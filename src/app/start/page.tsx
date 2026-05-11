@@ -7,6 +7,7 @@ import IntakeScreen from "@/components/biq/IntakeScreen";
 import QuestionScreen from "@/components/biq/QuestionScreen";
 import OpenEndedScreen from "@/components/biq/OpenEndedScreen";
 import ResultsBreakdown from "@/components/biq/ResultsBreakdown";
+import PremiumReportCTA, { type Archetype as PremiumArchetype } from "@/components/PremiumReportCTA";
 import {
   ArrowRight, Clock, CheckCircle, Copy, RotateCcw, Shield,
 } from "lucide-react";
@@ -470,6 +471,14 @@ export default function StartPage() {
             openResponses={openResponses}
             sector={sector}
             role={role}
+          />
+
+          {/* Premium Report upsell — surfaced to every taker. Org-invited
+              employees see it too; the report is private to them. */}
+          <PremiumReportCTA
+            archetype={results.archetype as PremiumArchetype}
+            burnoutScore={results.composite.pct}
+            email={email || undefined}
           />
 
           {orgToken && (

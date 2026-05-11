@@ -2,19 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ArrowRight, FileText, ShieldCheck, Sparkles } from "lucide-react";
 
 /**
- * PremiumReportCTA
- * Drop-in component for the BurnoutIQ assessment results page.
- * Shows after the user sees their archetype, before the share/CTA section.
- *
- * Usage:
- *   <PremiumReportCTA archetype="DEPLETED" burnoutScore={62} email={userEmail} />
- *
- * The Stripe Checkout flow is triggered via /api/stripe/create-checkout.
+ * PremiumReportCTA — first-class upsell card surfaced after the free
+ * BurnoutIQ assessment result. Brand-native palette (navy ink, ember
+ * accent), editorial typography, magazine-style PDF preview.
  */
 
-type Archetype = "STEADY" | "DEPLETED" | "DETACHED" | "FOGGY" | "VOLATILE" | "DOUBTER" | "STRANDED" | "SMOLDERING";
+export type Archetype =
+  | "STEADY" | "DEPLETED" | "DETACHED" | "FOGGY"
+  | "VOLATILE" | "DOUBTER" | "STRANDED" | "SMOLDERING";
 
 interface Props {
   archetype: Archetype;
@@ -22,7 +20,7 @@ interface Props {
   email?: string;
 }
 
-const archetypeNames: Record<Archetype, string> = {
+const ARCHETYPE_NAME: Record<Archetype, string> = {
   STEADY: "The Steady",
   DEPLETED: "The Depleted",
   DETACHED: "The Detached",
@@ -32,6 +30,25 @@ const archetypeNames: Record<Archetype, string> = {
   STRANDED: "The Stranded",
   SMOLDERING: "The Smoldering",
 };
+
+const ARCHETYPE_TAG: Record<Archetype, string> = {
+  STEADY: "Handling the load.",
+  DEPLETED: "Reserves on vapors.",
+  DETACHED: "Mentally already gone.",
+  FOGGY: "Bandwidth compressing.",
+  VOLATILE: "Regulation buffer collapsed.",
+  DOUBTER: "Efficacy eroding.",
+  STRANDED: "Recovery systems failing.",
+  SMOLDERING: "All six dimensions elevated.",
+};
+
+const INSIDE = [
+  "Six-dimension clinical breakdown calibrated to your scores",
+  "Personalized 30 · 60 · 90-day recovery plan with weekly milestones",
+  "Conversation scripts for your manager, partner, and therapist",
+  "14-day reflection journal + vetted clinical resources",
+  "Re-assessment cadence built into the plan",
+];
 
 export default function PremiumReportCTA({ archetype, burnoutScore, email }: Props) {
   const [loading, setLoading] = useState(false);
@@ -46,107 +63,185 @@ export default function PremiumReportCTA({ archetype, burnoutScore, email }: Pro
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ archetype, burnoutScore, email }),
       });
-      if (!res.ok) throw new Error("Failed to start checkout");
+      if (!res.ok) throw new Error(await res.text());
       const { url } = await res.json();
       window.location.href = url;
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
+    } catch {
+      setError("Couldn't open checkout. Try again, or email hello@pivottraining.us.");
       setLoading(false);
     }
   }
 
   return (
-    <section className="my-12 rounded-2xl overflow-hidden border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 shadow-sm">
-      <div className="grid md:grid-cols-[1.2fr_1fr] gap-0">
-        {/* LEFT: pitch */}
-        <div className="p-8 md:p-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-600 text-white text-xs font-semibold uppercase tracking-wider mb-5">
-            New &middot; Premium Report
-          </div>
+    <section className="relative my-10 group">
+      {/* Ambient ember glow on hover */}
+      <div
+        aria-hidden
+        className="absolute -inset-px rounded-3xl bg-gradient-to-br from-ember/40 via-ember/0 to-ember/30 opacity-60 blur-xl group-hover:opacity-90 transition-opacity duration-700"
+      />
 
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight text-slate-900 mb-3">
-            Want the full clinical breakdown for {archetypeNames[archetype]}?
-          </h2>
+      <div className="relative rounded-3xl overflow-hidden bg-[#0B1220] text-white shadow-[0_24px_80px_-24px_rgba(11,18,32,0.55)] ring-1 ring-white/10">
+        {/* Radial highlights */}
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(60% 50% at 20% 0%, rgba(217,119,6,0.30), transparent 60%), radial-gradient(50% 40% at 100% 100%, rgba(217,119,6,0.18), transparent 65%)",
+          }}
+        />
 
-          <p className="text-slate-700 leading-relaxed mb-5">
-            Your free result is the headline. Your <strong>BurnoutIQ Premium Report</strong> is the full diagnostic &mdash; a personalized 12-page PDF that turns your archetype into a 30/60/90-day recovery plan you can actually execute.
-          </p>
+        <div className="relative grid md:grid-cols-[1.15fr_1fr] gap-0">
+          {/* LEFT — pitch */}
+          <div className="p-9 md:p-12">
+            <div className="flex items-center gap-2 mb-6">
+              <Sparkles className="w-3.5 h-3.5 text-ember" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-ember">
+                BurnoutIQ Premium · Personalized Report
+              </span>
+            </div>
 
-          <ul className="space-y-2 mb-6 text-sm text-slate-700">
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 mt-0.5">&rarr;</span>
-              <span>Personalized to <strong>{archetypeNames[archetype]}</strong> &mdash; not a generic template</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 mt-0.5">&rarr;</span>
-              <span>Full six-dimension narrative with your specific scores</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 mt-0.5">&rarr;</span>
-              <span>12-week recovery plan with weekly milestones</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 mt-0.5">&rarr;</span>
-              <span>Conversation scripts for manager, partner, therapist</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-amber-600 mt-0.5">&rarr;</span>
-              <span>14-day reflection journal + vetted clinical resources</span>
-            </li>
-          </ul>
+            <h2 className="font-serif text-[2.1rem] md:text-[2.6rem] leading-[1.05] tracking-tight text-white mb-3">
+              The full clinical read on{" "}
+              <span className="italic text-ember">{ARCHETYPE_NAME[archetype]}.</span>
+            </h2>
 
-          <div className="flex items-baseline gap-3 mb-6">
-            <span className="text-4xl font-bold tracking-tight text-slate-900">$49</span>
-            <span className="text-sm text-slate-500">one-time &middot; emailed in 60 seconds</span>
-          </div>
+            <p className="text-base text-white/70 leading-relaxed mb-7 max-w-[42ch]">
+              Your free result is the headline. The Premium Report is the
+              chapter: a 12-page personalized PDF that turns your archetype
+              into a 30 · 60 · 90-day plan you can actually execute.
+            </p>
 
-          <button
-            onClick={startCheckout}
-            disabled={loading}
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white font-semibold transition shadow-sm"
-          >
-            {loading ? "Loading checkout..." : "Get the Full Report"}
-            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8h10m-4-4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+            <ul className="space-y-2.5 mb-8 text-[14.5px] text-white/80">
+              {INSIDE.map((line) => (
+                <li key={line} className="flex items-start gap-3">
+                  <span className="mt-1.5 inline-block w-1.5 h-1.5 rounded-full bg-ember flex-shrink-0" />
+                  <span className="leading-snug">{line}</span>
+                </li>
+              ))}
+            </ul>
 
-          {error && <p className="text-red-600 text-sm mt-3">{error}</p>}
-
-          <p className="text-xs text-slate-500 mt-4 leading-relaxed">
-            Secure checkout via Stripe. 30-day refund if it doesn&apos;t deliver. By purchasing, you agree to our <Link href="/terms.html" className="underline hover:text-slate-700">Terms</Link> and <Link href="/privacy.html" className="underline hover:text-slate-700">Privacy Policy</Link>.
-          </p>
-        </div>
-
-        {/* RIGHT: preview mockup */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 md:p-10 flex flex-col justify-center text-white">
-          <div className="text-xs uppercase tracking-[0.2em] text-amber-400 font-semibold mb-3">
-            A peek inside
-          </div>
-          <div className="bg-stone-50 text-slate-900 rounded-xl p-5 shadow-2xl rotate-1">
-            <div className="text-[10px] uppercase tracking-wider text-amber-600 font-bold mb-1">Your BurnoutIQ Result</div>
-            <div className="text-xs text-slate-500 mb-1">You are</div>
-            <div className="text-2xl font-bold tracking-tight mb-1">{archetypeNames[archetype]}</div>
-            <div className="text-xs italic text-amber-700 mb-3">"Emotional reserves running on vapors."</div>
-            <div className="grid grid-cols-3 gap-2 text-center pt-2 border-t border-stone-200">
-              <div>
-                <div className="text-xl font-bold">{burnoutScore}</div>
-                <div className="text-[9px] uppercase tracking-wider text-slate-500">Burnout Index</div>
+            <div className="flex flex-wrap items-end gap-x-5 gap-y-3 mb-5">
+              <div className="flex items-baseline gap-2">
+                <span className="font-serif text-5xl font-bold tracking-tight">$49</span>
+                <span className="text-xs text-white/40 uppercase tracking-widest">one-time</span>
               </div>
-              <div>
-                <div className="text-xl font-bold text-amber-600">3</div>
-                <div className="text-[9px] uppercase tracking-wider text-slate-500">Elevated Dims</div>
-              </div>
-              <div>
-                <div className="text-xl font-bold text-slate-900">12</div>
-                <div className="text-[9px] uppercase tracking-wider text-slate-500">Page Report</div>
+              <span className="text-xs text-white/40">·</span>
+              <span className="text-xs text-white/55">
+                Delivered to your inbox in 60 seconds
+              </span>
+            </div>
+
+            <button
+              onClick={startCheckout}
+              disabled={loading}
+              className="group/btn inline-flex items-center gap-2.5 bg-ember hover:bg-ember-light disabled:bg-ember/50 text-white font-semibold text-[15px] px-7 py-4 rounded-xl shadow-[0_8px_24px_-8px_rgba(217,119,6,0.6)] transition-all hover:translate-y-[-1px] hover:shadow-[0_12px_28px_-8px_rgba(217,119,6,0.7)]"
+            >
+              {loading ? "Opening secure checkout…" : "Get the Full Report"}
+              <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+            </button>
+
+            {error && (
+              <p className="text-rose-300 text-sm mt-4" role="alert">
+                {error}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-6 text-[11px] text-white/45">
+              <span className="inline-flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Secure checkout via Stripe
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5" />
+                12 pages · personalized PDF
+              </span>
+              <span>30-day refund if it doesn&apos;t deliver</span>
+            </div>
+
+            <p className="text-[11px] text-white/35 mt-4 leading-relaxed">
+              By purchasing, you agree to our{" "}
+              <Link href="/terms" className="underline underline-offset-2 hover:text-white/60">
+                Terms
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="underline underline-offset-2 hover:text-white/60">
+                Privacy Policy
+              </Link>
+              . Authored by Pivot Training &amp; Development.
+            </p>
+          </div>
+
+          {/* RIGHT — magazine-style PDF preview */}
+          <div className="relative p-9 md:p-12 flex flex-col justify-center items-center border-t md:border-t-0 md:border-l border-white/10 bg-gradient-to-br from-[#0F172A] to-[#070C16]">
+            <div className="text-[10px] uppercase tracking-[0.32em] text-ember font-semibold mb-5">
+              A page from inside
+            </div>
+
+            <div className="relative w-full max-w-[280px]">
+              {/* Stacked sheets for depth */}
+              <div className="absolute inset-0 rounded-lg bg-[#FAFAF7] translate-x-2 translate-y-3 rotate-[1.5deg] opacity-30" />
+              <div className="absolute inset-0 rounded-lg bg-[#FAFAF7] translate-x-1 translate-y-1.5 rotate-[0.5deg] opacity-50" />
+
+              {/* Top sheet — the readable preview */}
+              <div className="relative rounded-lg bg-[#FAFAF7] text-[#0B1220] p-6 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] -rotate-[1deg] transform-gpu transition-transform group-hover:-rotate-[2deg] group-hover:translate-y-[-2px] duration-500">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E6E2D9]">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-ember" />
+                    <span className="text-[9px] font-bold tracking-wide">BurnoutIQ</span>
+                  </div>
+                  <span className="text-[7px] tracking-[0.2em] uppercase text-ember font-semibold">
+                    Executive Summary
+                  </span>
+                </div>
+
+                <div className="text-[7px] tracking-[0.3em] uppercase text-ember font-bold mt-4 mb-1">
+                  01 · Executive Summary
+                </div>
+                <h3 className="text-[14px] font-bold leading-tight mb-2 tracking-tight">
+                  Your Result, In Context
+                </h3>
+
+                <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mt-3">
+                  <div className="text-[7px] tracking-[0.2em] uppercase text-ember font-bold mb-1">
+                    You are
+                  </div>
+                  <div className="text-[15px] font-bold tracking-tight leading-tight">
+                    {ARCHETYPE_NAME[archetype]}
+                  </div>
+                  <div className="text-[9px] italic text-amber-900 mt-0.5">
+                    {ARCHETYPE_TAG[archetype]}
+                  </div>
+                </div>
+
+                <div className="mt-3 space-y-1.5">
+                  <div className="h-1 rounded bg-[#0B1220]/15 w-full" />
+                  <div className="h-1 rounded bg-[#0B1220]/15 w-[92%]" />
+                  <div className="h-1 rounded bg-[#0B1220]/15 w-[88%]" />
+                  <div className="h-1 rounded bg-[#0B1220]/15 w-[75%]" />
+                </div>
+                <div className="mt-4">
+                  <div className="text-[8px] font-bold tracking-wide mb-1">What This Means</div>
+                  <div className="space-y-1.5">
+                    <div className="h-1 rounded bg-[#0B1220]/15 w-full" />
+                    <div className="h-1 rounded bg-[#0B1220]/15 w-[90%]" />
+                    <div className="h-1 rounded bg-[#0B1220]/15 w-[55%]" />
+                  </div>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-[#E6E2D9] flex items-center justify-between">
+                  <span className="text-[6px] tracking-[0.2em] uppercase text-[#8A93A2]">
+                    Pivot Training &amp; Development
+                  </span>
+                  <span className="text-[6px] tracking-wider text-[#8A93A2]">02</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="bg-stone-50 text-slate-900 rounded-xl p-4 shadow-2xl -rotate-2 mt-4 ml-4">
-            <div className="text-[10px] uppercase tracking-wider text-amber-600 font-bold mb-1">Week 1</div>
-            <div className="text-xs leading-relaxed text-slate-700">
-              <strong>Identify the three biggest energy leaks</strong> in your current week. One of these gets eliminated this week. Not later.
+
+            <div className="mt-6 text-center">
+              <div className="text-[10px] uppercase tracking-[0.28em] text-white/45 font-semibold">
+                One of 12 pages · written for {ARCHETYPE_NAME[archetype]}
+              </div>
             </div>
           </div>
         </div>
