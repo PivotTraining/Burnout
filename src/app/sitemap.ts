@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { ARCHETYPES } from "@/lib/archetype-content";
+import { BLOG_POSTS } from "@/lib/blog-content";
 
 const BASE = "https://burnoutiqtest.com";
 
@@ -24,6 +25,7 @@ const STATIC_ROUTES: { path: string; priority: number; changefreq: MetadataRoute
   { path: "/roi-calculator", priority: 0.8, changefreq: "monthly" },
   { path: "/case-studies", priority: 0.8, changefreq: "monthly" },
   { path: "/resources", priority: 0.75, changefreq: "weekly" },
+  { path: "/blog", priority: 0.85, changefreq: "weekly" },
   { path: "/about", priority: 0.7, changefreq: "monthly" },
   { path: "/whitepaper/six-archetypes", priority: 0.7, changefreq: "yearly" },
   { path: "/briefing", priority: 0.75, changefreq: "monthly" },
@@ -53,5 +55,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }),
   );
 
-  return [...staticEntries, ...archetypeEntries];
+  const blogEntries: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
+    url: `${BASE}/blog/${post.slug}`,
+    lastModified: new Date(post.dateISO),
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }));
+
+  return [...staticEntries, ...archetypeEntries, ...blogEntries];
 }
