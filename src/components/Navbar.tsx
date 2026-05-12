@@ -23,7 +23,7 @@ const learnLinks = [
   { label: "Methodology", href: "/methodology/burnoutiq", desc: "How the assessment is scored" },
   { label: "Resources", href: "/resources", desc: "Free curated library" },
   { label: "ROI Calculator", href: "/roi-calculator", desc: "Cost of burnout to your org" },
-  { label: "Case Studies", href: "/case-studies", desc: "J&J, CMSD, Head Start, CUNY" },
+  { label: "Case Studies", href: "/case-studies", desc: "Fortune 500, K-12, ECE, higher ed" },
   { label: "About", href: "/about", desc: "Founders + clinical bench" },
 ];
 

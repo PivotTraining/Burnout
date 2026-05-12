@@ -466,12 +466,12 @@ export function PremiumReportPDF({
 
       {/* ─── PAGE 2: EXECUTIVE SUMMARY ─── */}
       <Page size="LETTER" style={[styles.pageBase, styles.pagePaper]}>
-        
+
           <PageHeader section="Executive Summary" />
           <Text style={styles.eyebrow}>01 · Executive Summary</Text>
           <Text style={styles.h1}>Your Result, In Context</Text>
           <Text style={styles.subhead}>
-            A clinical read on what your assessment is showing — and what it isn&apos;t.
+            A structured read on what your assessment is showing — and what it isn&apos;t.
           </Text>
 
           <View style={styles.archetypeCard}>

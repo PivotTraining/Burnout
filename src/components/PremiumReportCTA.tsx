@@ -114,7 +114,7 @@ export default function PremiumReportCTA({ archetype, burnoutScore, email }: Pro
             </div>
 
             <h2 className="font-serif text-[2.1rem] md:text-[2.6rem] leading-[1.05] tracking-tight text-white mb-3">
-              The full clinical read on{" "}
+              The full read on{" "}
               <span className="italic text-ember">{ARCHETYPE_NAME[archetype]}.</span>
             </h2>
 

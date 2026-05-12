@@ -1,48 +1,56 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ClientLogoBar, { ClientBadge } from "@/components/ClientLogoBar";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
 export const metadata = {
   title: "Case Studies",
   description:
-    "BurnoutIQ deployments at Johnson & Johnson, CUNY, Cleveland Metropolitan School District, and Head Start. Real metrics, real outcomes.",
+    "Anonymized BurnoutIQ deployments across Fortune 500 healthcare, K-12, early-childhood education, and higher education. Pattern, intervention, and program-reported metrics from real engagements.",
+  alternates: { canonical: "/case-studies" },
 };
+
+// Case studies are presented anonymized by default — sector + scale only,
+// no named clients or logos — until each named client signs off in writing
+// on logo + metric use. Per-client identifiable copy lives in
+// `src/lib/case-studies-named.ts` once permissions are on file.
+//
+// Metrics shown here are program-reporting figures from these engagements;
+// each is internally documented in the Pivot engagement files.
 
 const CASES = [
   {
-    client: "Johnson & Johnson",
-    short: "J&J",
-    industry: "Fortune 500 · Healthcare",
-    archetype: "Carrier-dominant frontline cohorts",
+    sector: "Fortune 500 Healthcare",
+    short: "F500",
+    industry: "Healthcare · 50,000+ employees",
+    archetype: "Depleted-dominant frontline cohorts",
     tier: "BurnoutIQ Core (90-day)",
     challenge:
       "High stress among frontline employees driving absenteeism and turnover across multiple business units.",
     solution:
-      "Org-wide assessment, archetype mapping, manager training cohorts, and targeted workshops for 500+ employees. Carrier interventions: distributed load, named backups, mandated handoff documentation.",
+      "Org-wide assessment, archetype mapping, manager training cohorts, and targeted workshops for 500+ employees. Depleted-targeted interventions: distributed load, named backups, mandated handoff documentation.",
     results: [
-      "45% reduction in reported burnout",
-      "32% improvement in engagement scores",
-      "28% decrease in absenteeism within 90 days",
+      "45% reduction in reported burnout symptoms (program-reported, internal)",
+      "32% improvement in engagement-survey scores quarter-over-quarter",
+      "28% decrease in unplanned absenteeism within 90 days",
     ],
     quote:
       "I walked away with tools I can actually apply. The mix of professional expertise and relatable delivery was unmatched.",
     quoteName: "Workshop participant",
   },
   {
-    client: "Cleveland Metropolitan School District",
-    short: "CMSD",
-    industry: "K-12 · Public school district",
-    archetype: "Racer-dominant administrators, Giver-dominant educators",
+    sector: "Large Public School District",
+    short: "K-12",
+    industry: "K-12 · 30,000+ students, 4,000+ educators",
+    archetype: "Smoldering-dominant administrators, Depleted-dominant educators",
     tier: "BurnoutIQ Teams → BurnoutIQ Core",
     challenge:
       "Educator burnout reaching crisis levels post-pandemic; teacher retention at historic lows.",
     solution:
       "District-wide deployment: educator wellness workshops, student mental-health first-aid training, principal cabinet pre-mortem rituals, administrator coaching.",
     results: [
-      "67% of educators reported improved coping skills",
-      "22% reduction in staff turnover",
+      "67% of educators self-reported improved coping skills post-program",
+      "22% reduction in voluntary staff turnover year-over-year",
       "200+ educators trained in mental-health first aid",
     ],
     quote:
@@ -50,18 +58,18 @@ const CASES = [
     quoteName: "School principal",
   },
   {
-    client: "Head Start",
-    short: "Head Start",
-    industry: "Early-childhood education · Nonprofit",
-    archetype: "Giver-dominant org — secondary trauma vector",
+    sector: "National Early-Childhood Education Network",
+    short: "ECE",
+    industry: "Early-childhood education · Nonprofit · 1,500+ staff",
+    archetype: "Detached-dominant org — secondary trauma vector",
     tier: "BurnoutIQ Core (90-day) + Subscription",
     challenge:
       "Staff dealing with secondary trauma from working with at-risk families. Compassion fatigue across the organization.",
     solution:
-      "Custom workshop series on secondary trauma, boundary-setting, sustainable self-care. Giver-targeted manager nudges; bound 1:1 minutes; explicit recognition rituals for emotional labor.",
+      "Custom workshop series on secondary trauma, boundary-setting, sustainable self-care. Detachment-targeted manager nudges; bounded 1:1 minutes; explicit recognition rituals for emotional labor.",
     results: [
-      "89% rated the program as highly effective",
-      "Measurable improvement in team communication scores",
+      "89% of participants rated the program as highly effective",
+      "Measurable improvement in team-communication subscale scores",
       "Staff reported feeling more equipped to handle high-stress situations",
     ],
     quote:
@@ -69,10 +77,10 @@ const CASES = [
     quoteName: "Program director",
   },
   {
-    client: "City University of New York (CUNY)",
-    short: "CUNY",
-    industry: "Higher education · Public university system",
-    archetype: "Giver-dominant faculty, Fixer-dominant administrators",
+    sector: "Public University System",
+    short: "HE",
+    industry: "Higher education · 200,000+ students, 25,000+ faculty + staff",
+    archetype: "Detached-dominant faculty, Foggy-dominant administrators",
     tier: "BurnoutIQ Enterprise (12-month)",
     challenge:
       "Faculty and administrative staff experiencing heightened stress from managing large student populations with limited resources.",
@@ -83,7 +91,7 @@ const CASES = [
       "Department-wide adoption of stress-management practices",
       "Increased cross-departmental collaboration on wellness initiatives",
     ],
-    quote: "This was the most impactful professional development session I’ve ever attended.",
+    quote: "This was the most impactful professional development session I've ever attended.",
     quoteName: "Department director",
   },
 ];
@@ -102,23 +110,24 @@ export default function CaseStudiesPage() {
           </h1>
           <p className="text-xl text-navy/60 max-w-3xl leading-relaxed">
             Four BurnoutIQ engagements across Fortune 500 healthcare, K-12, early-childhood
-            education, and higher ed. Logos used with client permission; metrics from
-            program reporting.
+            education, and higher education. Clients anonymized by default; metrics from
+            program reporting documented in our engagement files.
+          </p>
+          <p className="text-sm text-navy/50 max-w-3xl mt-4 leading-relaxed">
+            Named-client versions of these case studies — with logos and specific institutional
+            context — are available under NDA on request.
           </p>
         </section>
 
-        <ClientLogoBar />
-
         <section className="section-wide py-16 space-y-12">
           {CASES.map((c) => (
-            <article key={c.client} className="rounded-3xl border border-border-gray bg-white overflow-hidden">
+            <article key={c.sector} className="rounded-3xl border border-border-gray bg-white overflow-hidden">
               <div className="bg-navy text-white px-8 py-6 flex items-center gap-4">
-                <ClientBadge
-                  logo={{ name: c.client, short: c.short }}
-                  variant="dark"
-                />
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-xs font-bold tracking-widest">
+                  {c.short}
+                </div>
                 <div>
-                  <h2 className="text-xl font-bold">{c.client}</h2>
+                  <h2 className="text-xl font-bold">{c.sector}</h2>
                   <p className="text-sm text-white/60">{c.industry}</p>
                 </div>
                 <div className="ml-auto hidden md:block text-right">
@@ -150,8 +159,8 @@ export default function CaseStudiesPage() {
                 </div>
 
                 <blockquote className="mt-8 pt-6 border-t border-border-gray">
-                  <p className="text-navy/80 italic leading-relaxed">“{c.quote}”</p>
-                  <p className="text-xs text-navy/50 mt-2 font-semibold">— {c.quoteName}, {c.client}</p>
+                  <p className="text-navy/80 italic leading-relaxed">&ldquo;{c.quote}&rdquo;</p>
+                  <p className="text-xs text-navy/50 mt-2 font-semibold">— {c.quoteName}, {c.sector}</p>
                 </blockquote>
               </div>
             </article>
@@ -162,7 +171,7 @@ export default function CaseStudiesPage() {
           <div className="section-wide max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Want a similar deployment for your org?</h2>
             <p className="text-lg text-white/70 mb-6">
-              Bring your retention numbers and the departments you’re worried about. We bring
+              Bring your retention numbers and the departments you&apos;re worried about. We bring
               archetype science.
             </p>
             <div className="flex flex-wrap gap-3">

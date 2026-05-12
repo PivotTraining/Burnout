@@ -18,17 +18,23 @@ export default function DriversChart({
   showBenchmarks?: boolean;
 }) {
   const sorted = [...DRIVER_SUBSCALES].sort((a, b) => subscales[b].pct - subscales[a].pct);
+  // Only the highest-scoring highlighted driver gets the "Top driver" pill.
+  // Any additional highlighted drivers get the softer "At risk" label.
+  // This mirrors the singular "Your top driver" framing in the results hero.
+  const topDriverKey = highlight?.[0] ?? null;
   return (
     <div className="space-y-4">
       {sorted.map((s) => {
         const score = subscales[s];
         const isHighlighted = highlight?.includes(s);
+        const isTop = isHighlighted && s === topDriverKey;
         return (
           <div key={s}>
             <div className="flex justify-between items-baseline mb-1">
               <span className={`text-sm ${isHighlighted ? "font-bold text-navy" : "font-medium text-navy/70"}`}>
                 {SUBSCALE_LABELS[s]}
-                {isHighlighted && (<span className="ml-2 text-[10px] uppercase tracking-widest font-bold text-ember">Top driver</span>)}
+                {isTop && (<span className="ml-2 text-[10px] uppercase tracking-widest font-bold text-ember">Top driver</span>)}
+                {isHighlighted && !isTop && (<span className="ml-2 text-[10px] uppercase tracking-widest font-bold text-amber-600">At risk</span>)}
               </span>
               <span className="text-sm font-bold tabular-nums" style={{ color: colorOf(score.band) }}>{score.pct}%</span>
             </div>

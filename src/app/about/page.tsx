@@ -10,9 +10,9 @@ export const metadata = {
 
 const MILESTONES = [
   { year: "2021", title: "Pivot founded", desc: "Chris and Jazmine Davis launch Pivot Training & Development from Cleveland." },
-  { year: "2022", title: "First district contract", desc: "Cleveland Metropolitan School District partners on district-wide educator training." },
+  { year: "2022", title: "First district contract", desc: "Large Midwest public school district partners on district-wide educator training." },
   { year: "2023", title: "Atlanta office, 15 states", desc: "Nationwide expansion. Workshops delivered across K-12, higher ed, and corporate verticals." },
-  { year: "2024", title: "Johnson & Johnson partnership", desc: "Selected by J&J for enterprise mental-health programming across 500+ employees." },
+  { year: "2024", title: "Fortune 500 healthcare partnership", desc: "Selected by a Fortune 500 healthcare system for enterprise mental-health programming across 500+ employees." },
   { year: "2025", title: "PressureIQ launches", desc: "First Stress Intelligence assessment ships. The six-archetype engine goes public." },
   { year: "2026", title: "BurnoutIQ launches", desc: "The enterprise productized storefront ships: three tiers + always-on Subscription, powered by the PressureIQ archetype engine." },
 ];
@@ -90,8 +90,8 @@ export default function About() {
           <div className="section-wide max-w-4xl">
             <h2 className="text-3xl font-bold text-navy mb-6">The IP architecture</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card eyebrow="PressureIQ™" title="The engine" body="Six archetypes. Forced-pair scoring. Win-rate normalization. Domain-level profiles. The differentiation layer the market can’t replace." />
-              <Card eyebrow="BurnoutIQ™" title="The storefront" body="Productized tiers, ROI calculator, dashboards. The category-fluent brand that matches buyer search language and budget categories." />
+              <Card eyebrow="PressureIQ™" title="The engine" body="Six pressure archetypes. Forced-pair scoring across four pressure domains. The behavioral diagnostic engine inside BurnoutIQ — and the layer that makes our reports defensible in front of a CHRO." />
+              <Card eyebrow="BurnoutIQ™" title="The storefront" body="Three productized tiers, an always-on subscription, ROI calculator, dashboards. Transparent pricing your finance team can sign off on without an RFP." />
               <Card eyebrow="Recharge Method™" title="The deployment" body="Eight-step proprietary framework that takes a BurnoutIQ assessment from diagnosis to lasting organizational change." />
             </div>
             <p className="mt-4 text-sm text-navy/50">
