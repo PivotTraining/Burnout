@@ -17,6 +17,23 @@ export const metadata = {
   title: "BurnoutIQ Premium · The personalized recovery report",
   description:
     "An in-depth personalized clinical breakdown of your burnout pattern plus a 30 · 60 · 90-day recovery plan. $49 one-time. Delivered in 60 seconds.",
+  openGraph: {
+    title: "BurnoutIQ Premium — Your personalized burnout recovery report",
+    description:
+      "The free assessment gives you your archetype. The Premium Report turns it into a 30·60·90-day plan you can actually execute. $49.",
+    url: "https://burnoutiqtest.com/premium",
+    siteName: "BurnoutIQ",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BurnoutIQ Premium — Personalized recovery report",
+    description:
+      "The free assessment gives you your archetype. The Premium Report turns it into a 30·60·90-day plan. $49.",
+  },
+  alternates: {
+    canonical: "https://burnoutiqtest.com/premium",
+  },
 };
 
 // Marketing landing page for the $49 Premium Report. Targets direct
@@ -89,9 +106,40 @@ const FAQ = [
   },
 ];
 
+const PRODUCT_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "BurnoutIQ Premium Report",
+  description:
+    "An in-depth personalized clinical PDF based on your free BurnoutIQ assessment. Includes archetype narrative, 30/60/90-day recovery plan, and conversation scripts. Authored by Pivot Training & Development.",
+  brand: { "@type": "Brand", name: "BurnoutIQ" },
+  category: "Health & Wellness",
+  audience: { "@type": "Audience", audienceType: "Knowledge workers" },
+  offers: {
+    "@type": "Offer",
+    price: "49.00",
+    priceCurrency: "USD",
+    availability: "https://schema.org/InStock",
+    url: "https://burnoutiqtest.com/premium",
+    seller: { "@type": "Organization", name: "Pivot Training & Development" },
+  },
+  author: {
+    "@type": "Person",
+    name: "Christopher Davis",
+    honorificSuffix: "M.S. Psychology",
+    jobTitle: "Founder",
+    worksFor: { "@type": "Organization", name: "Pivot Training & Development" },
+  },
+};
+
 export default function PremiumLandingPage() {
   return (
     <main className="min-h-screen bg-light-bg">
+      {/* SEO: product structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCT_JSONLD) }}
+      />
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div
