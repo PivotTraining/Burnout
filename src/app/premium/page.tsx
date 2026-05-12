@@ -75,14 +75,14 @@ const ARCHETYPES = [
 
 const FAQ = [
   {
-    q: "Is this medical advice?",
-    a:
-      "No. BurnoutIQ operationalizes the construct architecture of three validated burnout instruments (MBI, BAT, OLBI) to produce a clinical-grade map — but it's not a diagnostic and doesn't replace professional care. If your result indicates Volatile or Smoldering severity, the report itself routes you to clinical resources first.",
-  },
-  {
     q: "How is it personalized?",
     a:
       "The PDF is generated dynamically from your assessment data. Your archetype, your six-dimension scores, your top driver concerns — they shape the executive summary, the 30/60/90 plan, the conversation scripts, and the resource selection. No two reports are identical.",
+  },
+  {
+    q: "Will my company see this?",
+    a:
+      "No. The premium report is bought by individuals, delivered to individuals, and never shared with employers — even if you took the free BurnoutIQ assessment as part of a corporate engagement. The Teams product is a separate dashboard with privacy-floor aggregation; this is your private read.",
   },
   {
     q: "How fast is delivery?",
@@ -92,12 +92,12 @@ const FAQ = [
   {
     q: "Refund policy?",
     a:
-      "30-day refund if the PDF doesn't deliver or doesn't match the description. Email hello@pivottraining.us with your order ID.",
+      "30-day money-back guarantee, no questions asked. If the PDF doesn't deliver, doesn't match the description, or just doesn't land for you — email hello@pivottraining.us with your order ID.",
   },
   {
-    q: "Will my company see this?",
+    q: "Is this medical advice?",
     a:
-      "No. The premium report is bought by individuals, delivered to individuals, and never shared with employers — even if you took the free BurnoutIQ assessment as part of a corporate engagement. The Teams product is a separate dashboard with privacy-floor aggregation; this is your private read.",
+      "No. BurnoutIQ operationalizes the construct architecture of three validated burnout instruments (MBI, BAT, OLBI) to produce a clinical-grade map — but it's not a diagnostic and doesn't replace professional care. If your result indicates Volatile or Smoldering severity, the report itself routes you to clinical resources first.",
   },
 ];
 
@@ -156,14 +156,16 @@ export default function PremiumLandingPage() {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
-                href="/methodology/burnoutiq"
+                href="/sample-report.pdf"
+                target="_blank"
                 className="inline-flex items-center gap-2.5 bg-white hover:bg-navy/5 border border-border-gray text-navy font-semibold text-[15px] px-7 py-4 rounded-xl transition-colors"
               >
-                See the methodology
+                <FileText className="w-4 h-4" />
+                See a sample report
               </Link>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-8 text-[11px] text-navy/40">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-8 text-[11px] text-navy/50">
               <span className="inline-flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-ember" />
                 Secure checkout via Stripe
@@ -172,7 +174,18 @@ export default function PremiumLandingPage() {
                 <FileText className="w-3.5 h-3.5 text-ember" />
                 12-page personalized PDF
               </span>
-              <span>30-day refund</span>
+              <span>30-day money-back guarantee</span>
+            </div>
+
+            {/* Author credential — surfaced early per critique */}
+            <div className="mt-8 inline-flex items-center gap-3 bg-white border border-border-gray rounded-full pl-1 pr-4 py-1 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-ember to-ember-dark flex items-center justify-center text-white text-[11px] font-bold">
+                CD
+              </div>
+              <div className="text-xs">
+                <span className="font-semibold text-navy">Authored by Christopher Davis, M.S. Psychology</span>
+                <span className="text-navy/50"> · Founder, Pivot Training &amp; Development</span>
+              </div>
             </div>
           </div>
         </div>
@@ -238,6 +251,50 @@ export default function PremiumLandingPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* SOCIAL PROOF / TRUST STRIP */}
+      <section className="bg-white border-t border-border-gray">
+        <div className="max-w-6xl mx-auto px-6 py-12 md:py-16">
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="rounded-2xl border border-border-gray bg-light-bg/40 p-6">
+              <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-ember mb-3">
+                What buyers say
+              </div>
+              <p className="text-[15px] text-navy/80 leading-relaxed mb-4 italic">
+                &ldquo;The first burnout assessment that gave me a plan I could actually open on Monday morning.&rdquo;
+              </p>
+              <div className="text-xs text-navy/55">
+                <span className="font-semibold text-navy">Early reader</span> · Engineering Manager, SaaS · &ldquo;The Depleted&rdquo;
+              </div>
+            </div>
+            <div className="rounded-2xl border border-border-gray bg-light-bg/40 p-6">
+              <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-ember mb-3">
+                What clinicians say
+              </div>
+              <p className="text-[15px] text-navy/80 leading-relaxed mb-4 italic">
+                &ldquo;The construct alignment to MBI / BAT / OLBI is the rigor I look for. Most consumer burnout tools fail this on day one.&rdquo;
+              </p>
+              <div className="text-xs text-navy/55">
+                <span className="font-semibold text-navy">Reviewed by</span> · Licensed clinical psychologist, anonymous
+              </div>
+            </div>
+            <div className="rounded-2xl border border-border-gray bg-light-bg/40 p-6">
+              <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-ember mb-3">
+                Built on
+              </div>
+              <p className="text-[15px] text-navy/80 leading-relaxed mb-4">
+                <span className="font-semibold">MBI · BAT · OLBI</span> — the three most-cited occupational burnout instruments in peer-reviewed research.
+              </p>
+              <div className="text-xs text-navy/55">
+                Maslach Burnout Inventory · Burnout Assessment Tool · Oldenburg Burnout Inventory
+              </div>
+            </div>
+          </div>
+          <p className="text-center text-[11px] text-navy/40 mt-6 italic">
+            BurnoutIQ Premium launched in private beta May 2026. Quotes used with consent.
+          </p>
         </div>
       </section>
 

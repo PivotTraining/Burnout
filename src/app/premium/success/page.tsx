@@ -63,7 +63,9 @@ export default async function PremiumSuccessPage({ searchParams }: Props) {
                 {
                   icon: Mail,
                   title: "Check your inbox within 60 seconds",
-                  body: "Subject line: “Your BurnoutIQ Premium Report is ready.” From BurnoutIQ <hello@burnoutiqtest.com>. If you don’t see it, check spam.",
+                  body:
+                    "Search your inbox + spam folder for the subject line below if you don't see it land. Sender: BurnoutIQ <hello@burnoutiqtest.com>.",
+                  chip: "Your BurnoutIQ Premium Report is ready",
                 },
                 {
                   icon: BookOpen,
@@ -75,7 +77,7 @@ export default async function PremiumSuccessPage({ searchParams }: Props) {
                   title: "Re-take BurnoutIQ in 90 days",
                   body: "The single most reliable signal in burnout is the delta. Retaking at day 90 gives you a measurable trajectory — and a second report keyed to where you actually moved.",
                 },
-              ].map(({ icon: Icon, title, body }, i) => (
+              ].map(({ icon: Icon, title, body, chip }, i) => (
                 <li key={i} className="flex gap-4">
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-ember-pale border border-ember/20 flex items-center justify-center">
                     <Icon className="w-4.5 h-4.5 text-ember" />
@@ -83,6 +85,11 @@ export default async function PremiumSuccessPage({ searchParams }: Props) {
                   <div className="flex-1">
                     <div className="text-[15px] font-bold text-navy leading-snug">{title}</div>
                     <div className="text-sm text-navy/60 leading-relaxed mt-1">{body}</div>
+                    {chip && (
+                      <div className="mt-2 inline-block bg-navy/5 border border-navy/10 rounded-md px-3 py-1.5 text-xs font-mono text-navy/75">
+                        {chip}
+                      </div>
+                    )}
                   </div>
                 </li>
               ))}
@@ -91,21 +98,23 @@ export default async function PremiumSuccessPage({ searchParams }: Props) {
 
           {/* Footer band */}
           <div className="bg-light-bg/70 border-t border-border-gray px-8 md:px-10 py-6">
-            <div className="flex flex-col sm:flex-row items-stretch gap-3">
-              <Link
+            <Link
+              href="/"
+              className="w-full inline-flex items-center justify-center gap-2 bg-navy hover:bg-navy/90 text-white font-semibold text-sm px-6 py-3.5 rounded-xl transition-colors"
+            >
+              Back to BurnoutIQ
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <p className="text-center text-xs text-navy/45 mt-4">
+              When you&apos;re ready for the second half of the picture, you can also take{" "}
+              <a
                 href="https://pressureiqtest.com"
-                className="flex-1 inline-flex items-center justify-center gap-2 bg-navy hover:bg-navy/90 text-white font-semibold text-sm px-6 py-3.5 rounded-xl transition-colors"
+                className="text-ember hover:text-ember-dark underline underline-offset-2"
               >
-                Take PressureIQ next
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/"
-                className="flex-1 inline-flex items-center justify-center gap-2 bg-white hover:bg-navy/5 border border-border-gray text-navy font-semibold text-sm px-6 py-3.5 rounded-xl transition-colors"
-              >
-                Back to BurnoutIQ
-              </Link>
-            </div>
+                PressureIQ
+              </a>
+              .
+            </p>
           </div>
         </div>
 
