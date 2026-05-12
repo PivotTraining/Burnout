@@ -28,11 +28,16 @@ const C = {
   heat: "#DC2626",
 };
 
+// Use the built-in Helvetica family. Registering a custom font
+// (e.g. Inter) requires Font.register({ family, src }) with a
+// reachable font file URL — that adds runtime complexity and a
+// network dependency at render time. Helvetica ships with
+// @react-pdf/renderer and renders identically across environments.
 const styles = StyleSheet.create({
   page: {
     backgroundColor: C.paper,
     padding: 54,
-    fontFamily: "Inter",
+    fontFamily: "Helvetica",
     fontSize: 11,
     color: C.ink,
     lineHeight: 1.6,
