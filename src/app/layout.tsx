@@ -48,6 +48,9 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: { canonical: SITE_URL },
+  verification: {
+    google: "zbytZUE9QjRIEIDoslO6hrq1zkutVSyOeUdzf4ftKmc",
+  },
 };
 
 const jsonLdOrg = {
