@@ -7,6 +7,7 @@ export const metadata = {
   title: "BurnoutIQ Enterprise · 12-month transformation",
   description:
     "BurnoutIQ Enterprise is a 12-month, multi-site transformation: custom archetype playbooks per division, executive coaching, year-over-year impact study. $125,000–$300,000+.",
+  alternates: { canonical: "/tiers/enterprise" },
 };
 
 export default function EnterpriseTier() {

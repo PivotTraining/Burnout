@@ -7,6 +7,7 @@ export const metadata = {
   title: "BurnoutIQ Core · 90-day engagement",
   description:
     "BurnoutIQ Core is a 90-day org-wide engagement: full archetype mapping, manager training, employee workshops, department-level dashboard, executive readout. $35,000–$75,000.",
+  alternates: { canonical: "/tiers/core" },
 };
 
 export default function CoreTier() {

@@ -5,6 +5,7 @@ import { Shield, Lock, Eye, Server } from "lucide-react";
 export const metadata: Metadata = {
   title: "Security",
   description: "How BurnoutIQ keeps your assessment data safe and private.",
+  alternates: { canonical: "/security" },
 };
 
 const pillars = [

@@ -6,6 +6,7 @@ export const metadata = {
   title: "About BurnoutIQ · The diagnostic firm behind the storefront",
   description:
     "BurnoutIQ is a Pivot product. Founded in 2021 by Chris and Jazmine Davis with a clinical bench. Behavioral science, six archetypes, three tiers.",
+  alternates: { canonical: "/about" },
 };
 
 const MILESTONES = [

@@ -7,6 +7,7 @@ export const metadata = {
   title: "BurnoutIQ Assessment",
   description:
     "Take a BurnoutIQ assessment. Three paths: archetype quick, full burnout risk, or PressureIQ deep dive.",
+  alternates: { canonical: "/assessment" },
 };
 
 export default function AssessmentIntro() {

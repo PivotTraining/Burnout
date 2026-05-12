@@ -7,6 +7,7 @@ export const metadata = {
   title: "The Six Archetypes of Burnout · Whitepaper",
   description:
     "The PressureIQ archetype framework underneath every BurnoutIQ engagement. Free whitepaper. Carrier, Burner, Fixer, Guard, Giver, Racer.",
+  alternates: { canonical: "/whitepaper/six-archetypes" },
 };
 
 export default function Whitepaper() {
