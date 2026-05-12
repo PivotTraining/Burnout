@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata = {
-  title: "BurnoutIQ Methodology | BurnoutIQ",
+  title: "BurnoutIQ Methodology",
   description:
     "Technical reference for BurnoutIQ: 36-item instrument across 9 dimensions, scoring math, profile classification, the Burnout Risk Index (BRI), org aggregation, reliability targets, and roadmap. Built for data scientists, behavioral health PhDs, and clinical advisory partners.",
 };
@@ -68,8 +68,8 @@ export default function BurnoutIQMethodology() {
                 <ul>
                   <li>36 items, distributed evenly across 9 dimensions (4 items per dimension).</li>
                   <li>
-                    7-point frequency response scale (0 = Never, 6 = Every day), aligned
-                    with MBI convention.
+                    6-point Likert frequency response scale (0 = Never, 5 = Always),
+                    with anchors Never, Rarely, Sometimes, Often, Very Often, Always.
                   </li>
                   <li>Item ordering can be randomized per administration to mitigate position bias.</li>
                 </ul>
@@ -232,10 +232,20 @@ export default function BurnoutIQMethodology() {
 
                 <h3>3.4 What We Do Not Do</h3>
                 <p>
-                  We do not collapse EE + DP + PA into a single &ldquo;burnout score&rdquo;
-                  through summation or averaging. Maslach et al. are explicit that this
-                  practice is methodologically incorrect, because the three subscales are
-                  independent constructs.
+                  We do not collapse EE + DP + PA into a single <em>clinical</em> burnout
+                  score through simple summation or averaging. Maslach et al. are explicit
+                  that this practice is methodologically incorrect: the three subscales are
+                  independent constructs and a clinical reading requires the joint pattern,
+                  not a mean.
+                </p>
+                <p>
+                  Section 4 introduces the Burnout Risk Index (BRI), which <em>is</em> a
+                  weighted composite of EE, DP, PA, and driver scores. The BRI is a
+                  Pivot-authored organizational signal — designed for triage and longitudinal
+                  tracking, not for clinical diagnosis. We make this distinction explicit:
+                  the BRI is not a substitute for the joint-pattern profile classification
+                  in Section 3, and we always surface both the BRI and the underlying
+                  profile to the buyer rather than only the composite.
                 </p>
               </Section>
 

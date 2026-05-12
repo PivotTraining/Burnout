@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata = {
-  title: "The Recharge Method™ · BurnoutIQ’s deployment framework | BurnoutIQ",
+  title: "The Recharge Method™ · BurnoutIQ’s deployment framework",
   description:
     "The Recharge Method™ is the eight-step framework that turns a BurnoutIQ assessment into lasting organizational change. RECHARGE: Recognize, Evaluate, Calibrate, Heal, Activate, Realign, Grow, Elevate.",
 };
@@ -44,7 +44,8 @@ export default function MethodologyPage() {
           </p>
           <p className="text-lg text-navy/50 max-w-3xl leading-relaxed mb-8">
             Used in every Core and Enterprise engagement since 2022. Refined across 50+
-            client deployments — J&amp;J, CUNY, CMSD, Head Start, and others.
+            client deployments spanning Fortune 500 healthcare, K-12, early-childhood
+            education, and higher ed.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/briefing" className="inline-flex items-center px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-semibold">

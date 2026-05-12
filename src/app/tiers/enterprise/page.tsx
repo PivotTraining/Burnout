@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 
 export const metadata = {
-  title: "BurnoutIQ Enterprise · 12-month transformation | BurnoutIQ",
+  title: "BurnoutIQ Enterprise · 12-month transformation",
   description:
     "BurnoutIQ Enterprise is a 12-month, multi-site transformation: custom archetype playbooks per division, executive coaching, year-over-year impact study. $125,000–$300,000+.",
 };
@@ -15,7 +15,7 @@ export default function EnterpriseTier() {
     "Custom archetype playbooks per division",
     "Executive coaching for up to 6 leaders",
     "Quarterly strategic reviews with the C-suite",
-    "Year-over-year impact study (peer-review aspirations)",
+    "Year-over-year impact study",
     "Internal license to use BurnoutIQ language during contract year",
     "Dedicated BurnoutIQ engagement lead",
     "BurnoutIQ Subscription included (Tier 4 SaaS layer)",
@@ -27,7 +27,7 @@ export default function EnterpriseTier() {
       <main className="pt-20">
         <section className="section-wide py-16">
           <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
-            Tier 3 · The Lyra/Thrive replacement deal
+            Tier 3 · The 12-month behavioral diagnostic
           </p>
           <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">
             BurnoutIQ Enterprise

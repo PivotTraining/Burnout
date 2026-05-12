@@ -7,7 +7,7 @@ const familyLinks = [
 ];
 
 const productLinks = [
-  { label: "BurnoutIQ Pulse", href: "/tiers/pulse" },
+  { label: "BurnoutIQ Teams", href: "/tiers/teams" },
   { label: "BurnoutIQ Core", href: "/tiers/core" },
   { label: "BurnoutIQ Enterprise", href: "/tiers/enterprise" },
   { label: "Subscription", href: "/subscription" },

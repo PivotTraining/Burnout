@@ -64,7 +64,7 @@ export default function ROICalculator() {
 
           <div className="space-y-3 border-t border-white/10 pt-4">
             <Row
-              label="Projected savings · Pulse"
+              label="Projected savings · Teams"
               value={formatCurrency(result.projectedSavings.pulse)}
             />
             <Row
@@ -78,9 +78,9 @@ export default function ROICalculator() {
             />
           </div>
           <p className="text-[11px] text-white/40 mt-4 leading-relaxed">
-            Reduction assumptions are conservative pitch numbers. Ground in case
-            studies before quoting. Cost basis: $21K/employee/yr (Gallup),
-            backfill cost = 75% of salary.
+            Reduction assumptions are conservative. Final proposals are grounded
+            in sector benchmarks and your own program data. Cost basis: $21K/employee/yr
+            (Gallup), backfill cost = 75% of salary.
           </p>
         </div>
       </div>

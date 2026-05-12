@@ -3,16 +3,17 @@ import { Check } from "lucide-react";
 
 const tiers = [
   {
-    name: "BurnoutIQ Pulse",
-    slug: "pulse",
-    price: "$7,500–$15,000",
-    cadence: "1-day workshop or keynote",
-    audience: "L&D Manager, HR Director",
+    name: "BurnoutIQ Teams",
+    slug: "teams",
+    price: "$9,750–$14,750",
+    cadence: "30-day org diagnostic",
+    audience: "VP HR, CHRO, COO",
     features: [
-      "Group BurnoutIQ assessment",
-      "Archetype debrief + manager toolkit",
-      "30-day post-engagement dashboard",
-      "On-site or virtual delivery",
+      "Org-wide BurnoutIQ assessment + Pro PDF per employee",
+      "Department-level burnout heatmap",
+      "90-min manager training",
+      "Executive readout + 90-day action plan",
+      "3 months of Continuum included",
     ],
     accent: "border-navy/15",
   },
@@ -61,8 +62,8 @@ export default function TierComparison() {
           Three tiers. One diagnostic engine.
         </h2>
         <p className="text-lg text-navy/60 leading-relaxed">
-          Most enterprise deals land in Core. Pulse is the entry point. Enterprise
-          is the Lyra/Thrive replacement deal.
+          Most enterprise deals land in Core. Teams is the entry point. Enterprise
+          is the 12-month, multi-site transformation.
         </p>
       </div>
 

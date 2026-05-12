@@ -13,15 +13,30 @@ export interface ClientLogo {
   short: string;
 }
 
+// Client logos are surfaced only under signed permission. Until each
+// named client confirms logo + metric use in writing, the public
+// component renders anonymized sector tiles. The original list is
+// preserved here as comments so a permissioned version can be restored
+// by uncommenting the lines below.
+//
+// Original named-client list (do NOT re-enable without written permission):
+//   - Johnson & Johnson  → /images/clients/johnson-johnson.png
+//   - Cleveland Metropolitan School District  → /images/clients/cmsd.png
+//   - Head Start  → /images/clients/head-start.png
+//   - City University of New York  → /images/clients/cuny.png
+//   - Española Public Schools  → /images/clients/espanola.svg
+//   - Clark County School District  → /images/clients/clark-county.svg
+//   - Northwest Arctic Borough  → /images/clients/northwest-arctic.svg
+//   - Cleveland Heights-University Heights  → /images/clients/ch-uh.svg
 export const CLIENT_LOGOS: ClientLogo[] = [
-  { name: "Johnson & Johnson", short: "J&J", src: "/images/clients/johnson-johnson.png" },
-  { name: "Cleveland Metropolitan School District", short: "CMSD", src: "/images/clients/cmsd.png" },
-  { name: "Head Start", short: "Head Start", src: "/images/clients/head-start.png" },
-  { name: "City University of New York", short: "CUNY", src: "/images/clients/cuny.png" },
-  { name: "Española Public Schools", short: "Española PS", src: "/images/clients/espanola.svg" },
-  { name: "Clark County School District", short: "Clark County SD", src: "/images/clients/clark-county.svg" },
-  { name: "Northwest Arctic Borough", short: "NW Arctic SD", src: "/images/clients/northwest-arctic.svg" },
-  { name: "Cleveland Heights-University Heights", short: "CH-UH", src: "/images/clients/ch-uh.svg" },
+  { name: "Fortune 500 Healthcare", short: "F500" },
+  { name: "Large Midwest Public School District", short: "K-12" },
+  { name: "National Early-Childhood Education Network", short: "ECE" },
+  { name: "Public University System", short: "HE" },
+  { name: "Rural Public School District", short: "PSD" },
+  { name: "Western US Public School District", short: "WUS" },
+  { name: "Northern Borough School District", short: "NBS" },
+  { name: "Inner-Ring Suburban District", short: "ISD" },
 ];
 
 // Server-rendered list wrapper. Renders ClientBadge children which are

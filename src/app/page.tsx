@@ -43,11 +43,11 @@ function Hero() {
 
           <div className="fade-up" style={{ animationDelay: "150ms" }}>
             <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[0.95] tracking-tight mb-8">
-              Understand burnout.
+              See the pattern.
               <br />
-              <span className="text-ember">Bring it</span>
+              <span className="text-ember">Send the briefing.</span>
               <br />
-              to your leadership team.
+              Move the room.
             </h1>
           </div>
 
@@ -124,9 +124,9 @@ function Hero() {
 /* ------------------------------------------------------------------ */
 const stats = [
   { value: "82%", label: "of workers report burnout risk", source: "Mercer, 2024" },
-  { value: "$322B", label: "global cost of burnout-related turnover", source: "" },
+  { value: "$322B", label: "global cost of burnout-related turnover", source: "Gallup, 2024" },
   { value: "9", label: "burnout dimensions measured", source: "3 symptoms + 6 drivers" },
-  { value: "77%", label: "of employees experience burnout at current job", source: "" },
+  { value: "77%", label: "of employees experience burnout at their current job", source: "Deloitte, 2023" },
 ];
 
 function StatsBar() {
@@ -598,9 +598,9 @@ const footerLinks = {
     { label: "Contact", href: "mailto:hello@pivottraining.us", external: false },
   ],
   Legal: [
-    { label: "Privacy", href: "https://www.burnoutiqtest.com/privacy", external: true },
-    { label: "Terms", href: "https://www.burnoutiqtest.com/terms", external: true },
-    { label: "Security", href: "https://www.burnoutiqtest.com/security", external: true },
+    { label: "Privacy", href: "/privacy", external: false },
+    { label: "Terms", href: "/terms", external: false },
+    { label: "Security", href: "/security", external: false },
   ],
 };
 
@@ -662,7 +662,7 @@ function Footer() {
 
         <div className="mt-14 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/25">
-            &copy; 2024&ndash;2026 BurnoutIQ by Pivot Training &amp; Development.
+            &copy; 2024&ndash;{new Date().getFullYear()} BurnoutIQ by Pivot Training &amp; Development.
             All rights reserved.
           </p>
           <p className="text-xs text-white/25">hello@pivottraining.us</p>

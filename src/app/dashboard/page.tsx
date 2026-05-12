@@ -134,7 +134,7 @@ export default async function DashboardOverview() {
           tone={org.participationRate >= 70 ? "good" : "warn"}
         />
         <Kpi
-          label="Dominant archetype"
+          label="Dominant PressureIQ archetype"
           value={dominantArchetype ? dominantArchetype.name : "—"}
           delta={dominantArchetype ? `${dominantArchetype.pct}% of org` : ""}
         />
@@ -322,7 +322,7 @@ export default async function DashboardOverview() {
             <thead>
               <tr className="text-left text-[10px] uppercase tracking-widest text-navy/40">
                 <th className="pb-2">Department</th>
-                <th className="pb-2">Dominant archetype</th>
+                <th className="pb-2">Dominant PressureIQ archetype</th>
                 <th className="pb-2">Headcount</th>
                 <th className="pb-2">Burnout risk</th>
               </tr>
@@ -911,10 +911,10 @@ function SevereZoneBadge({ count }: { count: number }) {
     <span
       className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded"
       style={{ backgroundColor: "#FEE2E2", color: "#DC2626" }}
-      title="Number of users currently flagged in the Severe-zone alert state"
+      title="Number of individuals whose composite BRI sits in the Severe band (≥70)"
     >
       <AlertTriangle className="w-3 h-3" />
-      {count.toLocaleString()} {count === 1 ? "user" : "users"} in severe-zone alert
+      {count.toLocaleString()} {count === 1 ? "individual" : "individuals"} in the Severe band
     </span>
   );
 }

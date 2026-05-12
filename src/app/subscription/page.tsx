@@ -16,13 +16,12 @@ export default function Subscription() {
   const [error, setError] = useState("");
 
   const features = [
-    "Year-round PressureIQ archetype assessments",
+    "Year-round BurnoutIQ pulse assessments (6-item monthly check-in)",
     "Quarterly org pulse surveys",
-    "Manager nudge system (email; Slack/Teams in v2)",
+    "Manager nudge system (email)",
     "Org-level analytics dashboard",
     "Department-level archetype heatmap",
     "Anonymized aggregate reporting layer",
-    "API access for HRIS integration (roadmap)",
   ];
 
   function applyPromo() {
@@ -75,7 +74,7 @@ export default function Subscription() {
       <main className="pt-20">
         <section className="section-wide py-16">
           <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
-            Tier 4 · The recurring revenue layer
+            Tier 4 · The always-on org layer
           </p>
           <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">
             BurnoutIQ Subscription
