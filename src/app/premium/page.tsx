@@ -11,7 +11,9 @@ import {
   Stethoscope,
   Calendar,
   CheckCircle2,
+  ChevronDown,
 } from "lucide-react";
+import { getArchetypePlan, type ArchetypeKey } from "@/lib/archetype-content";
 
 export const metadata = {
   title: "BurnoutIQ Premium · The personalized recovery report",
@@ -62,7 +64,7 @@ const INSIDE = [
   },
 ];
 
-const ARCHETYPES = [
+const ARCHETYPES: { key: ArchetypeKey; name: string; tag: string }[] = [
   { key: "STEADY", name: "The Steady", tag: "Healthy baseline" },
   { key: "DEPLETED", name: "The Depleted", tag: "Reserves on vapors" },
   { key: "DETACHED", name: "The Detached", tag: "Mental distance" },
@@ -237,20 +239,52 @@ export default function PremiumLandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {ARCHETYPES.map((a) => (
-              <div
-                key={a.key}
-                className="bg-white border border-border-gray rounded-xl p-4 hover:border-ember/40 hover:shadow-[0_8px_28px_-12px_rgba(11,18,32,0.18)] transition-all duration-300"
-              >
-                <div className="text-[9px] uppercase tracking-[0.22em] text-ember font-bold mb-1">
-                  {a.key}
-                </div>
-                <div className="text-[15px] font-bold text-navy tracking-tight">{a.name}</div>
-                <div className="text-xs text-navy/50 italic mt-0.5">{a.tag}</div>
-              </div>
-            ))}
+          <div className="grid sm:grid-cols-2 gap-3">
+            {ARCHETYPES.map((a) => {
+              const plan = getArchetypePlan(a.key);
+              const week1 = plan.phases[0]?.weeks[0]?.task ?? "";
+              return (
+                <details
+                  key={a.key}
+                  className="group bg-white border border-border-gray rounded-xl overflow-hidden hover:border-ember/40 hover:shadow-[0_8px_28px_-12px_rgba(11,18,32,0.18)] transition-all duration-300"
+                >
+                  <summary className="cursor-pointer list-none p-5 flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-[9px] uppercase tracking-[0.22em] text-ember font-bold mb-1">
+                        {a.key}
+                      </div>
+                      <div className="text-[16px] font-bold text-navy tracking-tight">{a.name}</div>
+                      <div className="text-xs text-navy/55 italic mt-0.5">{a.tag}</div>
+                    </div>
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-light-bg flex items-center justify-center text-navy/50 group-hover:text-ember group-open:bg-ember group-open:text-white transition-colors">
+                      <ChevronDown className="w-4 h-4 group-open:rotate-180 transition-transform" />
+                    </div>
+                  </summary>
+                  <div className="px-5 pb-5 pt-1 border-t border-border-gray bg-light-bg/40">
+                    <div className="text-[10px] uppercase tracking-[0.22em] text-ember font-bold mt-4 mb-2">
+                      What this means
+                    </div>
+                    <p className="text-sm text-navy/75 leading-relaxed mb-4">
+                      {plan.meansNarrative}
+                    </p>
+                    <div className="text-[10px] uppercase tracking-[0.22em] text-ember font-bold mb-2">
+                      Week 1 from the recovery plan
+                    </div>
+                    <p className="text-sm text-navy/75 leading-relaxed mb-3 italic">
+                      {week1}
+                    </p>
+                    <p className="text-xs text-navy/50">
+                      Plus 11 more weeks, six-dimension narrative, conversation scripts,
+                      reflection journal, and clinical resources in the report.
+                    </p>
+                  </div>
+                </details>
+              );
+            })}
           </div>
+          <p className="text-center text-[12px] text-navy/45 mt-6 italic">
+            Click any archetype to see a real snippet from the plan.
+          </p>
         </div>
       </section>
 

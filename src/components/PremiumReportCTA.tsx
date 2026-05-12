@@ -149,10 +149,22 @@ export default function PremiumReportCTA({ archetype, burnoutScore, email }: Pro
             <button
               onClick={startCheckout}
               disabled={loading}
-              className="group/btn inline-flex items-center gap-2.5 bg-ember hover:bg-ember-light disabled:bg-ember/50 text-white font-semibold text-[15px] px-7 py-4 rounded-xl shadow-[0_8px_24px_-8px_rgba(217,119,6,0.6)] transition-all hover:translate-y-[-1px] hover:shadow-[0_12px_28px_-8px_rgba(217,119,6,0.7)]"
+              className="group/btn inline-flex items-center gap-2.5 bg-ember hover:bg-ember-light disabled:bg-ember/60 disabled:cursor-wait text-white font-semibold text-[15px] px-7 py-4 rounded-xl shadow-[0_8px_24px_-8px_rgba(217,119,6,0.6)] transition-all hover:translate-y-[-1px] hover:shadow-[0_12px_28px_-8px_rgba(217,119,6,0.7)]"
             >
-              {loading ? "Opening secure checkout…" : "Get the Full Report"}
-              <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+              {loading ? (
+                <>
+                  <span
+                    aria-hidden
+                    className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"
+                  />
+                  Opening secure checkout…
+                </>
+              ) : (
+                <>
+                  Get the Full Report
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                </>
+              )}
             </button>
 
             {error && (
