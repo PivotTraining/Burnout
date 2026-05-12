@@ -8,6 +8,7 @@ export const metadata = {
   title: "The 8 BurnoutIQ Archetypes",
   description:
     "The eight burnout archetypes BurnoutIQ surfaces from your assessment: Steady, Depleted, Detached, Foggy, Volatile, Doubter, Stranded, and Smoldering. What each one means, what it predicts, and what to do.",
+  alternates: { canonical: "/archetypes" },
 };
 
 export default function ArchetypesPage() {
@@ -117,6 +118,22 @@ export default function ArchetypesPage() {
                 <p className="text-sm text-navy/70 leading-relaxed">
                   {a.leadership}
                 </p>
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-border-gray flex items-center justify-between">
+                <Link
+                  href={`/archetypes/${a.label.toLowerCase()}`}
+                  className="text-sm font-semibold text-ember hover:text-ember-light inline-flex items-center gap-1"
+                >
+                  Full read on The {a.label}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+                <Link
+                  href="/start"
+                  className="text-xs font-semibold text-navy/50 hover:text-navy"
+                >
+                  Take the assessment →
+                </Link>
               </div>
             </article>
           ))}

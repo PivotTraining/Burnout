@@ -6,6 +6,7 @@ export const metadata = {
   title: "BurnoutIQ Methodology",
   description:
     "Technical reference for BurnoutIQ: 36-item instrument across 9 dimensions, scoring math, profile classification, the Burnout Risk Index (BRI), org aggregation, reliability targets, and roadmap. Built for data scientists, behavioral health PhDs, and clinical advisory partners.",
+  alternates: { canonical: "/methodology/burnoutiq" },
 };
 
 const sections = [

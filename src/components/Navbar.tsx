@@ -22,6 +22,7 @@ const learnLinks = [
   { label: "The 8 Archetypes", href: "/archetypes", desc: "Steady, Depleted, Detached, and 5 more" },
   { label: "Methodology", href: "/methodology/burnoutiq", desc: "How the assessment is scored" },
   { label: "Resources", href: "/resources", desc: "Free curated library" },
+  { label: "Field Notes", href: "/blog", desc: "Practical writing on burnout" },
   { label: "ROI Calculator", href: "/roi-calculator", desc: "Cost of burnout to your org" },
   { label: "Case Studies", href: "/case-studies", desc: "Fortune 500, K-12, ECE, higher ed" },
   { label: "About", href: "/about", desc: "Founders + clinical bench" },

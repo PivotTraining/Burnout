@@ -7,6 +7,7 @@ export const metadata = {
   title: "BurnoutIQ Teams · 30-day org diagnostic",
   description:
     "BurnoutIQ Teams is a 30-day organizational burnout diagnostic. Org-wide assessment, manager training, executive readout, and 3 months of Continuum included for every employee. $9,750–$14,750.",
+  alternates: { canonical: "/tiers/teams" },
 };
 
 const TEAMS_BANDS = [

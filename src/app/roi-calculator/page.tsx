@@ -7,6 +7,7 @@ export const metadata = {
   title: "ROI Calculator",
   description:
     "Headcount, average salary, turnover. Three inputs. See the annual cost of burnout in your organization and projected savings by tier.",
+  alternates: { canonical: "/roi-calculator" },
 };
 
 export default function ROIPage() {
