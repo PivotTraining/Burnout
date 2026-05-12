@@ -478,10 +478,10 @@ export function PremiumReportPDF({
             <Text style={{ fontSize: 9, letterSpacing: 2, color: C.ember, textTransform: "uppercase", fontWeight: 700, marginBottom: 8 }}>
               You are
             </Text>
-            <Text style={{ fontSize: 24, fontWeight: 700, color: C.ink, marginBottom: 4, letterSpacing: -0.5 }}>
+            <Text style={{ fontSize: 24, fontWeight: 700, color: C.ink, marginBottom: 8, letterSpacing: -0.5, lineHeight: 1.15 }}>
               {meta.name}
             </Text>
-            <Text style={{ fontSize: 12, color: "#92400E", fontStyle: "italic", marginBottom: 12 }}>
+            <Text style={{ fontSize: 12, color: "#92400E", fontStyle: "italic", marginBottom: 14, lineHeight: 1.4 }}>
               {meta.tag}
             </Text>
             <Text style={{ fontSize: 11, lineHeight: 1.55, color: C.ink }}>{meta.blurb}</Text>
