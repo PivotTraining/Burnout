@@ -112,12 +112,39 @@ export async function generatePost(opts: GenerateOptions): Promise<DraftPost> {
     theme: opts.theme,
     body: parsed.body.trim(),
     hashtags: parsed.hashtags.map((h) => h.replace(/^#/, "")),
-    link: parsed.link,
+    link: withUtm(parsed.link, opts.platform, opts.theme),
     headline: parsed.headline.trim(),
     subtitle: parsed.subtitle.trim(),
   };
   draft.imageUrl = buildOgImageUrl(draft);
   return draft;
+}
+
+/**
+ * Append UTM params so traffic from the agent is attributable in PostHog
+ * (or any analytics tool reading utm_*). Internal #fragments are
+ * preserved; existing utm_* params are NOT overwritten.
+ */
+export function withUtm(
+  rawUrl: string,
+  platform: Platform,
+  theme: ContentTheme,
+): string {
+  try {
+    const url = new URL(rawUrl);
+    if (!url.searchParams.has("utm_source")) {
+      url.searchParams.set("utm_source", platform);
+    }
+    if (!url.searchParams.has("utm_medium")) {
+      url.searchParams.set("utm_medium", "social");
+    }
+    if (!url.searchParams.has("utm_campaign")) {
+      url.searchParams.set("utm_campaign", theme);
+    }
+    return url.toString();
+  } catch {
+    return rawUrl;
+  }
 }
 
 /** Build the absolute OG card URL for a draft. */
