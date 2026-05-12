@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildOgImageUrl, renderPost } from "@/lib/social-media/generator";
+import {
+  buildOgImageUrl,
+  renderPost,
+  withUtm,
+} from "@/lib/social-media/generator";
 import { PLATFORM_LIMITS, type DraftPost } from "@/lib/social-media/types";
 
 describe("renderPost", () => {
@@ -35,6 +39,30 @@ describe("renderPost", () => {
     expect(PLATFORM_LIMITS.x).toBe(280);
     expect(PLATFORM_LIMITS.linkedin).toBeGreaterThan(280);
     expect(PLATFORM_LIMITS.facebook).toBeGreaterThan(280);
+  });
+});
+
+describe("withUtm", () => {
+  it("appends utm_source/medium/campaign from platform + theme", () => {
+    const url = new URL(
+      withUtm("https://burnoutiqtest.com/start", "linkedin", "assessment_cta"),
+    );
+    expect(url.searchParams.get("utm_source")).toBe("linkedin");
+    expect(url.searchParams.get("utm_medium")).toBe("social");
+    expect(url.searchParams.get("utm_campaign")).toBe("assessment_cta");
+  });
+
+  it("does not overwrite existing utm params", () => {
+    const out = withUtm(
+      "https://burnoutiqtest.com/start?utm_source=newsletter",
+      "x",
+      "driver_insight",
+    );
+    expect(new URL(out).searchParams.get("utm_source")).toBe("newsletter");
+  });
+
+  it("returns the input unchanged when the URL is malformed", () => {
+    expect(withUtm("not a url", "x", "driver_insight")).toBe("not a url");
   });
 });
 

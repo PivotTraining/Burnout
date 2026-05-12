@@ -13,7 +13,10 @@ import type {
 export type { ContentTheme, DraftPost, Platform, PublishResult } from "./types";
 export { generatePost, renderPost } from "./generator";
 
-const PUBLISHERS: Record<Platform, (text: string) => Promise<PublishResult>> = {
+const PUBLISHERS: Record<
+  Platform,
+  (text: string, imageUrl?: string) => Promise<PublishResult>
+> = {
   x: publishToX,
   linkedin: publishToLinkedIn,
   facebook: publishToFacebook,
@@ -22,7 +25,7 @@ const PUBLISHERS: Record<Platform, (text: string) => Promise<PublishResult>> = {
 export async function publishDraft(draft: DraftPost): Promise<PublishResult> {
   const text = renderPost(draft);
   const publisher = PUBLISHERS[draft.platform];
-  return publisher(text);
+  return publisher(text, draft.imageUrl);
 }
 
 /**
