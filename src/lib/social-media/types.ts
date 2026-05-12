@@ -15,6 +15,12 @@ export interface DraftPost {
   body: string;
   hashtags: string[];
   link?: string;
+  /** Short headline for the OG card. */
+  headline?: string;
+  /** Short subtitle for the OG card. */
+  subtitle?: string;
+  /** Fully-qualified URL to a rendered branded OG card for this post. */
+  imageUrl?: string;
 }
 
 export interface PublishedPost extends DraftPost {

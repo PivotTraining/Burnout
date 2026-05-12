@@ -5,31 +5,42 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * POST /api/social-media/post
+ * GET  /api/social-media/post  — Vercel Cron entrypoint (no body, runs the daily rotation).
+ * POST /api/social-media/post  — Manual / scripted invocation with optional overrides.
  *
- * Auth: header `x-admin-token` must match ADMIN_TOKEN, OR `authorization: Bearer <ADMIN_TOKEN>`
- * (Vercel/Netlify cron-friendly).
+ * Auth: token in `x-admin-token` or `Authorization: Bearer <token>` must match
+ * ADMIN_TOKEN or CRON_SECRET. Vercel Cron auto-sends `Authorization: Bearer ${CRON_SECRET}`.
  *
- * Body (all optional):
- *   { platform?: "x" | "linkedin" | "facebook",
- *     theme?: ContentTheme,
- *     steer?: string,
- *     dryRun?: boolean }
- *
- * With no body, follows the weekly rotation.
+ * POST body (all optional):
+ *   { platform?, theme?, steer?, dryRun? }
  */
-export async function POST(req: NextRequest) {
-  const adminToken = process.env.ADMIN_TOKEN;
-  if (!adminToken) {
-    return NextResponse.json(
-      { error: "ADMIN_TOKEN not configured" },
-      { status: 500 },
-    );
-  }
-  const header =
+
+function authorized(req: NextRequest): boolean {
+  const tokens = [process.env.ADMIN_TOKEN, process.env.CRON_SECRET].filter(
+    (t): t is string => !!t,
+  );
+  if (tokens.length === 0) return false;
+  const presented =
     req.headers.get("x-admin-token") ??
     req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-  if (header !== adminToken) {
+  return !!presented && tokens.includes(presented);
+}
+
+export async function GET(req: NextRequest) {
+  if (!authorized(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  try {
+    const result = await runDailyPost();
+    return NextResponse.json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  if (!authorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

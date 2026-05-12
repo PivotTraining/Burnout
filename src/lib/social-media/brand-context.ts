@@ -69,4 +69,16 @@ whitepaper at ${SITE_URL}/whitepaper.
 - Never imply the assessment diagnoses or treats a medical condition.
 - No fear-mongering. The signal is real; the tone is grounded.
 - Output ONLY a single JSON object that matches the schema you are
-  given. No preamble, no markdown fences, no commentary.`;
+  given. No preamble, no markdown fences, no commentary.
+
+## Headline / subtitle for the OG card
+
+Every post also has a 1200x630 branded card rendered from a \`headline\`
+(max ~90 chars, large display type) and a \`subtitle\` (max ~140 chars,
+muted). Use these for the link preview, not for the body.
+
+- The headline is the single sharpest sentence — the thing you'd put on
+  a billboard. It should stand alone, with no context.
+- The subtitle either sharpens the headline or carries the CTA + URL.
+- Headlines and subtitles must be different from the body. Do not
+  duplicate the body's opening line into the headline.`;

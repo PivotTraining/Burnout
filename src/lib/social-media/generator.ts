@@ -32,8 +32,18 @@ const POST_SCHEMA = {
       type: "string",
       description: "The CTA link the body refers to.",
     },
+    headline: {
+      type: "string",
+      description:
+        "A short, punchy headline (max ~90 chars) for the OG card / link preview. Distinct from the body.",
+    },
+    subtitle: {
+      type: "string",
+      description:
+        "A 1-line subtitle (max ~140 chars) for the OG card, e.g. a sharpening line and the CTA.",
+    },
   },
-  required: ["body", "hashtags", "link"],
+  required: ["body", "hashtags", "link", "headline", "subtitle"],
   additionalProperties: false,
 } as const;
 
@@ -93,15 +103,31 @@ export async function generatePost(opts: GenerateOptions): Promise<DraftPost> {
     body: string;
     hashtags: string[];
     link: string;
+    headline: string;
+    subtitle: string;
   };
 
-  return {
+  const draft: DraftPost = {
     platform: opts.platform,
     theme: opts.theme,
     body: parsed.body.trim(),
     hashtags: parsed.hashtags.map((h) => h.replace(/^#/, "")),
     link: parsed.link,
+    headline: parsed.headline.trim(),
+    subtitle: parsed.subtitle.trim(),
   };
+  draft.imageUrl = buildOgImageUrl(draft);
+  return draft;
+}
+
+/** Build the absolute OG card URL for a draft. */
+export function buildOgImageUrl(draft: DraftPost): string {
+  const params = new URLSearchParams({
+    theme: draft.theme,
+    headline: draft.headline ?? "",
+    subtitle: draft.subtitle ?? "",
+  });
+  return `${SITE_URL}/api/social-media/og?${params.toString()}`;
 }
 
 /** Compose the final string the platform will see. */
