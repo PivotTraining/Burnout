@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+export const resend = new Resend(process.env.RESEND_API_KEY ?? "re_build_placeholder");
 
 export const FROM_WEBINAR  = "Chris Davis at Pivot Training <webinar@burnoutiqtest.com>";
 export const FROM_HELLO    = "Pivot Training <hello@burnoutiqtest.com>";
