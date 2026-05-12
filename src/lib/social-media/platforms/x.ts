@@ -6,6 +6,37 @@ import type { PublishResult } from "../types";
  * Requires X_BEARER_TOKEN with tweet.write + media.write scopes
  * (OAuth 2.0 user context).
  */
+export async function replyOnX(
+  text: string,
+  inReplyToTweetId: string,
+): Promise<PublishResult> {
+  const token = process.env.X_BEARER_TOKEN;
+  if (!token) return { platform: "x", ok: false, error: "X_BEARER_TOKEN not set" };
+
+  const res = await fetch("https://api.twitter.com/2/tweets", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      text,
+      reply: { in_reply_to_tweet_id: inReplyToTweetId },
+    }),
+  });
+  if (!res.ok) {
+    return { platform: "x", ok: false, error: `${res.status}: ${await res.text()}` };
+  }
+  const json = (await res.json()) as { data?: { id: string } };
+  const id = json.data?.id;
+  return {
+    platform: "x",
+    ok: !!id,
+    postId: id,
+    url: id ? `https://x.com/i/web/status/${id}` : undefined,
+  };
+}
+
 export async function publishToX(
   text: string,
   imageUrl?: string,

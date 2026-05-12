@@ -1,24 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  publishExistingDraft,
-  runDailyPost,
-  type ContentTheme,
-  type Platform,
-} from "@/lib/social-media";
+import { ingestAndDraft } from "@/lib/social-media/listen";
+import type { Platform } from "@/lib/social-media/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/**
- * GET  /api/social-media/post  — Vercel Cron entrypoint (no body, runs the daily rotation).
- * POST /api/social-media/post  — Manual / scripted invocation with optional overrides.
- *
- * Auth: token in `x-admin-token` or `Authorization: Bearer <token>` must match
- * ADMIN_TOKEN or CRON_SECRET. Vercel Cron auto-sends `Authorization: Bearer ${CRON_SECRET}`.
- *
- * POST body (all optional):
- *   { platform?, theme?, steer?, dryRun? }
- */
+const ALL: Platform[] = ["x", "linkedin", "facebook"];
 
 function authorized(req: NextRequest): boolean {
   const tokens = [process.env.ADMIN_TOKEN, process.env.CRON_SECRET].filter(
@@ -31,13 +18,21 @@ function authorized(req: NextRequest): boolean {
   return !!presented && tokens.includes(presented);
 }
 
+/**
+ * Poll each platform for new mentions/comments and have Claude draft a
+ * reply. Drafts are persisted to social_media_mentions and surfaced in
+ * the admin UI for approval. Nothing is sent to platforms.
+ *
+ * GET  /api/social-media/listen           — all platforms (cron-friendly)
+ * POST /api/social-media/listen { platforms?: Platform[] }
+ */
 export async function GET(req: NextRequest) {
   if (!authorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const result = await runDailyPost();
-    return NextResponse.json(result);
+    const drafted = await ingestAndDraft(ALL);
+    return NextResponse.json({ drafted });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
@@ -48,27 +43,15 @@ export async function POST(req: NextRequest) {
   if (!authorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  let body: {
-    platform?: Platform;
-    theme?: ContentTheme;
-    steer?: string;
-    dryRun?: boolean;
-    postId?: string;
-  } = {};
+  let body: { platforms?: Platform[] } = {};
   try {
-    if (req.headers.get("content-length") !== "0") {
-      body = await req.json();
-    }
+    if (req.headers.get("content-length") !== "0") body = await req.json();
   } catch {
     body = {};
   }
-
   try {
-    const result = body.postId
-      ? await publishExistingDraft(body.postId)
-      : await runDailyPost(body);
-    return NextResponse.json(result);
+    const drafted = await ingestAndDraft(body.platforms ?? ALL);
+    return NextResponse.json({ drafted });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
