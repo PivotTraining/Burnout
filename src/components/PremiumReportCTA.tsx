@@ -56,10 +56,9 @@ const PHASE1_HEADLINE: Record<Archetype, string> = {
 };
 
 const INSIDE = [
-  "Six-dimension clinical breakdown calibrated to your scores",
-  "Personalized 30 · 60 · 90-day recovery plan with weekly milestones",
+  "Clinical narrative calibrated to your archetype and BRI score",
+  "30 · 60 · 90-day recovery plan with weekly milestones",
   "Conversation scripts for your manager, partner, and therapist",
-  "14-day reflection journal + vetted clinical resources",
   "Re-assessment cadence built into the plan",
 ];
 
@@ -121,8 +120,9 @@ export default function PremiumReportCTA({ archetype, burnoutScore, email }: Pro
 
             <p className="text-base text-white/70 leading-relaxed mb-7 max-w-[42ch]">
               Your free result is the headline. The Premium Report is the
-              chapter: a 12-page personalized PDF that turns your archetype
-              into a 30 · 60 · 90-day plan you can actually execute.
+              chapter: an in-depth personalized PDF that turns your
+              archetype into a 30 · 60 · 90-day plan you can actually
+              execute.
             </p>
 
             <ul className="space-y-2.5 mb-8 text-[14.5px] text-white/80">
@@ -186,7 +186,7 @@ export default function PremiumReportCTA({ archetype, burnoutScore, email }: Pro
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5" />
-                12 pages · personalized PDF
+                Personalized PDF
               </span>
               <Link href="/sample-report.pdf" target="_blank" className="text-ember hover:text-white underline underline-offset-2">
                 See a sample
@@ -277,7 +277,7 @@ export default function PremiumReportCTA({ archetype, burnoutScore, email }: Pro
 
             <div className="mt-6 text-center">
               <div className="text-[10px] uppercase tracking-[0.28em] text-white/45 font-semibold">
-                One of 12 pages · written for {ARCHETYPE_NAME[archetype]}
+                Written for {ARCHETYPE_NAME[archetype]} · delivered as PDF
               </div>
             </div>
           </div>

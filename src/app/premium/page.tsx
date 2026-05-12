@@ -7,8 +7,6 @@ import {
   Clock,
   Compass,
   MessageSquare,
-  NotebookPen,
-  Stethoscope,
   Calendar,
   CheckCircle2,
   ChevronDown,
@@ -18,7 +16,7 @@ import { getArchetypePlan, type ArchetypeKey } from "@/lib/archetype-content";
 export const metadata = {
   title: "BurnoutIQ Premium · The personalized recovery report",
   description:
-    "A 12-page personalized clinical breakdown of your burnout pattern plus a 30 · 60 · 90-day recovery plan. $49 one-time. Delivered in 60 seconds.",
+    "An in-depth personalized clinical breakdown of your burnout pattern plus a 30 · 60 · 90-day recovery plan. $49 one-time. Delivered in 60 seconds.",
 };
 
 // Marketing landing page for the $49 Premium Report. Targets direct
@@ -28,15 +26,15 @@ export const metadata = {
 const INSIDE = [
   {
     icon: Compass,
-    title: "Six-dimension clinical breakdown",
+    title: "Clinical narrative calibrated to you",
     body:
-      "Exhaustion, Mental Distance, Cognitive Impairment, Emotional Dysregulation, Reduced Efficacy, Recovery Capacity — narrated to your specific scores, not a generic template.",
+      "The executive summary opens with what the data is showing about YOU — your archetype, your composite BRI, the dimension that's driving it most. Not a generic template.",
   },
   {
     icon: Calendar,
     title: "30 · 60 · 90-day recovery plan",
     body:
-      "Twelve weeks of weekly milestones tailored to your archetype. Not a self-help mood board. A sequence you can execute.",
+      "Twelve weeks of weekly milestones tailored to your archetype. Not a self-help mood board. A sequence you can actually execute.",
   },
   {
     icon: MessageSquare,
@@ -45,22 +43,10 @@ const INSIDE = [
       "Verbatim language for the conversations that matter — your manager, your partner, your therapist. The hardest part of recovery is what to say.",
   },
   {
-    icon: NotebookPen,
-    title: "14-day reflection journal",
-    body:
-      "Daily check-in prompts calibrated to your archetype. The questions that close the loop between insight and action.",
-  },
-  {
-    icon: Stethoscope,
-    title: "Vetted clinical resources",
-    body:
-      "Curated books, podcasts, practitioners, and crisis lines. No content marketing. No affiliate noise. Just what's actually useful.",
-  },
-  {
     icon: Clock,
     title: "Re-assessment cadence",
     body:
-      "Built-in 90-day re-check. The trajectory is the product — and the report knows when to bring you back.",
+      "Built-in 90-day re-check. The trajectory is the product — and the report tells you when to come back.",
   },
 ];
 
@@ -132,10 +118,10 @@ export default function PremiumLandingPage() {
 
             <p className="text-lg md:text-xl text-navy/65 leading-relaxed max-w-2xl mb-10">
               The free BurnoutIQ assessment tells you your archetype.
-              The Premium Report turns that archetype into a 12-page
-              personalized PDF — a 30 · 60 · 90-day recovery plan you can
-              actually execute, with conversation scripts, journal prompts,
-              and a built-in re-assessment cadence.
+              The Premium Report turns that archetype into a personalized
+              clinical PDF — a 30 · 60 · 90-day recovery plan you can
+              actually execute, with conversation scripts and a built-in
+              re-assessment cadence.
             </p>
 
             <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mb-10">
@@ -174,7 +160,7 @@ export default function PremiumLandingPage() {
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5 text-ember" />
-                12-page personalized PDF
+                Personalized PDF · in-depth
               </span>
               <span>30-day money-back guarantee</span>
             </div>
@@ -201,7 +187,7 @@ export default function PremiumLandingPage() {
               What&apos;s inside
             </div>
             <h2 className="font-serif text-4xl md:text-5xl font-bold tracking-tight text-navy leading-[1.05]">
-              Six modules. Twelve weeks. One sequence written for you.
+              Twelve weeks. One sequence written for you.
             </h2>
           </div>
 
@@ -274,8 +260,8 @@ export default function PremiumLandingPage() {
                       {week1}
                     </p>
                     <p className="text-xs text-navy/50">
-                      Plus 11 more weeks, six-dimension narrative, conversation scripts,
-                      reflection journal, and clinical resources in the report.
+                      Plus 11 more weeks, the clinical narrative for your scores, and the
+                      conversation scripts that pair with this archetype in the report.
                     </p>
                   </div>
                 </details>

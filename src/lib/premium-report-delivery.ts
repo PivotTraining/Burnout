@@ -35,11 +35,10 @@ export function premiumReportEmailHtml(archetype: ArchetypeKey, name: string): s
   <p>Your personalized BurnoutIQ Premium Report for <strong>${archetypeName}</strong> is attached as a PDF.</p>
   <p>Inside you'll find:</p>
   <ul>
-    <li>Your full six-dimension clinical breakdown</li>
-    <li>A personalized 30/60/90-day recovery plan</li>
+    <li>Your clinical narrative — what the data is saying, in plain English</li>
+    <li>A personalized 30/60/90-day recovery plan with weekly milestones</li>
     <li>Conversation scripts for manager, partner, therapist</li>
-    <li>14-day reflection journal prompts</li>
-    <li>Vetted clinical resources</li>
+    <li>A built-in re-assessment cadence so you can track your trajectory</li>
   </ul>
   <p>The recovery plan inside is built for ${archetypeName} specifically. Don't read it all at once. Pick week one. Run it. Come back next week.</p>
   <p>Re-take BurnoutIQ in 90 days at <a href="https://burnoutiqtest.com" style="color: #D97706;">burnoutiqtest.com</a> to track your progress.</p>
