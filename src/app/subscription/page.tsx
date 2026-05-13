@@ -7,7 +7,7 @@ import { Check, Tag } from "lucide-react";
 import { validatePromoCode, type PromoResult } from "@/lib/promo-codes";
 
 export default function Subscription() {
-  const [seats, setSeats] = useState(1000);
+  const [seats, setSeats] = useState(100);
   const [email, setEmail] = useState("");
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<PromoResult | null>(null);
@@ -109,8 +109,8 @@ export default function Subscription() {
               </span>
               <input
                 type="range"
-                min={50}
-                max={50000}
+                min={10}
+                max={1000}
                 step={50}
                 value={seats}
                 onChange={(e) => setSeats(Number(e.target.value))}
@@ -118,7 +118,7 @@ export default function Subscription() {
               />
               <p className="text-xs text-white/60 mt-1">{seats.toLocaleString()} employees</p>
             </label>
-            <p className="text-sm text-white/60">Annual at $35 / employee:</p>
+            <p className="text-sm text-white/60">Annual at $45$45 / employee:</p>
             {promo?.valid && promo.discount ? (
               <>
                 <p className="text-2xl font-medium text-white/40 line-through">
@@ -136,7 +136,7 @@ export default function Subscription() {
               <p className="text-5xl font-extrabold text-ember">${baseAnnual.toLocaleString()}</p>
             )}
             <p className="text-sm text-white/60 mt-2">
-              Pricing scales between $25 and $45 / employee / year based on org size and
+              Pricing scales between $32 and $55 / employee / year based on org size and
               tier attachment.
             </p>
 
