@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import BurnoutLogo from "@/components/BurnoutLogo";
@@ -9,7 +9,7 @@ import { TIERS, priceLabel } from "@/lib/biq-tiers";
 import { validatePromoCode, type PromoResult } from "@/lib/promo-codes";
 import { useSearchParams } from "next/navigation";
 
-export default function ProPage() {
+function ProPageInner() {
   const tier = TIERS.pro;
   const [email, setEmail] = useState("");
   const [promoInput, setPromoInput] = useState("");
@@ -181,5 +181,13 @@ export default function ProPage() {
         </div>
       </main>
     </>
+  );
+}
+
+export default function ProPage() {
+  return (
+    <Suspense fallback={null}>
+      <ProPageInner />
+    </Suspense>
   );
 }
