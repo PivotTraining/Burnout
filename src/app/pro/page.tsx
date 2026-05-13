@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import BurnoutLogo from "@/components/BurnoutLogo";
 import { Check, ArrowRight, Tag } from "lucide-react";
 import { TIERS, priceLabel } from "@/lib/biq-tiers";
 import { validatePromoCode, type PromoResult } from "@/lib/promo-codes";
+import { useSearchParams } from "next/navigation";
 
 export default function ProPage() {
   const tier = TIERS.pro;
@@ -18,6 +19,38 @@ export default function ProPage() {
   const [error, setError] = useState("");
 
   const basePrice = (tier.billing as { kind: "one-time"; priceUsd: number }).priceUsd;
+  const searchParams = useSearchParams();
+
+  // Persist promo across navigation: URL ?promo=CODE > sessionStorage
+  useEffect(() => {
+    if (promo) return; // already applied
+    const urlCode = searchParams.get("promo");
+    if (urlCode) {
+      const result = validatePromoCode(urlCode);
+      if (result.valid) {
+        setPromoInput(urlCode.toUpperCase());
+        setPromo(result);
+      if (typeof window !== "undefined" && result.valid) {
+        sessionStorage.setItem("biq_promo", promoInput);
+      }
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("biq_promo", urlCode);
+        }
+        return;
+      }
+    }
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("biq_promo");
+      if (stored) {
+        const result = validatePromoCode(stored);
+        if (result.valid) {
+          setPromoInput(stored.toUpperCase());
+          setPromo(result);
+        }
+      }
+    }
+  }, [searchParams, promo]);
+
   const finalPrice = promo?.valid && promo.discount
     ? Math.round(basePrice * (1 - promo.discount / 100))
     : basePrice;
