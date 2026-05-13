@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -21,6 +21,18 @@ export default function ResultsPage() {
       return null;
     }
   }, [raw]);
+
+  useEffect(() => {
+    if (!result || typeof window === "undefined") return;
+    try {
+      const r = result as unknown as Record<string, unknown>;
+      sessionStorage.setItem("biq_result", JSON.stringify({
+        ...r,
+        archetype: r.dominant ?? r.archetype,
+        burnoutScore: r.totalScore ?? r.burnoutScore ?? r.score ?? 0,
+      }));
+    } catch {}
+  }, [result]);
 
   if (!result) {
     return (
