@@ -6,6 +6,14 @@ import Footer from "@/components/Footer";
 import { Check, Tag } from "lucide-react";
 import { validatePromoCode, type PromoResult } from "@/lib/promo-codes";
 
+function getRate(seats: number): number {
+  if (seats <= 49) return 55;
+  if (seats <= 99) return 48;
+  if (seats <= 249) return 42;
+  if (seats <= 499) return 38;
+  return 32;
+}
+
 export default function Subscription() {
   const [seats, setSeats] = useState(100);
   const [email, setEmail] = useState("");
@@ -63,7 +71,7 @@ export default function Subscription() {
     }
   }
 
-  const baseAnnual = seats * 35;
+  const baseAnnual = seats * getRate(seats);
   const discountedAnnual = promo?.valid && promo.discount
     ? Math.round(baseAnnual * (1 - promo.discount / 100))
     : baseAnnual;
@@ -118,7 +126,7 @@ export default function Subscription() {
               />
               <p className="text-xs text-white/60 mt-1">{seats.toLocaleString()} employees</p>
             </label>
-            <p className="text-sm text-white/60">Annual at $45$45 / employee:</p>
+            <p className="text-sm text-white/60">{seats >= 1000 ? "Pricing scoped to your org — talk to enterprise sales" : `Annual at $${getRate(seats)} / employee:`}</p>
             {promo?.valid && promo.discount ? (
               <>
                 <p className="text-2xl font-medium text-white/40 line-through">
