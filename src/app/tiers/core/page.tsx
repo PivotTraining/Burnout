@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 export const metadata = {
   title: "BurnoutIQ Core · 90-day engagement",
   description:
-    "BurnoutIQ Core is a 90-day org-wide engagement: full archetype mapping, manager training, employee workshops, department-level dashboard, executive readout. $35,000–$75,000.",
+    "BurnoutIQ Core is a 90-day org-wide engagement: full archetype mapping, manager training, employee workshops, department-level dashboard, executive readout. $35,000–$95,000.",
   alternates: { canonical: "/tiers/core" },
 };
 
@@ -45,7 +45,7 @@ export default function CoreTier() {
             fiscal quarter.
           </p>
           <div className="flex flex-wrap gap-6 text-sm">
-            <Stat label="Investment" value="$35,000–$75,000" />
+            <Stat label="Investment" value="$35,000–$95,000" />
             <Stat label="Engagement" value="90 days" />
             <Stat label="Buyer" value="VP HR, CHRO direct report" />
             <Stat label="Audience" value="100–2,000 employees" />
