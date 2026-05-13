@@ -10,7 +10,7 @@ const SUPABASE_LIVE = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY ?? "re_build_placeholder");
 // FROM must use a domain verified in Resend. burnoutiqtest.com is verified;
 // pivottraining.us is NOT — sends from it will fail silently.
 const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";

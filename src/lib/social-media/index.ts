@@ -57,6 +57,57 @@ export interface RunResult {
   publish: PublishResult | null;
 }
 
+/**
+ * Republish an existing draft (e.g. an approved dry-run) without
+ * regenerating. Loads the row, rebuilds the DraftPost, publishes, and
+ * writes a fresh log row reflecting the live result.
+ */
+export async function publishExistingDraft(postId: string): Promise<RunResult> {
+  const sb = supabaseAdmin();
+  const { data, error } = await sb
+    .from("social_media_posts")
+    .select(
+      "platform, theme, body, hashtags, link, headline, subtitle, image_url",
+    )
+    .eq("id", postId)
+    .single();
+  if (error || !data) {
+    throw new Error(error?.message ?? "Draft not found");
+  }
+  const draft: DraftPost = {
+    platform: data.platform as Platform,
+    theme: data.theme as ContentTheme,
+    body: data.body,
+    hashtags: data.hashtags ?? [],
+    link: data.link ?? undefined,
+    headline: data.headline ?? undefined,
+    subtitle: data.subtitle ?? undefined,
+    imageUrl: data.image_url ?? undefined,
+  };
+  const publish = await publishDraft(draft);
+  try {
+    await sb.from("social_media_posts").insert({
+      platform: draft.platform,
+      theme: draft.theme,
+      body: draft.body,
+      hashtags: draft.hashtags,
+      link: draft.link,
+      headline: draft.headline ?? null,
+      subtitle: draft.subtitle ?? null,
+      image_url: draft.imageUrl ?? null,
+      rendered: renderPost(draft),
+      published: publish.ok,
+      platform_post_id: publish.postId ?? null,
+      platform_url: publish.url ?? null,
+      error: publish.error ?? null,
+      dry_run: false,
+    });
+  } catch {
+    // ignore log failure
+  }
+  return { draft, publish };
+}
+
 export async function runDailyPost(opts: RunOptions = {}): Promise<RunResult> {
   const dayPlan = WEEKLY_PLAN[new Date().getUTCDay()];
   const platform = opts.platform ?? dayPlan.platform;

@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY ?? "re_build_placeholder");
 
 const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@pivottraining.us>";
 const NOTIFY = process.env.RESEND_NOTIFY_EMAIL || "hello@pivottraining.us";

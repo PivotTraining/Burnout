@@ -17,7 +17,7 @@ import { Resend } from "resend";
 import { supabaseServer, supabaseAdmin } from "@/lib/supabase";
 import { isLiveMode } from "@/lib/data";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY ?? "re_build_placeholder");
 const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";
 const REPLY_TO = process.env.RESEND_REPLY_TO || undefined;
 const DEMO_PASSWORD = process.env.DASHBOARD_DEMO_PASSWORD;
