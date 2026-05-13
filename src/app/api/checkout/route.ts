@@ -4,6 +4,9 @@ import { requireStripe } from "@/lib/stripe";
 import { TIERS, stripePriceFor, type TierProduct } from "@/lib/biq-tiers";
 import { validatePromoCode } from "@/lib/promo-codes";
 
+// Webhook fulfillment tag — must match PREMIUM_PRODUCT_TAG in /api/stripe/webhook
+const PREMIUM_PRODUCT_TAG = "burnoutiq_premium_report_v1";
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const product = (body.product || "continuum") as TierProduct;
@@ -11,6 +14,8 @@ export async function POST(req: NextRequest) {
   const customerEmail = body.customerEmail as string | undefined;
   const seats = Math.max(1, Number(body.seats) || 1);
   const promoCode = body.promoCode as string | undefined;
+  const archetype = body.archetype as string | undefined;
+  const burnoutScore = body.burnoutScore as number | undefined;
 
   if (!TIERS[product]) {
     return NextResponse.json(
@@ -57,13 +62,6 @@ export async function POST(req: NextRequest) {
 
   const isRecurring = tier.billing.kind === "recurring";
 
-  // Inline-discount path for one-time payments using internal-only promo codes
-  // (codes without a Stripe Promotion Code attached). Compute the discounted
-  // unit_amount and send Stripe a one-off price_data line item. Keeps the
-  // existing Stripe Promotion Code path intact for codes that have one.
-  // NOTE: 100%-off codes (FAMILY, PIVOT100) breach Stripe Checkout's $0.50
-  // minimum and still fall through to full price — needs a separate
-  // skip-Stripe / free-fulfillment path.
   const useInlineDiscount =
     !!promo?.valid &&
     typeof promo.discount === "number" &&
@@ -108,6 +106,16 @@ export async function POST(req: NextRequest) {
     success_url: `${origin}${tier.route}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}${tier.route}`,
   };
+
+  // Premium-report fulfillment metadata — read by /api/stripe/webhook to
+  // generate and email the personalized PDF on checkout.session.completed.
+  if (product === "pro" && archetype) {
+    params.metadata = {
+      product: PREMIUM_PRODUCT_TAG,
+      archetype,
+      burnoutScore: String(burnoutScore ?? ""),
+    };
+  }
 
   if (promo?.valid && promo.stripePromotionCode) {
     params.discounts = [{ promotion_code: promo.stripePromotionCode }];
