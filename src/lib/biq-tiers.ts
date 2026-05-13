@@ -81,7 +81,7 @@ export const TIERS: Record<TierProduct, TierDef> = {
     product: "teams",
     name: "BurnoutIQ Teams",
     tagline: "30-day org diagnostic. Five-figure results.",
-    billing: { kind: "quoted", range: "$9,750 – $14,750" },
+    billing: { kind: "quoted", range: "$12,000 – $18,000" },
     payoff: [
       "Day 0 exec kickoff (45 min) + comms plan",
       "Org-wide assessment (every employee gets personal results + Pro PDF)",
