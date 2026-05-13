@@ -17,6 +17,7 @@ function ProPageInner() {
   const [loading, setLoading] = useState(false);
   const [demo, setDemo] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [assessmentResult, setAssessmentResult] = useState<{archetype?: string; burnoutScore?: number} | null>(null);
 
   const basePrice = (tier.billing as { kind: "one-time"; priceUsd: number }).priceUsd;
   const searchParams = useSearchParams();
@@ -51,6 +52,14 @@ function ProPageInner() {
     }
   }, [searchParams, promo]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = sessionStorage.getItem("biq_result");
+      if (stored) setAssessmentResult(JSON.parse(stored));
+    } catch {}
+  }, []);
+
   const finalPrice = promo?.valid && promo.discount
     ? Math.round(basePrice * (1 - promo.discount / 100))
     : basePrice;
@@ -71,6 +80,8 @@ function ProPageInner() {
           product: "pro",
           customerEmail: email,
           promoCode: promo?.valid ? promo.code : undefined,
+          archetype: assessmentResult?.archetype,
+          burnoutScore: assessmentResult?.burnoutScore,
         }),
       });
       const json = await res.json();
