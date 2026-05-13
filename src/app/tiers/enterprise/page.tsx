@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 export const metadata = {
   title: "BurnoutIQ Enterprise · 12-month transformation",
   description:
-    "BurnoutIQ Enterprise is a 12-month, multi-site transformation: custom archetype playbooks per division, executive coaching, year-over-year impact study. $125,000–$300,000+.",
+    "BurnoutIQ Enterprise is a 12-month, multi-site transformation: custom archetype playbooks per division, executive coaching, year-over-year impact study. $175,000–$500,000+.",
   alternates: { canonical: "/tiers/enterprise" },
 };
 
@@ -39,7 +39,7 @@ export default function EnterpriseTier() {
             measurement. Internal license to the methodology.
           </p>
           <div className="flex flex-wrap gap-6 text-sm">
-            <Stat label="Investment" value="$125,000–$300,000+" />
+            <Stat label="Investment" value="$175,000–$500,000+" />
             <Stat label="Engagement" value="12 months" />
             <Stat label="Buyer" value="CHRO, Chief People Officer" />
             <Stat label="Audience" value="2,000–50,000+ employees" />
