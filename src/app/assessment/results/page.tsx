@@ -5,32 +5,139 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ARCHETYPES, ARCHETYPE_BY_KEY, type ArchetypeKey } from "@/lib/archetypes";
-import { DOMAIN_LABEL, type QuizResult, type Domain } from "@/lib/scoring";
+import {
+  SUBSCALE_LABELS,
+  SYMPTOM_SUBSCALES,
+  DRIVER_SUBSCALES,
+} from "@/lib/biq-bank";
+import {
+  type BiqResults,
+  type RiskBand,
+  bandOf,
+  colorOf,
+} from "@/lib/biq-scoring";
 
-export default function ResultsPage() {
+const ARCHETYPE_COPY: Record<
+  string,
+  { name: string; tagline: string; signal: string }
+> = {
+  STEADY: {
+    name: "Steady",
+    tagline: "You're handling the load. Don't take it for granted.",
+    signal:
+      "Work is demanding but you have the capacity, the autonomy, and the meaning to absorb it. You recover between cycles.",
+  },
+  DEPLETED: {
+    name: "The Depleted",
+    tagline: "Emotional reserves running on vapors.",
+    signal:
+      "Exhaustion is leading. The cause may be volume, intensity, or recovery debt — but the energy is gone before the day is.",
+  },
+  DETACHED: {
+    name: "The Detached",
+    tagline: "Going through the motions to protect what's left.",
+    signal:
+      "Cynicism is leading. The work and the people are still there, but the connection has gone quiet as a self-protective move.",
+  },
+  FOGGY: {
+    name: "The Foggy",
+    tagline: "Capable, but the wires are crossed.",
+    signal:
+      "Reduced effectiveness is leading. Tasks that used to be automatic now require effort, and the small misses are starting to add up.",
+  },
+  VOLATILE: {
+    name: "The Volatile",
+    tagline: "Firefighting your way through every week.",
+    signal:
+      "Workload pressure is colliding with emotional exhaustion. The combination produces big swings — high output one day, collapse the next.",
+  },
+  DOUBTER: {
+    name: "The Doubter",
+    tagline: "Institutional trust has fractured.",
+    signal:
+      "Fairness or values misalignment is breaking your relationship to the organization. The work might still be doable; belief in the system is what's slipping.",
+  },
+  STRANDED: {
+    name: "The Stranded",
+    tagline: "High demands without the authority to meet them.",
+    signal:
+      "Workload and control are both pinning you down. There's nowhere to push back, no lever to pull. The pressure has nowhere to go.",
+  },
+  SMOLDERING: {
+    name: "The Smoldering",
+    tagline: "All four warning lights on.",
+    signal:
+      "Composite risk is severe. This is the pattern where people leave, get sick, or break before they recognize the pattern. Act on this reading.",
+  },
+};
+
+function decode(raw: string | null): BiqResults | null {
+  if (!raw) return null;
+  try {
+    const json = Buffer.from(decodeURIComponent(raw), "base64").toString("utf8");
+    return JSON.parse(json) as BiqResults;
+  } catch {
+    return null;
+  }
+}
+
+function bandColor(band: RiskBand): string {
+  return colorOf(band);
+}
+
+function SubscaleBar({
+  label,
+  pct,
+  band,
+}: {
+  label: string;
+  pct: number;
+  band: RiskBand;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-baseline justify-between">
+        <span className="text-sm font-semibold text-navy">{label}</span>
+        <span className="text-xs tabular-nums text-navy/70">
+          {pct}
+          <span className="text-navy/40">/100</span>
+          <span
+            className="ml-2 inline-block px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide text-white"
+            style={{ backgroundColor: bandColor(band) }}
+          >
+            {band}
+          </span>
+        </span>
+      </div>
+      <div className="h-2 rounded-full bg-light-bg overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{ width: `${pct}%`, backgroundColor: bandColor(band) }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default function ResultsV2Page() {
   const params = useSearchParams();
   const raw = params.get("r");
+  const result = useMemo<BiqResults | null>(() => decode(raw), [raw]);
 
-  const result = useMemo<QuizResult | null>(() => {
-    if (!raw) return null;
-    try {
-      const json = Buffer.from(decodeURIComponent(raw), "base64").toString("utf8");
-      return JSON.parse(json) as QuizResult;
-    } catch {
-      return null;
-    }
-  }, [raw]);
-
+  // Persist for the /pro flow so the premium-report metadata pipeline
+  // can pick up archetype + burnoutScore from localStorage.
   useEffect(() => {
     if (!result || typeof window === "undefined") return;
     try {
-      const r = result as unknown as Record<string, unknown>;
-      localStorage.setItem("biq_result", JSON.stringify({
-        ...r,
-        archetype: r.dominant ?? r.archetype,
-        burnoutScore: r.totalScore ?? r.burnoutScore ?? r.score ?? 0,
-      }));
+      localStorage.setItem(
+        "biq_result",
+        JSON.stringify({
+          archetype: result.archetype,
+          burnoutScore: result.composite.pct,
+          composite: result.composite,
+          subscales: result.subscales,
+        }),
+      );
     } catch {}
   }, [result]);
 
@@ -38,16 +145,16 @@ export default function ResultsPage() {
     return (
       <>
         <Navbar forceScrolled />
-        <main className="pt-24 pb-20 section-wide">
+        <main className="pt-24 pb-20 section-wide max-w-3xl">
           <h1 className="text-3xl font-bold text-navy mb-2">No result found</h1>
           <p className="text-navy/60 mb-6">
-            Looks like you landed here directly. Take the quiz first.
+            Looks like you landed here directly. Take the assessment first.
           </p>
           <Link
             href="/assessment/take"
-            className="inline-flex items-center px-5 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-semibold"
+            className="inline-flex items-center px-4 py-2 rounded-lg bg-ember hover:bg-ember-light text-white text-sm font-semibold"
           >
-            Start the BurnoutIQ Archetype Quick →
+            Start the BurnoutIQ Assessment →
           </Link>
         </main>
         <Footer />
@@ -55,190 +162,160 @@ export default function ResultsPage() {
     );
   }
 
-  const dom = ARCHETYPE_BY_KEY[result.dominant];
-  const sup = ARCHETYPE_BY_KEY[result.supportive];
+  const archetypeKey = result.archetype;
+  const archetype = ARCHETYPE_COPY[archetypeKey] ?? {
+    name: archetypeKey,
+    tagline: "",
+    signal: "",
+  };
 
   return (
     <>
       <Navbar forceScrolled />
-      <main className="pt-24 pb-20">
+      <main className="pt-24 pb-20 bg-light-bg min-h-screen">
         <section className="section-wide max-w-4xl">
-          <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
-            Your archetype profile
-          </p>
-          <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-2">
-            <span style={{ color: dom.accent }}>{dom.name}</span>
-            <span className="text-navy/40"> / {sup.name}</span>
-          </h1>
-          <p className="text-xl text-navy/60 max-w-3xl leading-relaxed mb-10">
-            <em>{dom.oneLiner}</em> Supported by <em>{sup.oneLiner.toLowerCase()}</em>
-          </p>
+          {/* Composite + Archetype header */}
+          <div className="bg-white rounded-2xl border border-border-gray p-8 md:p-10 mb-6 shadow-sm">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-2">
+                  Your Reading
+                </p>
+                <h1 className="text-4xl md:text-5xl font-bold text-navy mb-2 leading-tight">
+                  {archetype.name}
+                </h1>
+                <p className="text-navy/70 italic mb-4">{archetype.tagline}</p>
+                <p className="text-sm text-navy/80 leading-relaxed">
+                  {archetype.signal}
+                </p>
+              </div>
 
-          {/* Distribution */}
-          <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
-            <h2 className="text-lg font-bold text-navy mb-4">Score distribution</h2>
-            <p className="text-xs text-navy/50 mb-4">
-              Win-rate across {result.totalPairs} forced-pair scenarios. Each archetype was eligible in 4 pairs.
-            </p>
-            <div className="space-y-3">
-              {ARCHETYPES.slice()
-                .sort((a, b) => result.percentages[b.key] - result.percentages[a.key])
-                .map((a) => (
-                  <div key={a.key}>
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span
-                        className={`font-semibold ${
-                          a.key === result.dominant || a.key === result.supportive
-                            ? "text-navy"
-                            : "text-navy/60"
-                        }`}
-                      >
-                        {a.name}
-                      </span>
-                      <span className="tabular-nums text-navy/60">
-                        {result.percentages[a.key]}%
-                      </span>
-                    </div>
-                    <div className="h-2 rounded-full bg-light-bg overflow-hidden">
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${result.percentages[a.key] * 3}%`,
-                          backgroundColor: a.accent,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+              <div className="text-center md:text-left">
+                <p className="text-xs uppercase tracking-widest text-navy/60 mb-2">
+                  Composite Burnout Risk
+                </p>
+                <div className="flex items-baseline gap-2 justify-center md:justify-start mb-3">
+                  <span
+                    className="text-7xl font-bold tabular-nums"
+                    style={{ color: bandColor(result.composite.band) }}
+                  >
+                    {result.composite.pct}
+                  </span>
+                  <span className="text-navy/40 text-2xl">/100</span>
+                </div>
+                <span
+                  className="inline-block px-3 py-1 rounded text-xs font-bold uppercase tracking-wide text-white"
+                  style={{ backgroundColor: bandColor(result.composite.band) }}
+                >
+                  {result.composite.band} Risk
+                </span>
+              </div>
             </div>
-          </section>
+          </div>
 
-          {/* Dominant detail */}
-          <section className="rounded-2xl bg-navy text-white p-8 mb-8">
-            <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-2">
-              Your dominant archetype
-            </p>
-            <h2 className="text-3xl font-bold mb-4" style={{ color: dom.accent }}>
-              {dom.name}
+          {/* Symptom subscales */}
+          <div className="bg-white rounded-2xl border border-border-gray p-8 mb-6 shadow-sm">
+            <h2 className="text-xl font-bold text-navy mb-1">
+              Burnout Symptoms
             </h2>
-            <dl className="space-y-4 text-sm">
-              <div>
-                <dt className="text-[10px] uppercase tracking-widest text-white/40 font-bold">
-                  Enterprise signal
-                </dt>
-                <dd className="text-white/90 mt-1 leading-relaxed">{dom.enterpriseSignal}</dd>
-              </div>
-              <div>
-                <dt className="text-[10px] uppercase tracking-widest text-white/40 font-bold">
-                  Burnout pattern to watch
-                </dt>
-                <dd className="text-white/90 mt-1 leading-relaxed">{dom.burnoutPattern}</dd>
-              </div>
-              <div>
-                <dt className="text-[10px] uppercase tracking-widest text-white/40 font-bold">
-                  Targeted intervention
-                </dt>
-                <dd className="text-white/90 mt-1 leading-relaxed">{dom.intervention}</dd>
-              </div>
-            </dl>
-          </section>
-
-          {/* Domain picks (honest representation — NOT "per-domain dominant") */}
-          <section className="rounded-2xl border border-border-gray bg-white p-6 mb-8">
-            <h2 className="text-lg font-bold text-navy mb-1">How you leaned by domain</h2>
-            <p className="text-sm text-navy/50 mb-5">
-              The three archetypes you chose in each pressure domain. With three
-              forced pairs per domain, this is a directional signal — not a definitive
-              per-domain dominant. For that, take the{" "}
-              <a
-                href="https://www.pressureiqtest.com/assessment"
-                className="text-ember underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                PressureIQ Deep Dive
-              </a>
-              .
+            <p className="text-sm text-navy/60 mb-6">
+              Where the depletion is showing up.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {(Object.keys(result.domainPicks) as Domain[]).map((d) => {
-                const picks = result.domainPicks[d];
-                return (
-                  <div key={d} className="rounded-xl border border-border-gray p-4">
-                    <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold mb-2">
-                      {DOMAIN_LABEL[d]}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {picks.map((k, i) => {
-                        const a = ARCHETYPE_BY_KEY[k as ArchetypeKey];
-                        return (
-                          <span
-                            key={`${d}-${i}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-navy bg-light-bg rounded-full px-2.5 py-1"
-                          >
-                            <span
-                              className="w-1.5 h-1.5 rounded-full"
-                              style={{ backgroundColor: a.accent }}
-                            />
-                            {a.name}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="space-y-5">
+              {SYMPTOM_SUBSCALES.map((s) => (
+                <SubscaleBar
+                  key={s}
+                  label={SUBSCALE_LABELS[s]}
+                  pct={result.subscales[s].pct}
+                  band={result.subscales[s].band}
+                />
+              ))}
             </div>
-          </section>
+          </div>
 
-          {/* Enterprise CTA */}
-          <section className="rounded-2xl bg-cream p-6">
-            <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-2">
-              Want this for your whole team?
-            </p>
-            <h2 className="text-2xl font-bold text-navy mb-2">
-              BurnoutIQ deploys this org-wide.
+          {/* Driver subscales */}
+          <div className="bg-white rounded-2xl border border-border-gray p-8 mb-6 shadow-sm">
+            <h2 className="text-xl font-bold text-navy mb-1">
+              Workplace Drivers
             </h2>
-            <p className="text-sm text-navy/70 mb-4 leading-relaxed">
-              Pulse, Core, and Enterprise tiers map archetypes across your entire
-              organization, then design targeted interventions per department.
+            <p className="text-sm text-navy/60 mb-6">
+              The conditions feeding the symptoms.
+            </p>
+            <div className="space-y-5">
+              {DRIVER_SUBSCALES.map((d) => (
+                <SubscaleBar
+                  key={d}
+                  label={SUBSCALE_LABELS[d]}
+                  pct={result.subscales[d].pct}
+                  band={result.subscales[d].band}
+                />
+              ))}
+            </div>
+
+            {result.topDrivers.length > 0 && (
+              <div className="mt-6 p-4 rounded-lg bg-cream border border-ember/20">
+                <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-1">
+                  Top Drivers to Address
+                </p>
+                <p className="text-sm text-navy">
+                  {result.topDrivers
+                    .map((d) => SUBSCALE_LABELS[d])
+                    .join(" · ")}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* CTAs */}
+          <div className="bg-navy rounded-2xl p-8 md:p-10 text-white">
+            <h2 className="text-2xl font-bold mb-2">
+              What you do with this matters.
+            </h2>
+            <p className="text-white/80 mb-6">
+              Two ways to act on the reading.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/pro"
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-ember hover:bg-ember-light text-white text-sm font-semibold"
+                className="inline-flex items-center px-5 py-3 rounded-lg bg-ember hover:bg-ember-light text-white text-sm font-semibold"
               >
                 Get my full Pro Report — $19 →
               </Link>
               <Link
                 href="/continuum"
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-navy hover:bg-navy/90 text-white text-sm font-semibold"
+                className="inline-flex items-center px-5 py-3 rounded-lg bg-white text-navy text-sm font-semibold hover:bg-cream"
               >
                 Subscribe to Continuum — $9/mo →
               </Link>
               <Link
                 href="/briefing"
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-ember hover:bg-ember-light text-white text-sm font-semibold"
+                className="inline-flex items-center px-5 py-3 rounded-lg border border-white/30 text-white text-sm font-semibold hover:bg-white/10"
               >
-                Schedule a Briefing →
-              </Link>
-              <Link
-                href="/tiers/core"
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-white border border-border-gray text-navy text-sm font-semibold hover:border-ember"
-              >
-                See BurnoutIQ Core
-              </Link>
-              <Link
-                href="/assessment/take"
-                className="inline-flex items-center px-4 py-2 rounded-lg text-navy/60 text-sm hover:text-navy"
-              >
-                Retake the quiz
+                Schedule a Briefing
               </Link>
             </div>
-          </section>
+          </div>
+
+          {/* Retake link */}
+          <div className="text-center mt-8">
+            <Link
+              href="/assessment/take"
+              className="text-sm text-navy/60 hover:text-navy underline"
+            >
+              Retake the assessment
+            </Link>
+          </div>
+
+          <p className="text-xs text-navy/40 mt-12 text-center max-w-2xl mx-auto leading-relaxed">
+            BurnoutIQ measures burnout across nine validated subscales drawn from
+            the Maslach Burnout Inventory and the Areas of Worklife Survey. Item
+            wording is original to BurnoutIQ. Scoring is internally consistent
+            but not yet independently validated against MBI — that pass is
+            planned at N=200 takers.
+          </p>
         </section>
       </main>
       <Footer />
     </>
   );
-            }
+}
