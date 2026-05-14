@@ -26,7 +26,7 @@ export default function ResultsPage() {
     if (!result || typeof window === "undefined") return;
     try {
       const r = result as unknown as Record<string, unknown>;
-      sessionStorage.setItem("biq_result", JSON.stringify({
+      localStorage.setItem("biq_result", JSON.stringify({
         ...r,
         archetype: r.dominant ?? r.archetype,
         burnoutScore: r.totalScore ?? r.burnoutScore ?? r.score ?? 0,
@@ -205,6 +205,18 @@ export default function ResultsPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
+                href="/pro"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-ember hover:bg-ember-light text-white text-sm font-semibold"
+              >
+                Get my full Pro Report — $19 →
+              </Link>
+              <Link
+                href="/continuum"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-navy hover:bg-navy/90 text-white text-sm font-semibold"
+              >
+                Subscribe to Continuum — $9/mo →
+              </Link>
+              <Link
                 href="/briefing"
                 className="inline-flex items-center px-4 py-2 rounded-lg bg-ember hover:bg-ember-light text-white text-sm font-semibold"
               >
@@ -229,4 +241,4 @@ export default function ResultsPage() {
       <Footer />
     </>
   );
-}
+            }
