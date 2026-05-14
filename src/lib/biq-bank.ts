@@ -1,6 +1,6 @@
 // BurnoutIQ question bank — original-voice rewording pass.
 //
-// 36 scored items across 9 subscales + 3 optional open-ended prompts.
+// 45 scored items across 9 subscales + 3 optional open-ended prompts.
 // Item wording has been fully rewritten in Pivot Training's voice so the
 // instrument is unmistakably proprietary while still measuring the same
 // constructs as MBI + AWS. Architecture, scoring direction, and subscale
@@ -9,16 +9,16 @@
 //
 // Subscales:
 //   Burnout symptoms (Maslach constructs, original wording)
-//     - ee:        Emotional Exhaustion           (6 items, normal-scored)
-//     - dp:        Detachment / Cynicism          (6 items, normal-scored)
-//     - pa:        Reduced Effectiveness          (6 items, REVERSE-scored)
+//     - ee:        Emotional Exhaustion           (7 items, normal-scored)
+//     - dp:        Detachment / Cynicism          (7 items, normal-scored)
+//     - pa:        Reduced Effectiveness          (7 items, REVERSE-scored)
 //   Workplace drivers (Areas of Worklife constructs, original wording)
-//     - workload:  Workload demands               (3 items)
-//     - control:   Control / Autonomy             (3 items)
-//     - reward:    Reward / Recognition           (3 items)
-//     - community: Community / Belonging          (3 items)
-//     - fairness:  Fairness / Trust               (3 items)
-//     - values:    Values Alignment               (3 items)
+//     - workload:  Workload demands               (4 items)
+//     - control:   Control / Autonomy             (4 items)
+//     - reward:    Reward / Recognition           (4 items)
+//     - community: Community / Belonging          (4 items)
+//     - fairness:  Fairness / Trust               (4 items)
+//     - values:    Values Alignment               (4 items)
 //
 // Plus 3 open-ended prompts (free-text, optional skip).
 //
@@ -32,7 +32,7 @@
 // scoring direction is unchanged across variants.
 //
 // Invariants enforced by tests/biq-bank.test.ts:
-//   - exactly 36 scored items
+//   - exactly 45 scored items
 //   - exact subscale counts shown above
 //   - all PA items have reverse: true; all others reverse: false
 //   - all scored items use the 6-point Likert scale 0..5
@@ -95,6 +95,7 @@ export const BIQ_ITEMS: BiqItem[] = [
   { id: "ee_4", subscale: "ee", reverse: false, text: "What my job demands is wearing on my body the way it's wearing on my mind." },
   { id: "ee_5", subscale: "ee", reverse: false, text: "When I get home, the people I love get my leftovers, not my best." },
   { id: "ee_6", subscale: "ee", reverse: false, text: "Time off used to recharge me. Lately it just slows the depletion." },
+  { id: "ee_7", subscale: "ee", reverse: false, text: "My nervous system stays at a low simmer even when I'm not technically working." },
 
   // ─── Detachment / Cynicism (6) ────────────────────────────────
   { id: "dp_1", subscale: "dp", reverse: false, text: "I'm pulling back from the people I work with — not because of them, but because I have less to give." },
@@ -116,6 +117,7 @@ export const BIQ_ITEMS: BiqItem[] = [
   { id: "dp_4", subscale: "dp", reverse: false, text: "Most days at work I'm present in the room but absent from the conversation." },
   { id: "dp_5", subscale: "dp", reverse: false, text: "I'm more guarded, sharp-edged, or skeptical at work than I was a year ago." },
   { id: "dp_6", subscale: "dp", reverse: false, text: "I find reasons to skip the conversations and meetings I used to lean into." },
+  { id: "dp_7", subscale: "dp", reverse: false, text: "I catch myself rolling my eyes — internally or out loud — at things I would have engaged with a year ago." },
 
   // ─── Reduced Effectiveness (PA, 6, REVERSE-scored) ────────────
   { id: "pa_1", subscale: "pa", reverse: true, text: "When I look back at this week, I can point to something I did that mattered." },
@@ -134,36 +136,43 @@ export const BIQ_ITEMS: BiqItem[] = [
     },
   },
   { id: "pa_6", subscale: "pa", reverse: true, text: "I finish things and feel something real — pride, satisfaction, momentum — not just relief." },
+  { id: "pa_7", subscale: "pa", reverse: true, text: "At least once this week, my work was visibly better than my average week." },
 
   // ─── Workload (3) ─────────────────────────────────────────────
   { id: "workload_1", subscale: "workload", reverse: false, text: "The volume I'm asked to carry is no longer something I can carry well." },
   { id: "workload_2", subscale: "workload", reverse: false, text: "Something on my list slips every week, and the slippage is starting to compound." },
   { id: "workload_3", subscale: "workload", reverse: false, text: "My role has quietly grown to a size no one would have signed up for at the start." },
+  { id: "workload_4", subscale: "workload", reverse: false, text: "The work doesn't stop when I stop — emails, messages, and after-hours requests follow me into my own time." },
 
   // ─── Control / Autonomy (3) ───────────────────────────────────
   { id: "control_1", subscale: "control", reverse: false, text: "The decisions that shape my day are made by people who don't ask me first." },
   { id: "control_2", subscale: "control", reverse: false, text: "I'm held to outcomes I don't actually have the authority to deliver on." },
   { id: "control_3", subscale: "control", reverse: false, text: "I find out about changes to my own work the same time everyone else does." },
+  { id: "control_4", subscale: "control", reverse: false, text: "When I push back on what's being asked of me, the answer is some version of \"I hear you, but do it anyway.\"" },
 
   // ─── Reward / Recognition (3) ─────────────────────────────────
   { id: "reward_1", subscale: "reward", reverse: false, text: "The work I do gets absorbed quietly. People only notice when it doesn't land." },
   { id: "reward_2", subscale: "reward", reverse: false, text: "What I'm paid does not reflect what this role actually asks of me." },
   { id: "reward_3", subscale: "reward", reverse: false, text: "When my work makes someone else's job easier, that fact almost never gets named." },
+  { id: "reward_4", subscale: "reward", reverse: false, text: "The promotions and raises that get handed out don't track with who's actually carrying the work." },
 
   // ─── Community / Belonging (3) ────────────────────────────────
   { id: "community_1", subscale: "community", reverse: false, text: "I do my work next to people, not with them." },
   { id: "community_2", subscale: "community", reverse: false, text: "The undercurrent of my team is friction more than collaboration." },
   { id: "community_3", subscale: "community", reverse: false, text: "This place hasn't quite become mine, and it's getting harder to imagine it ever will." },
+  { id: "community_4", subscale: "community", reverse: false, text: "If I left tomorrow, the people I work with would feel my absence at the project level, not the human level." },
 
   // ─── Fairness / Trust (3) ─────────────────────────────────────
   { id: "fairness_1", subscale: "fairness", reverse: false, text: "How decisions get made here doesn't follow rules anyone could articulate out loud." },
   { id: "fairness_2", subscale: "fairness", reverse: false, text: "There are two sets of standards here — one for some people, another for the rest." },
   { id: "fairness_3", subscale: "fairness", reverse: false, text: "What leadership says in public and what they do in private have stopped lining up." },
+  { id: "fairness_4", subscale: "fairness", reverse: false, text: "The same concern raised by different people in this org gets two different responses." },
 
   // ─── Values Alignment (3) ─────────────────────────────────────
   { id: "values_1", subscale: "values", reverse: false, text: "I've been asked to do things at work I'd be uneasy explaining to the people who love me." },
   { id: "values_2", subscale: "values", reverse: false, text: "The values on the wall and the behaviors that get promoted here are two different things." },
   { id: "values_3", subscale: "values", reverse: false, text: "I wouldn't bring my best friend to work here and tell them this is what we're about." },
+  { id: "values_4", subscale: "values", reverse: false, text: "I have stopped recommending this place to people I respect." },
 ];
 
 export interface OpenEndedPrompt {
@@ -211,12 +220,12 @@ export function itemText(item: BiqItem, sector?: Sector): string {
 /** Read-only audit invariants — call from a unit test. Empty array = clean. */
 export function auditBank(items: BiqItem[] = BIQ_ITEMS, prompts: OpenEndedPrompt[] = OPEN_ENDED): string[] {
   const problems: string[] = [];
-  if (items.length !== 36) problems.push(`expected 36 scored items, got ${items.length}`);
+  if (items.length !== 45) problems.push(`expected 45 scored items, got ${items.length}`);
   if (prompts.length !== 3) problems.push(`expected 3 open-ended prompts, got ${prompts.length}`);
 
   const expected: Record<Subscale, number> = {
-    ee: 6, dp: 6, pa: 6,
-    workload: 3, control: 3, reward: 3, community: 3, fairness: 3, values: 3,
+    ee: 7, dp: 7, pa: 7,
+    workload: 4, control: 4, reward: 4, community: 4, fairness: 4, values: 4,
   };
   const counts: Record<Subscale, number> = {
     ee: 0, dp: 0, pa: 0,
