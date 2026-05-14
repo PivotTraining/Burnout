@@ -73,7 +73,11 @@ function ProPageInner() {
     setError("");
     setDemo(null);
     try {
-      const res = await fetch("/api/checkout", {
+      const endpoint =
+        promo?.valid && promo.discount === 100
+          ? "/api/free-unlock"
+          : "/api/checkout";
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
