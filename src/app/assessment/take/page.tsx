@@ -1,20 +1,38 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import {
   BIQ_ITEMS,
   SCALE_LABELS,
   SCALE_MAX,
   SUBSCALE_LABELS,
+  itemText,
   type BiqItem,
 } from "@/lib/biq-bank";
+import type { Sector } from "@/lib/biq-sectors";
 import { calculateResults } from "@/lib/biq-scoring";
 import { ArrowLeft } from "lucide-react";
 
-export default function TakeAssessmentV2() {
+const KNOWN_SECTORS: Sector[] = [
+  "healthcare",
+  "k-12",
+  "higher-ed",
+  "nonprofit",
+  "first-responders",
+  "government",
+];
+
+function parseSector(raw: string | null): Sector | undefined {
+  if (!raw) return undefined;
+  return (KNOWN_SECTORS as string[]).includes(raw) ? (raw as Sector) : undefined;
+}
+
+function TakeAssessmentInner() {
   const router = useRouter();
+  const params = useSearchParams();
+  const sector = parseSector(params.get("sector"));
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
 
@@ -46,11 +64,13 @@ export default function TakeAssessmentV2() {
               burnoutScore: result.composite.pct,
               composite: result.composite,
               subscales: result.subscales,
+              sector: sector ?? null,
             }),
           );
         }
       } catch {}
-      router.push(`/assessment/results?r=${encoded}`);
+      const sectorParam = sector ? `&sector=${sector}` : "";
+      router.push(`/assessment/results?r=${encoded}${sectorParam}`);
     } else {
       setStep(step + 1);
     }
@@ -83,6 +103,7 @@ export default function TakeAssessmentV2() {
             <div className="flex items-baseline justify-between mb-2">
               <p className="text-xs font-semibold uppercase tracking-widest text-ember">
                 BurnoutIQ · Item {step + 1} of {total}
+                {sector ? ` · ${sector}` : ""}
               </p>
               <span className="text-xs text-navy/40 tabular-nums">
                 {progress}%
@@ -102,7 +123,7 @@ export default function TakeAssessmentV2() {
           {/* The item */}
           <div className="bg-white rounded-2xl border border-border-gray p-8 md:p-10 mb-6 shadow-sm">
             <h1 className="text-xl md:text-2xl font-semibold text-navy leading-snug mb-2">
-              {item.text}
+              {itemText(item, sector)}
             </h1>
             <p className="text-sm text-navy/55 italic mb-8">
               Over the past two weeks, how often has this been true?
@@ -161,12 +182,31 @@ export default function TakeAssessmentV2() {
           </div>
 
           <p className="text-xs text-navy/40 mt-10 text-center">
-            36 items across 9 burnout dimensions. Original research-grounded
+            45 items across 9 burnout dimensions. Original research-grounded
             wording. Your answers stay on your device until you complete the
             assessment.
           </p>
         </section>
       </main>
     </>
+  );
+}
+
+export default function TakeAssessmentV2() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Navbar forceScrolled />
+          <main className="pt-24 pb-20 bg-light-bg min-h-screen">
+            <section className="section-wide max-w-3xl">
+              <p className="text-sm text-navy/60">Loading assessment…</p>
+            </section>
+          </main>
+        </>
+      }
+    >
+      <TakeAssessmentInner />
+    </Suspense>
   );
 }
