@@ -104,9 +104,9 @@ export const BIQ_ITEMS: BiqItem[] = [
     reverse: false,
     text: "When a colleague or client tells me what's going on with them, I have to work harder than I used to in order to actually care.",
     variants: {
-      healthcare: "When a colleague or patient tells me what's going on with them, I have to work harder than I used to in order to actually care.",
-      "k-12": "When a colleague or student tells me what's going on with them, I have to work harder than I used to in order to actually care.",
-      "higher-ed": "When a colleague or student tells me what's going on with them, I have to work harder than I used to in order to actually care.",
+      healthcare: "When a colleague or one of my patients tells me what's going on with them, I have to work harder than I used to in order to actually care.",
+      "k-12": "When a colleague or one of my students tells me what's going on with them, I have to work harder than I used to in order to actually care.",
+      "higher-ed": "When a colleague or one of my students tells me what's going on with them, I have to work harder than I used to in order to actually care.",
       nonprofit: "When a colleague or someone we serve tells me what's going on with them, I have to work harder than I used to in order to actually care.",
       "first-responders": "When a colleague or the people we serve tells me what's going on with them, I have to work harder than I used to in order to actually care.",
       government: "When a colleague or member of the public tells me what's going on with them, I have to work harder than I used to in order to actually care.",
