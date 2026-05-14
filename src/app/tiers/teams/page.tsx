@@ -31,7 +31,7 @@ const TEAMS_BANDS = [
 
 const TIMELINE = [
   { day: "Day 0", title: "Exec kickoff", desc: "45-min call. Confirm objectives, comms plan, calibration on what “success” means." },
-  { day: "Days 0–14", title: "Org-wide assessment", desc: "Every employee takes the 36-item BurnoutIQ. Each gets their personal results plus the Pro PDF." },
+  { day: "Days 0–14", title: "Org-wide assessment", desc: "Every employee takes the 45-item BurnoutIQ. Each gets their personal results plus the Pro PDF." },
   { day: "Day 14", title: "Department heatmap", desc: "Burnout + driver heatmap by department, delivered as a forwardable PDF." },
   { day: "Day 21", title: "Manager training", desc: "90-min live session: reading the heatmap, archetype-aware nudge skills, what to do this week." },
   { day: "Day 30", title: "Executive readout", desc: "60-min readout to your leadership team with custom 90-day action plan." },
