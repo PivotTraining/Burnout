@@ -54,7 +54,7 @@ function Hero() {
           <div className="fade-up" style={{ animationDelay: "250ms" }}>
             <p className="text-lg md:text-xl text-white/60 max-w-xl leading-relaxed mb-4">
               BurnoutIQ is a workplace burnout assessment grounded in published
-              burnout research. 36 items across 9 dimensions — three burnout
+              burnout research. 45 items across 9 dimensions — three burnout
               symptoms and six workplace drivers. Every result includes a
               Leadership Briefing built for forwarding.
             </p>
@@ -109,7 +109,7 @@ function Hero() {
               </div>
               <div className="flex items-center gap-2">
                 <BarChart3 size={16} className="text-ember/60" />
-                <span>~10 min · 36 items + 3 optional</span>
+                <span>~10 min · 45 items + 3 optional</span>
               </div>
             </div>
           </div>
@@ -272,7 +272,7 @@ const steps = [
   {
     icon: ClipboardList,
     step: "02",
-    title: "Take 36 items + 3 optional",
+    title: "Take 45 items + 3 optional",
     description:
       "Six-point Likert across 9 subscales, plus three optional open-ended prompts. Auto-saves as you go.",
   },
@@ -348,7 +348,7 @@ const plans = [
     dark: false,
     badge: null,
     features: [
-      "36-item assessment + 3 open-ended",
+      "45-item assessment + 3 open-ended",
       "9-dimension reading with sector benchmarks",
       "Top driver + composite burnout risk",
       "Leadership Briefing — forwardable",
@@ -550,7 +550,7 @@ function CTASection() {
 
         <div className="fade-up" style={{ animationDelay: "100ms" }}>
           <p className="text-lg text-white/50 max-w-xl mx-auto mb-10">
-            Free 36-item diagnostic in ~10 minutes. Includes a Leadership Briefing
+            Free 45-item diagnostic in ~10 minutes. Includes a Leadership Briefing
             you can forward.
           </p>
         </div>
