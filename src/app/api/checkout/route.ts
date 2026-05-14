@@ -1,11 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
+import { Resend } from "resend";
 import { requireStripe } from "@/lib/stripe";
 import { TIERS, stripePriceFor, type TierProduct } from "@/lib/biq-tiers";
 import { validatePromoCode } from "@/lib/promo-codes";
+import {
+  generatePremiumReportPDF,
+  premiumReportEmailHtml,
+} from "@/lib/premium-report-delivery";
+import type { ArchetypeKey } from "@/lib/archetype-content";
 
 // Webhook fulfillment tag — must match PREMIUM_PRODUCT_TAG in /api/stripe/webhook
 const PREMIUM_PRODUCT_TAG = "burnoutiq_premium_report_v1";
+const FROM =
+  process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";
+const REPLY_TO = process.env.RESEND_REPLY_TO || undefined;
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
@@ -24,7 +33,7 @@ export async function POST(req: NextRequest) {
     );
   }
   const tier = TIERS[product];
-  if (tier.product === "teams") {
+  if (product === "teams") {
     return NextResponse.json(
       {
         error:
@@ -33,7 +42,6 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
-
 
   let promo: ReturnType<typeof validatePromoCode> | null = null;
   if (promoCode) {
@@ -57,6 +65,73 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  // ─── 100%-off promo fast-path ───────────────────────────────────────
+  // For full-comp promos, bypass Stripe entirely and deliver the PDF
+  // directly. This mirrors the webhook fulfillment so the user gets
+  // exactly the same email regardless of whether they paid or used a
+  // free promo. Without this branch, $0 Stripe sessions can fire the
+  // webhook with payment_status="no_payment_required" and edge cases
+  // in metadata propagation can leave the email un-sent.
+  if (
+    product === "pro" &&
+    archetype &&
+    promo?.valid &&
+    typeof promo.discount === "number" &&
+    promo.discount >= 100
+  ) {
+    if (!customerEmail) {
+      return NextResponse.json(
+        { error: "Email is required to deliver your report." },
+        { status: 400 },
+      );
+    }
+    if (!process.env.RESEND_API_KEY) {
+      console.error("[/api/checkout] free-promo: RESEND_API_KEY missing");
+      return NextResponse.json(
+        { error: "Email delivery not configured." },
+        { status: 500 },
+      );
+    }
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const pdfBuffer = await generatePremiumReportPDF({
+        archetype: archetype as ArchetypeKey,
+        burnoutScore: burnoutScore ?? 0,
+        customerName: "",
+        customerEmail,
+        purchaseDate: new Date(),
+      });
+      await resend.emails.send({
+        from: FROM,
+        to: customerEmail,
+        ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+        subject: "Your BurnoutIQ Premium Report is ready",
+        html: premiumReportEmailHtml(archetype as ArchetypeKey, ""),
+        attachments: [
+          {
+            filename: `BurnoutIQ-Premium-Report-${archetype}.pdf`,
+            content: pdfBuffer,
+          },
+        ],
+      });
+      const origin = req.nextUrl.origin;
+      return NextResponse.json({
+        url: `${origin}${tier.route}/success?free=1&promo=${encodeURIComponent(promo.code || "")}`,
+      });
+    } catch (err) {
+      console.error("[/api/checkout] free-promo fulfillment failed", err);
+      return NextResponse.json(
+        {
+          error:
+            err instanceof Error
+              ? err.message
+              : "Could not deliver report. Please try again.",
+        },
+        { status: 500 },
+      );
+    }
+  }
+
   const stripe = requireStripe();
   const origin = req.nextUrl.origin;
 
@@ -73,12 +148,12 @@ export async function POST(req: NextRequest) {
 
   const baseUnitAmountCents =
     tier.billing.kind === "one-time"
-      ? Math.round(tier.billing.priceUsd * 100)
-      : 0;
+      ? tier.billing.priceUsd * 100
+      : tier.billing.intervalMonthly * 100;
+
   const discountedUnitAmountCents = useInlineDiscount
-    ? Math.max(
-        50,
-        Math.round((baseUnitAmountCents * (100 - (promo!.discount as number))) / 100),
+    ? Math.round(
+        (baseUnitAmountCents * (100 - (promo!.discount as number))) / 100,
       )
     : baseUnitAmountCents;
 
