@@ -312,13 +312,13 @@ export default function StartPage() {
             )}
             <div className="inline-flex items-center gap-2 bg-ember/15 text-ember text-xs font-bold px-3 py-1.5 rounded-full mb-6">
               <Clock className="w-3.5 h-3.5" />
-              ~10 min · 36 questions + 3 optional · Free
+              ~10 min · 45 questions + 3 optional · Free
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
               The workplace burnout assessment.
             </h1>
             <p className="text-white/55 leading-relaxed mb-3 text-sm">
-              36 items across 9 dimensions — three burnout symptoms (Emotional
+              45 items across 9 dimensions — three burnout symptoms (Emotional
               Exhaustion, Detachment, Reduced Effectiveness) plus six workplace
               drivers (workload, control, reward, community, fairness, values).
               Plus three optional open‑ended questions that say what numbers can&apos;t.
@@ -331,7 +331,7 @@ export default function StartPage() {
             </p>
             <div className="grid grid-cols-3 gap-3 mb-8">
               {[
-                ["36 items", "Scored across 9 dimensions"],
+                ["45 items", "Scored across 9 dimensions"],
                 ["3 open-ended", "Optional, anonymized"],
                 ["Leadership briefing", "For your next leadership meeting"],
               ].map(([t, b], i) => (
@@ -430,7 +430,7 @@ export default function StartPage() {
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-navy mb-1">Your BurnoutIQ Results</h1>
             <p className="text-navy/40 text-sm">
-              36 items across 9 dimensions{sector && role ? ` · ${SECTOR_LABELS[sector]} · ${ROLE_LABELS[role]}` : ""}
+              45 items across 9 dimensions{sector && role ? ` · ${SECTOR_LABELS[sector]} · ${ROLE_LABELS[role]}` : ""}
             </p>
           </div>
 
