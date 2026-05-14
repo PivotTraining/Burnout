@@ -15,8 +15,8 @@ describe("BurnoutIQ question bank — invariants", () => {
     expect(auditBank()).toEqual([]);
   });
 
-  it("has exactly 36 scored items", () => {
-    expect(BIQ_ITEMS).toHaveLength(36);
+  it("has exactly 45 scored items", () => {
+    expect(BIQ_ITEMS).toHaveLength(45);
   });
 
   it("has exactly 3 open-ended prompts", () => {
@@ -30,11 +30,11 @@ describe("BurnoutIQ question bank — invariants", () => {
       community: 0, fairness: 0, values: 0,
     };
     for (const it of BIQ_ITEMS) counts[it.subscale]++;
-    expect(counts.ee).toBe(6);
-    expect(counts.dp).toBe(6);
-    expect(counts.pa).toBe(6);
+    expect(counts.ee).toBe(7);
+    expect(counts.dp).toBe(7);
+    expect(counts.pa).toBe(7);
     for (const d of DRIVER_SUBSCALES) {
-      expect(counts[d]).toBe(3);
+      expect(counts[d]).toBe(4);
     }
   });
 
@@ -74,14 +74,14 @@ describe("BurnoutIQ question bank — invariants", () => {
     }
   });
 
-  it("symptom subscales total 18 items, drivers total 18", () => {
+  it("symptom subscales total 21 items, drivers total 24", () => {
     const symptomCount = BIQ_ITEMS.filter((i) =>
       SYMPTOM_SUBSCALES.includes(i.subscale as never),
     ).length;
     const driverCount = BIQ_ITEMS.filter((i) =>
       DRIVER_SUBSCALES.includes(i.subscale as never),
     ).length;
-    expect(symptomCount).toBe(18);
-    expect(driverCount).toBe(18);
+    expect(symptomCount).toBe(21);
+    expect(driverCount).toBe(24);
   });
 });
