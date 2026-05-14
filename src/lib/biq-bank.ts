@@ -1,14 +1,18 @@
-// BurnoutIQ question bank — Phase A overhaul.
+// BurnoutIQ question bank — original-voice rewording pass.
 //
 // 36 scored items across 9 subscales + 3 optional open-ended prompts.
-// Replaces the prior 20-item work/personal Maslach-only bank.
+// Item wording has been fully rewritten in Pivot Training's voice so the
+// instrument is unmistakably proprietary while still measuring the same
+// constructs as MBI + AWS. Architecture, scoring direction, and subscale
+// counts are unchanged from the prior version — only the item text and
+// open-ended prompts have been rewritten.
 //
 // Subscales:
-//   Burnout symptoms (Maslach)
+//   Burnout symptoms (Maslach constructs, original wording)
 //     - ee:        Emotional Exhaustion           (6 items, normal-scored)
 //     - dp:        Detachment / Cynicism          (6 items, normal-scored)
 //     - pa:        Reduced Effectiveness          (6 items, REVERSE-scored)
-//   Workplace drivers (Areas of Worklife — Maslach & Leiter)
+//   Workplace drivers (Areas of Worklife constructs, original wording)
 //     - workload:  Workload demands               (3 items)
 //     - control:   Control / Autonomy             (3 items)
 //     - reward:    Reward / Recognition           (3 items)
@@ -18,8 +22,10 @@
 //
 // Plus 3 open-ended prompts (free-text, optional skip).
 //
-// Citations: Maslach et al., Maslach Burnout Inventory; Leiter & Maslach,
-// Areas of Worklife Survey. Item wording is original to BurnoutIQ.
+// Citations: Constructs and subscale architecture follow Maslach et al.
+// (Maslach Burnout Inventory) and Leiter & Maslach (Areas of Worklife
+// Survey). Item wording is original to BurnoutIQ and intentionally does
+// not paraphrase MBI/AWS item text.
 //
 // Sector variants: a small number of items have alternative phrasings
 // keyed by sector (e.g., "clients" → "patients" / "students"). The
@@ -83,81 +89,81 @@ export interface BiqItem {
 
 export const BIQ_ITEMS: BiqItem[] = [
   // ─── Emotional Exhaustion (6) ─────────────────────────────────
-  { id: "ee_1", subscale: "ee", reverse: false, text: "I feel emotionally drained by my work." },
-  { id: "ee_2", subscale: "ee", reverse: false, text: "I feel used up at the end of the workday." },
-  { id: "ee_3", subscale: "ee", reverse: false, text: "Facing another workday feels like a battle I have already lost." },
-  { id: "ee_4", subscale: "ee", reverse: false, text: "I feel mentally or physically exhausted by what my job demands." },
-  { id: "ee_5", subscale: "ee", reverse: false, text: "I have nothing left to give by the time I get home." },
-  { id: "ee_6", subscale: "ee", reverse: false, text: "Even time off does not restore me the way it used to." },
+  { id: "ee_1", subscale: "ee", reverse: false, text: "By the time the workday ends, my emotional tank is empty." },
+  { id: "ee_2", subscale: "ee", reverse: false, text: "I run out of energy before the work runs out." },
+  { id: "ee_3", subscale: "ee", reverse: false, text: "The thought of another full week ahead lands heavier than it should." },
+  { id: "ee_4", subscale: "ee", reverse: false, text: "What my job demands is wearing on my body the way it's wearing on my mind." },
+  { id: "ee_5", subscale: "ee", reverse: false, text: "When I get home, the people I love get my leftovers, not my best." },
+  { id: "ee_6", subscale: "ee", reverse: false, text: "Time off used to recharge me. Lately it just slows the depletion." },
 
   // ─── Detachment / Cynicism (6) ────────────────────────────────
-  { id: "dp_1", subscale: "dp", reverse: false, text: "I have become more detached or indifferent toward people at work." },
+  { id: "dp_1", subscale: "dp", reverse: false, text: "I'm pulling back from the people I work with — not because of them, but because I have less to give." },
   {
     id: "dp_2",
     subscale: "dp",
     reverse: false,
-    text: "I have lost genuine interest in how my colleagues or clients are doing.",
+    text: "When a colleague or client tells me what's going on with them, I have to work harder than I used to in order to actually care.",
     variants: {
-      healthcare: "I have lost genuine interest in how my colleagues or patients are doing.",
-      "k-12": "I have lost genuine interest in how my colleagues or students are doing.",
-      "higher-ed": "I have lost genuine interest in how my colleagues or students are doing.",
-      nonprofit: "I have lost genuine interest in how my colleagues or the community we serve are doing.",
-      "first-responders": "I have lost genuine interest in how my colleagues or the people we serve are doing.",
-      government: "I have lost genuine interest in how my colleagues or the public we serve are doing.",
+      healthcare: "When a colleague or patient tells me what's going on with them, I have to work harder than I used to in order to actually care.",
+      "k-12": "When a colleague or student tells me what's going on with them, I have to work harder than I used to in order to actually care.",
+      "higher-ed": "When a colleague or student tells me what's going on with them, I have to work harder than I used to in order to actually care.",
+      nonprofit: "When a colleague or someone we serve tells me what's going on with them, I have to work harder than I used to in order to actually care.",
+      "first-responders": "When a colleague or the people we serve tells me what's going on with them, I have to work harder than I used to in order to actually care.",
+      government: "When a colleague or member of the public tells me what's going on with them, I have to work harder than I used to in order to actually care.",
     },
   },
-  { id: "dp_3", subscale: "dp", reverse: false, text: "I care less about the quality or impact of my work than I used to." },
-  { id: "dp_4", subscale: "dp", reverse: false, text: "I find myself going through the motions instead of fully engaging." },
-  { id: "dp_5", subscale: "dp", reverse: false, text: "I am more cynical about my workplace than I was a year ago." },
-  { id: "dp_6", subscale: "dp", reverse: false, text: "I avoid interactions with people at work when I can." },
+  { id: "dp_3", subscale: "dp", reverse: false, text: "My standards for the work I produce have quietly slipped, and I've stopped pushing back on that slip." },
+  { id: "dp_4", subscale: "dp", reverse: false, text: "Most days at work I'm present in the room but absent from the conversation." },
+  { id: "dp_5", subscale: "dp", reverse: false, text: "I'm more guarded, sharp-edged, or skeptical at work than I was a year ago." },
+  { id: "dp_6", subscale: "dp", reverse: false, text: "I find reasons to skip the conversations and meetings I used to lean into." },
 
   // ─── Reduced Effectiveness (PA, 6, REVERSE-scored) ────────────
-  { id: "pa_1", subscale: "pa", reverse: true, text: "I feel I am making a meaningful difference through my work." },
-  { id: "pa_2", subscale: "pa", reverse: true, text: "I feel confident and effective at what I do professionally." },
-  { id: "pa_3", subscale: "pa", reverse: true, text: "I find my work stimulating and worth the effort." },
-  { id: "pa_4", subscale: "pa", reverse: true, text: "I solve problems at work that others cannot." },
+  { id: "pa_1", subscale: "pa", reverse: true, text: "When I look back at this week, I can point to something I did that mattered." },
+  { id: "pa_2", subscale: "pa", reverse: true, text: "I trust my own judgment on the hard calls in my domain." },
+  { id: "pa_3", subscale: "pa", reverse: true, text: "The work itself, on its best days, still pulls me forward." },
+  { id: "pa_4", subscale: "pa", reverse: true, text: "I'm the person people in my orbit ask when the problem is genuinely hard." },
   {
     id: "pa_5",
     subscale: "pa",
     reverse: true,
-    text: "I have a positive impact on the people I work with.",
+    text: "The people I work with are better off for me being in the room.",
     variants: {
-      healthcare: "I have a positive impact on my patients and colleagues.",
-      "k-12": "I have a positive impact on my students and colleagues.",
-      "higher-ed": "I have a positive impact on my students and colleagues.",
+      healthcare: "My patients and colleagues are better off for me being in the room.",
+      "k-12": "My students and colleagues are better off for me being in the room.",
+      "higher-ed": "My students and colleagues are better off for me being in the room.",
     },
   },
-  { id: "pa_6", subscale: "pa", reverse: true, text: "I am energized by what I accomplish at work." },
+  { id: "pa_6", subscale: "pa", reverse: true, text: "I finish things and feel something real — pride, satisfaction, momentum — not just relief." },
 
   // ─── Workload (3) ─────────────────────────────────────────────
-  { id: "workload_1", subscale: "workload", reverse: false, text: "My workload exceeds what I can reasonably do well." },
-  { id: "workload_2", subscale: "workload", reverse: false, text: "I struggle to keep up with the volume of work expected of me." },
-  { id: "workload_3", subscale: "workload", reverse: false, text: "I am asked to do more than my role can absorb." },
+  { id: "workload_1", subscale: "workload", reverse: false, text: "The volume I'm asked to carry is no longer something I can carry well." },
+  { id: "workload_2", subscale: "workload", reverse: false, text: "Something on my list slips every week, and the slippage is starting to compound." },
+  { id: "workload_3", subscale: "workload", reverse: false, text: "My role has quietly grown to a size no one would have signed up for at the start." },
 
   // ─── Control / Autonomy (3) ───────────────────────────────────
-  { id: "control_1", subscale: "control", reverse: false, text: "I have little say over the decisions that affect my work." },
-  { id: "control_2", subscale: "control", reverse: false, text: "I do not have the authority I need to do my job effectively." },
-  { id: "control_3", subscale: "control", reverse: false, text: "Important decisions are made without my input." },
+  { id: "control_1", subscale: "control", reverse: false, text: "The decisions that shape my day are made by people who don't ask me first." },
+  { id: "control_2", subscale: "control", reverse: false, text: "I'm held to outcomes I don't actually have the authority to deliver on." },
+  { id: "control_3", subscale: "control", reverse: false, text: "I find out about changes to my own work the same time everyone else does." },
 
   // ─── Reward / Recognition (3) ─────────────────────────────────
-  { id: "reward_1", subscale: "reward", reverse: false, text: "My work goes unrecognized." },
-  { id: "reward_2", subscale: "reward", reverse: false, text: "The compensation does not match what I bring to this role." },
-  { id: "reward_3", subscale: "reward", reverse: false, text: "I am not appreciated for what I contribute." },
+  { id: "reward_1", subscale: "reward", reverse: false, text: "The work I do gets absorbed quietly. People only notice when it doesn't land." },
+  { id: "reward_2", subscale: "reward", reverse: false, text: "What I'm paid does not reflect what this role actually asks of me." },
+  { id: "reward_3", subscale: "reward", reverse: false, text: "When my work makes someone else's job easier, that fact almost never gets named." },
 
   // ─── Community / Belonging (3) ────────────────────────────────
-  { id: "community_1", subscale: "community", reverse: false, text: "I feel isolated from my colleagues." },
-  { id: "community_2", subscale: "community", reverse: false, text: "Conflict and tension are common on my team." },
-  { id: "community_3", subscale: "community", reverse: false, text: "I do not feel I belong here." },
+  { id: "community_1", subscale: "community", reverse: false, text: "I do my work next to people, not with them." },
+  { id: "community_2", subscale: "community", reverse: false, text: "The undercurrent of my team is friction more than collaboration." },
+  { id: "community_3", subscale: "community", reverse: false, text: "This place hasn't quite become mine, and it's getting harder to imagine it ever will." },
 
   // ─── Fairness / Trust (3) ─────────────────────────────────────
-  { id: "fairness_1", subscale: "fairness", reverse: false, text: "Decisions at work are not made fairly." },
-  { id: "fairness_2", subscale: "fairness", reverse: false, text: "Some people get away with things others do not." },
-  { id: "fairness_3", subscale: "fairness", reverse: false, text: "Trust is broken between leadership and staff." },
+  { id: "fairness_1", subscale: "fairness", reverse: false, text: "How decisions get made here doesn't follow rules anyone could articulate out loud." },
+  { id: "fairness_2", subscale: "fairness", reverse: false, text: "There are two sets of standards here — one for some people, another for the rest." },
+  { id: "fairness_3", subscale: "fairness", reverse: false, text: "What leadership says in public and what they do in private have stopped lining up." },
 
   // ─── Values Alignment (3) ─────────────────────────────────────
-  { id: "values_1", subscale: "values", reverse: false, text: "I am asked to do things that conflict with my values." },
-  { id: "values_2", subscale: "values", reverse: false, text: "What this organization says it values does not match what it rewards." },
-  { id: "values_3", subscale: "values", reverse: false, text: "I am not proud of what this organization stands for." },
+  { id: "values_1", subscale: "values", reverse: false, text: "I've been asked to do things at work I'd be uneasy explaining to the people who love me." },
+  { id: "values_2", subscale: "values", reverse: false, text: "The values on the wall and the behaviors that get promoted here are two different things." },
+  { id: "values_3", subscale: "values", reverse: false, text: "I wouldn't bring my best friend to work here and tell them this is what we're about." },
 ];
 
 export interface OpenEndedPrompt {
@@ -169,18 +175,18 @@ export interface OpenEndedPrompt {
 export const OPEN_ENDED: OpenEndedPrompt[] = [
   {
     id: "open_pressure",
-    text: "What is the biggest source of pressure in your work right now?",
-    placeholder: "e.g., a sustained understaffing problem, a specific project, a difficult relationship...",
+    text: "If you had to name the one thing eating you alive at work right now, what would it be?",
+    placeholder: "Sustained understaffing, a specific project, a difficult relationship, a deadline that won't let go…",
   },
   {
     id: "open_sustainable",
-    text: "What would make your work feel more sustainable?",
-    placeholder: "What change — small or large — would tip the scale for you?",
+    text: "If you could change one thing about your work and no one would notice it had changed, what would you change?",
+    placeholder: "The change that would quietly tip the scale.",
   },
   {
     id: "open_leadership",
-    text: "What do you wish leadership understood about your workload or emotional state?",
-    placeholder: "This is anonymous in aggregate dashboards. Be direct.",
+    text: "What would you want the people above you to actually understand — not just hear, but understand — about how you're carrying this?",
+    placeholder: "Anonymous in aggregate dashboards. Be direct.",
   },
 ];
 
