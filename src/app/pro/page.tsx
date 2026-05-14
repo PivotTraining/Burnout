@@ -55,7 +55,7 @@ function ProPageInner() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      const stored = sessionStorage.getItem("biq_result");
+      const stored = (typeof localStorage !== "undefined" && localStorage.getItem("biq_result")) || sessionStorage.getItem("biq_result");
       if (stored) setAssessmentResult(JSON.parse(stored));
     } catch {}
   }, []);
