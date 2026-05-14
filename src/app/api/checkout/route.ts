@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     );
   }
   const tier = TIERS[product];
-  if (tier.product === "teams") {
+  if (product === "teams") {
     return NextResponse.json(
       {
         error:
@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
-
 
   let promo: ReturnType<typeof validatePromoCode> | null = null;
   if (promoCode) {
@@ -57,6 +56,77 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  // ─── 100%-off promo fast-path ───────────────────────────────────────
+  // For full-comp promos, bypass Stripe entirely and deliver the PDF
+  // directly. Mirrors webhook fulfillment so user gets the same email
+  // whether they paid or used a free promo. Uses dynamic imports so the
+  // PDF library doesn't load on every request.
+  const isFullComp =
+    product === "pro" &&
+    !!archetype &&
+    !!customerEmail &&
+    promo !== null &&
+    promo.valid === true &&
+    typeof promo.discount === "number" &&
+    promo.discount >= 100;
+
+  if (isFullComp && archetype && customerEmail && promo) {
+    if (!process.env.RESEND_API_KEY) {
+      console.error("[/api/checkout] free-promo: RESEND_API_KEY missing");
+      return NextResponse.json(
+        { error: "Email delivery not configured." },
+        { status: 500 },
+      );
+    }
+    try {
+      const [{ Resend }, deliveryMod] = await Promise.all([
+        import("resend"),
+        import("@/lib/premium-report-delivery"),
+      ]);
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const FROM_ADDR =
+        process.env.RESEND_FROM_EMAIL ||
+        "BurnoutIQ <hello@burnoutiqtest.com>";
+      const REPLY_TO_ADDR = process.env.RESEND_REPLY_TO;
+      const pdfBuffer = await deliveryMod.generatePremiumReportPDF({
+        archetype: archetype as never,
+        burnoutScore: burnoutScore ?? 0,
+        customerName: "",
+        customerEmail,
+        purchaseDate: new Date(),
+      });
+      await resend.emails.send({
+        from: FROM_ADDR,
+        to: customerEmail,
+        ...(REPLY_TO_ADDR ? { replyTo: REPLY_TO_ADDR } : {}),
+        subject: "Your BurnoutIQ Premium Report is ready",
+        html: deliveryMod.premiumReportEmailHtml(archetype as never, ""),
+        attachments: [
+          {
+            filename: `BurnoutIQ-Premium-Report-${archetype}.pdf`,
+            content: pdfBuffer,
+          },
+        ],
+      });
+      const origin = req.nextUrl.origin;
+      const promoCodeOut = promo.code ?? "";
+      return NextResponse.json({
+        url: `${origin}${tier.route}/success?free=1&promo=${encodeURIComponent(promoCodeOut)}`,
+      });
+    } catch (err) {
+      console.error("[/api/checkout] free-promo fulfillment failed", err);
+      return NextResponse.json(
+        {
+          error:
+            err instanceof Error
+              ? err.message
+              : "Could not deliver report. Please try again.",
+        },
+        { status: 500 },
+      );
+    }
+  }
+
   const stripe = requireStripe();
   const origin = req.nextUrl.origin;
 
@@ -73,12 +143,12 @@ export async function POST(req: NextRequest) {
 
   const baseUnitAmountCents =
     tier.billing.kind === "one-time"
-      ? Math.round(tier.billing.priceUsd * 100)
-      : 0;
+      ? tier.billing.priceUsd * 100
+      : tier.billing.intervalMonthly * 100;
+
   const discountedUnitAmountCents = useInlineDiscount
-    ? Math.max(
-        50,
-        Math.round((baseUnitAmountCents * (100 - (promo!.discount as number))) / 100),
+    ? Math.round(
+        (baseUnitAmountCents * (100 - (promo!.discount as number))) / 100,
       )
     : baseUnitAmountCents;
 
