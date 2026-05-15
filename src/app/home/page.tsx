@@ -257,7 +257,7 @@ export default async function HomePage() {
                 </span>
               </div>
               {primarySub?.current_period_end && (
-                <p className="text-sm text-navy/60 inline-flex items-center gap-2">
+                <p className="text-sm text-navy/60 inline-flex items-center gap-2 mb-4">
                   <Calendar className="w-4 h-4" />
                   Next billing on{" "}
                   {new Date(primarySub.current_period_end).toLocaleDateString("en-US", {
@@ -267,8 +267,17 @@ export default async function HomePage() {
                   })}
                 </p>
               )}
+              <form action="/api/billing/portal" method="POST" className="inline">
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 bg-navy hover:bg-navy-light text-white font-semibold px-4 py-2 rounded-lg text-sm"
+                >
+                  Manage subscription
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </form>
               <p className="text-xs text-navy/40 mt-3">
-                To update your card or cancel, reply to any BurnoutIQ email or message hello@pivottraining.us — we&apos;ll send you the Stripe portal link.
+                Update card, view invoices, change plan, or cancel — handled by Stripe&apos;s secure portal.
               </p>
             </section>
           ) : (
