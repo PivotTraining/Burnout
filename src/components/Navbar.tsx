@@ -64,6 +64,7 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
           <DropdownMenu menuKey="enterprise" label="Enterprise" links={enterpriseLinks} openMenu={openMenu} setOpenMenu={setOpenMenu} linkClass={linkClass} />
           <DropdownMenu menuKey="learn" label="Learn" links={learnLinks} openMenu={openMenu} setOpenMenu={setOpenMenu} linkClass={linkClass} />
           <a href="https://pressureiqtest.com" target="_blank" rel="noopener noreferrer" className={linkClass}>PressureIQ ↗</a>
+          <Link href="/signin?next=/home" className={linkClass}>Sign in</Link>
           <Link href="/start" className="inline-flex items-center justify-center h-10 px-5 rounded-full bg-ember text-white text-sm font-semibold hover:bg-ember-light transition-colors shadow-sm">Take the Assessment</Link>
         </div>
 
@@ -82,6 +83,7 @@ export default function Navbar({ forceScrolled = false }: { forceScrolled?: bool
             <MobileSection title="Learn" links={learnLinks} onClose={() => setMobileOpen(false)} />
             <div className="h-px bg-border-gray my-2" />
             <a href="https://pressureiqtest.com" target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">PressureIQ ↗</a>
+            <Link href="/signin?next=/home" onClick={() => setMobileOpen(false)} className="py-2 text-sm text-navy/80">Sign in</Link>
             <Link href="/start" onClick={() => setMobileOpen(false)} className="mt-3 inline-flex items-center justify-center h-10 px-5 rounded-full bg-ember text-white text-sm font-semibold">Take the Assessment</Link>
           </div>
         </div>

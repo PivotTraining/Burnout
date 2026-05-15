@@ -8,7 +8,7 @@ import { Mail, ArrowRight, CheckCircle, Lock } from "lucide-react";
 export default function SignIn() {
   const params = useSearchParams();
   const router = useRouter();
-  const next = params.get("next") || "/dashboard";
+  const next = params.get("next") || "/home";
   const mode = params.get("mode"); // "demo" if redirected from a demo-protected route
 
   const [email, setEmail] = useState("");

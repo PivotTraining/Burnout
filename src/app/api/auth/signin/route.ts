@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     if (password !== DEMO_PASSWORD) {
       return NextResponse.json({ error: "Wrong demo password" }, { status: 401 });
     }
-    const res = NextResponse.json({ ok: true, demo: true, next: next || "/dashboard" });
+    const res = NextResponse.json({ ok: true, demo: true, next: next || "/home" });
     res.cookies.set({
       name: DEMO_COOKIE,
       value: DEMO_PASSWORD,
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next || "/dashboard")}`,
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next || "/home")}`,
     },
   });
   if (error) {

@@ -78,12 +78,15 @@ export default async function ContinuumSuccessPage({ searchParams }: PageProps) 
             Take your baseline assessment →
           </Link>
           <Link
-            href="/"
+            href="/home"
             className="inline-flex items-center px-5 py-3 rounded-lg border border-white/20 hover:bg-white/5 text-white text-sm font-semibold"
           >
-            Back to BurnoutIQ
+            Go to your home
           </Link>
         </div>
+        <p className="text-xs text-slate-400 mt-4 max-w-md mx-auto">
+          You can sign back in anytime at <span className="text-slate-200">burnoutiqtest.com/signin</span> — your trend, archetype, and subscription status live at <span className="text-slate-200">/home</span>.
+        </p>
 
         {sessionId && (
           <p className="text-[10px] text-slate-500 mt-10 tracking-wide">

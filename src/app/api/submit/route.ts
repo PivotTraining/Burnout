@@ -252,8 +252,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Persist to Supabase if configured AND an org_token is present (Teams flow).
-    // Individual / non-org assessments are emailed only.
+    // Persist to Supabase under one of three paths:
+    //  (A) orgToken present  → Teams employee path (invitation-keyed)
+    //  (B) no orgToken but email has an active subscription
+    //                        → personal-subscriber path (saved into their
+    //                          personal org so /home can show their trend)
+    //  (C) neither            → email-only (free-takers without a paid plan)
+    //
+    // Privacy: the public policy already discloses that final scores +
+    // contact info are transmitted on submit; (B) just makes the storage
+    // route useful instead of dropping the data on the floor.
     if (SUPABASE_LIVE && body.orgToken) {
       try {
         const admin = supabaseAdmin();
@@ -298,6 +306,58 @@ export async function POST(req: NextRequest) {
         }
       } catch (err) {
         console.error("[submit] supabase write failed (non-fatal)", err);
+      }
+    } else if (SUPABASE_LIVE) {
+      // Personal-subscriber path: if the submitter's email matches an
+      // auth user with an active subscription, persist into their
+      // personal org so they can revisit at /home.
+      try {
+        const admin = supabaseAdmin();
+        // Find the auth user by email (paged listUsers — Supabase admin
+        // SDK doesn't expose getUserByEmail directly today).
+        const { data: list } = await admin.auth.admin.listUsers({ perPage: 1000 });
+        const user = list?.users?.find(
+          (u) => (u.email || "").toLowerCase() === email.toLowerCase(),
+        );
+        if (user?.id) {
+          // Find their personal org via members + active subscription.
+          const { data: member } = await admin
+            .from("members")
+            .select("id, org_id")
+            .eq("user_id", user.id)
+            .limit(1)
+            .maybeSingle();
+          if (member?.org_id) {
+            const { data: sub } = await admin
+              .from("subscriptions")
+              .select("status")
+              .eq("org_id", member.org_id)
+              .eq("status", "active")
+              .limit(1)
+              .maybeSingle();
+            if (sub) {
+              const scoresJson = {
+                subscales: body.subscales,
+                topDrivers: body.topDrivers,
+                openResponses: body.openResponses,
+                sector: body.sector,
+                role: body.role,
+              };
+              await admin.from("assessments").insert({
+                org_id: member.org_id,
+                member_id: member.id,
+                email,
+                first_name: firstName,
+                last_name: lastName,
+                archetype: body.archetype,
+                burnout_risk: body.composite,
+                scores_json: scoresJson,
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.error("[submit] personal-subscriber persist failed (non-fatal)", err);
       }
     }
 

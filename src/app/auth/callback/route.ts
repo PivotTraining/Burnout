@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const tokenHash = req.nextUrl.searchParams.get("token_hash");
   const type = req.nextUrl.searchParams.get("type");
-  const next = req.nextUrl.searchParams.get("next") || "/dashboard";
+  const next = req.nextUrl.searchParams.get("next") || "/home";
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return NextResponse.redirect(new URL(next, req.nextUrl.origin));
