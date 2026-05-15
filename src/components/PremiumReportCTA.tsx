@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { TIERS, priceLabel } from "@/lib/biq-tiers";
 import { ArrowRight, FileText, ShieldCheck, Sparkles } from "lucide-react";
 
 /**
@@ -66,22 +68,15 @@ export default function PremiumReportCTA({ archetype, burnoutScore, email }: Pro
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const router = useRouter();
   async function startCheckout() {
     setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/stripe/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ archetype, burnoutScore, email }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const { url } = await res.json();
-      window.location.href = url;
-    } catch {
-      setError("Couldn't open checkout. Try again, or email hello@pivottraining.us.");
-      setLoading(false);
-    }
+    const params = new URLSearchParams({
+      archetype: String(archetype ?? ""),
+      burnoutScore: String(burnoutScore ?? ""),
+      email: String(email ?? ""),
+    });
+    router.push(`/pro?${params.toString()}`);
   }
 
   return (
@@ -136,7 +131,7 @@ export default function PremiumReportCTA({ archetype, burnoutScore, email }: Pro
 
             <div className="flex flex-wrap items-end gap-x-5 gap-y-3 mb-5">
               <div className="flex items-baseline gap-2">
-                <span className="font-serif text-5xl font-bold tracking-tight">$49</span>
+                <span className="font-serif text-5xl font-bold tracking-tight">{priceLabel(TIERS.pro)}</span>
                 <span className="text-xs text-white/55 uppercase tracking-widest">one-time</span>
               </div>
               <span className="text-xs text-white/55">·</span>
