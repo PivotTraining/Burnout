@@ -54,11 +54,25 @@ function ProPageInner() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // 1. URL params take priority (used by /start → /pro handoff so the
+    //    user doesn't have to re-enter their archetype/score/email).
+    const urlArchetype = searchParams.get("archetype");
+    const urlScore = searchParams.get("burnoutScore");
+    const urlEmail = searchParams.get("email");
+    if (urlArchetype) {
+      setAssessmentResult({
+        archetype: urlArchetype,
+        burnoutScore: urlScore ? Number(urlScore) : undefined,
+      });
+      if (urlEmail) setEmail(urlEmail);
+      return;
+    }
+    // 2. Fallback to localStorage (the /pro direct-entry path).
     try {
       const stored = (typeof localStorage !== "undefined" && localStorage.getItem("biq_result")) || sessionStorage.getItem("biq_result");
       if (stored) setAssessmentResult(JSON.parse(stored));
     } catch {}
-  }, []);
+  }, [searchParams]);
 
   const finalPrice = promo?.valid && promo.discount
     ? Math.round(basePrice * (1 - promo.discount / 100))
