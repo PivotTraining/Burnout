@@ -32,7 +32,7 @@ export interface SectorPageContent {
   whyFit: string;
 }
 
-export const SECTOR_PAGES: Record<Sector, SectorPageContent> = {
+export const SECTOR_PAGES: Record<string, SectorPageContent> = {
   healthcare: {
     slug: "healthcare",
     name: "Healthcare",
