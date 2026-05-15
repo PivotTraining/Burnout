@@ -122,3 +122,17 @@ export function stripePriceFor(
   }
   return process.env[env[cycle]];
 }
+
+// PRODUCT → DB tier mapping.
+//
+// orgs.tier CHECK constraint allows only 'pulse' (assessment-only),
+// 'core' (individual paid: Continuum, Coach), or 'enterprise' (Teams).
+// Product keys differ from DB values — this map is the source of truth.
+export const PRODUCT_TO_DB_TIER = {
+  pro: "pulse",
+  continuum: "core",
+  coach: "core",
+  teams: "enterprise",
+} as const satisfies Record<TierProduct, "pulse" | "core" | "enterprise">;
+
+export type DbTier = (typeof PRODUCT_TO_DB_TIER)[keyof typeof PRODUCT_TO_DB_TIER];
