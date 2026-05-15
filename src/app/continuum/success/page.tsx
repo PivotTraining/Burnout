@@ -50,14 +50,16 @@ export default async function ContinuumSuccessPage({ searchParams }: PageProps) 
           </h2>
           <ol className="space-y-3 text-slate-200">
             <li>
-              <span className="font-semibold">1. Check your inbox</span> —
-              including spam/promotions — for a welcome email from BurnoutIQ
-              with your member sign-in link.
+              <span className="font-semibold">1. Take your baseline assessment</span>{" "}
+              — Continuum only works if there's a starting point to measure
+              against. The 36-item BurnoutIQ takes about ten minutes and gives
+              you your archetype + 9-dimension reading. Your monthly pulse from
+              here on out compares to this baseline.
             </li>
             <li>
-              <span className="font-semibold">2. Schedule your first pulse</span>{" "}
-              — we'll prompt you in 30 days, but the pattern is sharper if you
-              put it on your calendar now.
+              <span className="font-semibold">2. Check your inbox</span> —
+              including spam/promotions — for a welcome email from BurnoutIQ
+              confirming your subscription and explaining the monthly cadence.
             </li>
             <li>
               <span className="font-semibold">3. Bring it to your reflection cadence</span>{" "}
@@ -70,10 +72,10 @@ export default async function ContinuumSuccessPage({ searchParams }: PageProps) 
 
         <div className="flex flex-wrap gap-3 justify-center">
           <Link
-            href="/me"
+            href="/start"
             className="inline-flex items-center px-5 py-3 rounded-lg bg-[#D97706] hover:bg-[#F59E0B] text-white text-sm font-semibold"
           >
-            Go to my dashboard
+            Take your baseline assessment →
           </Link>
           <Link
             href="/"
