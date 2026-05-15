@@ -8,6 +8,7 @@ import {
   premiumReportEmailHtml,
 } from "@/lib/premium-report-delivery";
 import type { ArchetypeKey } from "@/lib/archetype-content";
+import { provisionPersonalContinuum } from "@/lib/continuum-provisioning";
 
 const PREMIUM_PRODUCT_TAG = "burnoutiq_premium_report_v1";
 const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";
@@ -83,22 +84,33 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // ─── Existing subscription completion path ─────────────────────────
+      // ─── Subscription completion path ──────────────────────────────
+      // Continuum / Coach: provision the personal org + member + subscription
+      // via the shared helper. Mirrors /api/continuum-unlock so paid and
+      // $0-comp flows produce identical back-end state.
       const subId = session.subscription as string | null;
       const customerId = session.customer as string | null;
-      if (subId && customerId) {
-        // Org linkage will be added once we wire the checkout flow to org_id.
-        // For now, write the row keyed by stripe ids.
-        await sb
-          .from("subscriptions")
-          .insert({
-            org_id: null as unknown as string, // backfilled by ops once attached
-            stripe_customer_id: customerId,
-            stripe_subscription_id: subId,
-            status: "active",
-            seats: session.amount_total ? Math.round((session.amount_total ?? 0) / 100) : 0,
-          })
-          .select();
+      const subscriberEmail =
+        session.customer_details?.email || session.customer_email || null;
+      if (subId && customerId && subscriberEmail) {
+        try {
+          const sub = await stripe.subscriptions.retrieve(subId);
+          const periodEnd = sub.current_period_end
+            ? new Date(sub.current_period_end * 1000)
+            : null;
+          await provisionPersonalContinuum({
+            userEmail: subscriberEmail,
+            productKind: "continuum",
+            stripeCustomerId: customerId,
+            stripeSubscriptionId: subId,
+            currentPeriodEnd: periodEnd,
+          });
+        } catch (err) {
+          console.error(
+            "[stripe webhook] subscription provisioning failed",
+            err,
+          );
+        }
       }
       break;
     }
