@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import TakerCounter from "@/components/TakerCounter";
 import BurnoutLogo from "@/components/BurnoutLogo";
 import Link from "next/link";
 import {
@@ -71,6 +72,10 @@ function Hero() {
               </Link>
               .
             </p>
+          </div>
+
+          <div className="fade-up" style={{ animationDelay: "375ms" }}>
+            <TakerCounter prefix="Joined by" suffix="people taking BurnoutIQ" className="text-white/60 mb-4" />
           </div>
 
           <div className="fade-up" style={{ animationDelay: "400ms" }}>

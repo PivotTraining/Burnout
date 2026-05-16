@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
+import MbiCalibrationPrompt from "@/components/MbiCalibrationPrompt";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -123,6 +124,7 @@ export default function ResultsV2Page() {
   const params = useSearchParams();
   const raw = params.get("r");
   const result = useMemo<BiqResults | null>(() => decode(raw), [raw]);
+  const [assessmentId, setAssessmentId] = useState<string | null>(null);
 
   // Persist for the /pro flow so the premium-report metadata pipeline
   // can pick up archetype + burnoutScore from localStorage.
@@ -140,6 +142,30 @@ export default function ResultsV2Page() {
       );
     } catch {}
   }, [result]);
+
+  // Persist anonymous assessment row server-side and capture assessmentId
+  // so the MBI calibration prompt below can attach to it.
+  useEffect(() => {
+    if (!result || assessmentId) return;
+    let cancelled = false;
+    fetch("/api/assessment/log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        archetype: result.archetype,
+        burnoutRisk: result.composite.pct,
+        scoresJson: result.subscales,
+      }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d?.id) setAssessmentId(d.id as string);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [result, assessmentId]);
 
   if (!result) {
     return (
@@ -295,6 +321,13 @@ export default function ResultsV2Page() {
               </Link>
             </div>
           </div>
+
+          {/* MBI calibration (validation) */}
+          {assessmentId && (
+            <div className="mt-12">
+              <MbiCalibrationPrompt assessmentId={assessmentId} />
+            </div>
+          )}
 
           {/* Retake link */}
           <div className="text-center mt-8">

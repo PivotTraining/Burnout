@@ -1,12 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
-      "path": "/api/social-media/post",
+      "path": "/api/cron/retest-reminders",
       "schedule": "0 14 * * *"
-    },
-    {
-      "path": "/api/social-media/listen",
-      "schedule": "0 15 * * *"
     }
   ]
 }
