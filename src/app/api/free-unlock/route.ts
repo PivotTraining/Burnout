@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
   const customerEmail = body.customerEmail as string | undefined;
   const archetypeRaw = body.archetype as string | undefined;
   const burnoutScore = Number(body.burnoutScore) || 0;
+  const sector = (body.sector as string | undefined) || undefined;
   const promoCode = body.promoCode as string | undefined;
 
   if (!customerEmail) {
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
     const pdfBuffer = await generatePremiumReportPDF({
       archetype,
       burnoutScore,
+      sector,
       customerName: "",
       customerEmail,
       purchaseDate: new Date(),

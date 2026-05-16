@@ -2,6 +2,7 @@
 
 import { useMemo, useEffect, useState } from "react";
 import MbiCalibrationPrompt from "@/components/MbiCalibrationPrompt";
+import { getSectorCopy } from "@/lib/biq-sector-copy";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -125,6 +126,8 @@ export default function ResultsV2Page() {
   const raw = params.get("r");
   const result = useMemo<BiqResults | null>(() => decode(raw), [raw]);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
+  const sectorParam = params.get("sector");
+  const sectorCopy = useMemo(() => getSectorCopy(sectorParam), [sectorParam]);
 
   // Persist for the /pro flow so the premium-report metadata pipeline
   // can pick up archetype + burnoutScore from localStorage.
@@ -291,6 +294,26 @@ export default function ResultsV2Page() {
               </div>
             )}
           </div>
+
+          {sectorCopy && (
+            <div className="bg-light-bg border border-navy/10 rounded-2xl p-8 mt-12">
+              <p className="text-xs font-bold uppercase tracking-widest text-ember mb-3">
+                Your sector context
+              </p>
+              <h2 className="text-2xl font-bold text-navy mb-3">
+                {sectorCopy.hook}
+              </h2>
+              <p className="text-navy/70 mb-4 leading-relaxed">
+                {sectorCopy.resultsBlurb}
+              </p>
+              <div className="border-l-4 border-ember pl-4 mt-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-ember mb-1">
+                  Reflection
+                </p>
+                <p className="text-sm text-navy italic">{sectorCopy.reflectionQ}</p>
+              </div>
+            </div>
+          )}
 
           {/* CTAs */}
           <div className="bg-navy rounded-2xl p-8 md:p-10 text-white">

@@ -17,7 +17,7 @@ function ProPageInner() {
   const [loading, setLoading] = useState(false);
   const [demo, setDemo] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [assessmentResult, setAssessmentResult] = useState<{archetype?: string; burnoutScore?: number} | null>(null);
+  const [assessmentResult, setAssessmentResult] = useState<{archetype?: string; burnoutScore?: number; sector?: string | null} | null>(null);
 
   const basePrice = (tier.billing as { kind: "one-time"; priceUsd: number }).priceUsd;
   const searchParams = useSearchParams();
@@ -100,6 +100,7 @@ function ProPageInner() {
           promoCode: promo?.valid ? promo.code : undefined,
           archetype: assessmentResult?.archetype,
           burnoutScore: assessmentResult?.burnoutScore,
+          sector: assessmentResult?.sector ?? undefined,
         }),
       });
       const json = await res.json();

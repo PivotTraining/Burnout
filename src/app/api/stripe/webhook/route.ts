@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
       // ─── Premium Report (one-time) — discriminated by metadata.product ─
       if (session.metadata?.product === PREMIUM_PRODUCT_TAG) {
         const archetype = session.metadata.archetype as ArchetypeKey | undefined;
+      const sector = (session.metadata?.sector as string | undefined) || undefined;
         const burnoutScore = Number.parseInt(session.metadata.burnoutScore || "0", 10);
         const customerEmail =
           session.customer_details?.email || session.customer_email || null;

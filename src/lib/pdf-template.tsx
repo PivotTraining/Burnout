@@ -32,6 +32,7 @@ import {
 } from "@react-pdf/renderer";
 import { ARCHETYPES, getArchetypePlan, type ArchetypeKey } from "./archetype-content";
 import { Markdown } from "./pdf-markdown";
+import { getSectorCopy } from "./biq-sector-copy";
 
 // ─── Color tokens ────────────────────────────────────────────────────────
 
@@ -363,15 +364,16 @@ interface Props {
   customerName?: string;
   customerEmail?: string;
   purchaseDate?: Date;
+  sector?: string;
 }
 
 export function PremiumReportPDF({
   archetype,
   burnoutScore,
   customerName,
-  purchaseDate = new Date(),
-}: Props) {
+  purchaseDate = new Date(),, sector}: Props) {
   const meta = ARCHETYPES[archetype];
+  const sectorCopy = sector ? getSectorCopy(sector) : null;
   const plan = getArchetypePlan(archetype);
   const band = bandFor(burnoutScore);
   const fmtDate = purchaseDate.toLocaleDateString("en-US", {
@@ -499,6 +501,27 @@ export function PremiumReportPDF({
 
         <PageFooter pageNum={2} total={TOTAL} />
       </Page>
+
+      {/* ─── SECTOR INTRO: tailored framing for the buyer's context ─── */}
+      {sectorCopy && (
+        <Page size="LETTER" style={[styles.pageBase, styles.pagePaper]}>
+          <PageHeader section="Your Sector Context" />
+          <Text style={styles.eyebrow}>Sector Framing · Why This Matters For You Specifically</Text>
+          <Text style={styles.h1}>{sectorCopy.hook}</Text>
+          <Text style={[styles.subhead, { marginBottom: 18 }]}>
+            Same instrument, calibrated for the constraints you actually work inside.
+          </Text>
+          <Text style={styles.paragraph}>{sectorCopy.proIntro}</Text>
+          <View style={{ marginTop: 24, padding: 16, backgroundColor: C.emberPale, borderRadius: 10, borderLeftWidth: 4, borderLeftColor: C.ember }}>
+            <Text style={{ fontSize: 9, letterSpacing: 1.6, color: C.ember, textTransform: "uppercase", fontWeight: 700, marginBottom: 6 }}>
+              Reflection prompt
+            </Text>
+            <Text style={{ fontSize: 11, lineHeight: 1.55, color: C.ink, fontStyle: "italic" }}>
+              {sectorCopy.reflectionQ}
+            </Text>
+          </View>
+        </Page>
+      )}
 
       {/* ─── DEEP READ: v2 narrative (auto-paginated) ─── */}
       {meta.narrativeV2 && (
