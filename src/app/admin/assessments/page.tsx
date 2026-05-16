@@ -21,6 +21,7 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { supabaseAdmin } from "@/lib/supabase";
+import { correlationWithCI, type CorrelationResult } from "@/lib/biq-stats";
 
 export const revalidate = 0;
 
@@ -197,6 +198,9 @@ export default async function AdminAssessments() {
         </section>
       )}
 
+      {/* MBI calibration analysis */}
+      <MbiCalibrationPanel />
+
       {/* Detailed table */}
       <section className="mt-8 overflow-x-auto">
         <table className="min-w-full divide-y divide-stone-200 text-sm">
@@ -255,5 +259,149 @@ export default async function AdminAssessments() {
         via the Supabase SQL editor.
       </p>
     </main>
+  );
+}
+
+
+// ─── MBI calibration analysis (separate async component) ──────────────
+
+const TARGET_N = 30;
+
+interface CalibrationJoinRow {
+  burnout_risk: number | null;
+  assessment_id: string;
+  mbi_exhaustion: number;
+  mbi_cynicism: number;
+  mbi_efficacy: number;
+}
+
+interface PanelStats {
+  n: number;
+  exhaustionR: CorrelationResult | null;
+  cynicismR: CorrelationResult | null;
+  efficacyR: CorrelationResult | null;
+  sumR: CorrelationResult | null;
+}
+
+async function getMbiPanelStats(): Promise<PanelStats> {
+  const sb = supabaseAdmin();
+  // Pull all calibrations and join their assessments for burnout_risk
+  const { data: cal } = await sb
+    .from("mbi_calibrations")
+    .select("assessment_id, mbi_exhaustion, mbi_cynicism, mbi_efficacy");
+
+  const ids = (cal ?? []).map((c) => (c as { assessment_id: string }).assessment_id);
+  if (ids.length === 0) {
+    return { n: 0, exhaustionR: null, cynicismR: null, efficacyR: null, sumR: null };
+  }
+  const { data: asx } = await sb
+    .from("assessments")
+    .select("id, burnout_risk")
+    .in("id", ids);
+
+  const briById = new Map((asx ?? []).map((a) => [
+    (a as { id: string }).id,
+    (a as { burnout_risk: number | null }).burnout_risk,
+  ]));
+
+  const rows: CalibrationJoinRow[] = (cal as CalibrationJoinRow[]).map((c) => ({
+    ...c,
+    burnout_risk: briById.get(c.assessment_id) ?? null,
+  }));
+
+  const filtered = rows.filter((r) => typeof r.burnout_risk === "number");
+  const n = filtered.length;
+  if (n < 3) return { n, exhaustionR: null, cynicismR: null, efficacyR: null, sumR: null };
+
+  const bri = filtered.map((r) => r.burnout_risk as number);
+  const ex = filtered.map((r) => r.mbi_exhaustion);
+  const cy = filtered.map((r) => r.mbi_cynicism);
+  // Note: efficacy is reverse-scored conceptually; high efficacy = low burnout. We don't
+  // flip here — we just report the raw correlation with its sign.
+  const ef = filtered.map((r) => r.mbi_efficacy);
+  const sum = filtered.map((r) => r.mbi_exhaustion + r.mbi_cynicism + (8 - r.mbi_efficacy));
+
+  return {
+    n,
+    exhaustionR: correlationWithCI(bri, ex),
+    cynicismR: correlationWithCI(bri, cy),
+    efficacyR: correlationWithCI(bri, ef),
+    sumR: correlationWithCI(bri, sum),
+  };
+}
+
+function fmt(v: number | undefined | null, digits = 2): string {
+  if (v == null || Number.isNaN(v)) return "—";
+  return v.toFixed(digits);
+}
+
+async function MbiCalibrationPanel() {
+  const stats = await getMbiPanelStats();
+
+  // Below threshold — show progress
+  if (stats.n < TARGET_N) {
+    const pct = Math.min(100, Math.round((stats.n / TARGET_N) * 100));
+    return (
+      <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6">
+        <h2 className="text-lg font-bold text-stone-900">MBI Calibration · Validation Pipeline</h2>
+        <p className="mt-1 text-sm text-stone-600">
+          Convergent-validity correlations (BurnoutIQ vs MBI dimensions) require at least {TARGET_N} paired calibration submissions before we report them. The correlation is mathematically computable below that, but the confidence intervals are too wide to be useful.
+        </p>
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-sm font-mono">
+            <span className="text-stone-700">{stats.n} of {TARGET_N} submissions</span>
+            <span className="text-stone-500">{pct}%</span>
+          </div>
+          <div className="mt-2 h-2 rounded-full bg-stone-100 overflow-hidden">
+            <div className="h-full bg-amber-600" style={{ width: pct + "%" }} />
+          </div>
+        </div>
+        <p className="mt-4 text-xs text-stone-500">
+          Calibration submissions accumulate as takers fill out the optional 3-item MBI prompt on the results page. We&apos;ll start displaying r-values + 95% CIs once {TARGET_N} pairs land.
+        </p>
+      </section>
+    );
+  }
+
+  // Threshold met — show the actual stats
+  return (
+    <section className="mt-8 rounded-2xl border border-stone-200 bg-white p-6">
+      <h2 className="text-lg font-bold text-stone-900">MBI Calibration · Convergent Validity</h2>
+      <p className="mt-1 text-sm text-stone-600">
+        Pearson correlations between the BurnoutIQ composite (BRI) and self-rated MBI dimensions, with 95% confidence intervals via Fisher z-transform. n = {stats.n} paired submissions.
+      </p>
+      <div className="mt-4 overflow-x-auto">
+        <table className="min-w-full text-sm">
+          <thead className="bg-stone-50">
+            <tr>
+              <th className="px-3 py-2 text-left font-semibold text-stone-700">Comparison</th>
+              <th className="px-3 py-2 text-right font-semibold text-stone-700">r</th>
+              <th className="px-3 py-2 text-right font-semibold text-stone-700">95% CI</th>
+              <th className="px-3 py-2 text-right font-semibold text-stone-700">p (approx)</th>
+              <th className="px-3 py-2 text-left font-semibold text-stone-700">Interpretation</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-stone-100">
+            {([
+              { label: "BRI ↔ MBI Exhaustion", res: stats.exhaustionR, expect: "positive (high exhaustion → high BRI)" },
+              { label: "BRI ↔ MBI Cynicism", res: stats.cynicismR, expect: "positive (high cynicism → high BRI)" },
+              { label: "BRI ↔ MBI Efficacy", res: stats.efficacyR, expect: "negative (high efficacy → low BRI)" },
+              { label: "BRI ↔ MBI Composite (Ex+Cy+(8-Ef))", res: stats.sumR, expect: "positive (high MBI total → high BRI)" },
+            ] as const).map((row) => (
+              <tr key={row.label}>
+                <td className="px-3 py-2 text-stone-700">{row.label}</td>
+                <td className="px-3 py-2 text-right font-mono font-semibold text-stone-900">{fmt(row.res?.r)}</td>
+                <td className="px-3 py-2 text-right font-mono text-stone-700">[{fmt(row.res?.ciLow)}, {fmt(row.res?.ciHigh)}]</td>
+                <td className="px-3 py-2 text-right font-mono text-stone-700">{fmt(row.res?.pTwoSided, 4)}</td>
+                <td className="px-3 py-2 text-stone-500 text-xs">{row.expect}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-4 text-xs text-stone-500">
+        These are exploratory correlations on a self-selecting subsample. Treat them as evidence of construct overlap, not as a substitute for a full convergent-validity study against a clinically-administered MBI.
+      </p>
+    </section>
   );
 }
