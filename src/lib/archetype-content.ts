@@ -8,6 +8,18 @@
  * item wording.
  */
 
+
+import {
+  DEPLETED_V2,
+  STEADY_V2,
+  DETACHED_V2,
+  SMOLDERING_V2,
+  FOGGY_V2,
+  VOLATILE_V2,
+  DOUBTER_V2,
+  STRANDED_V2,
+} from "./archetype-narratives";
+
 export type ArchetypeKey =
   | "STEADY" | "DEPLETED" | "DETACHED" | "FOGGY"
   | "VOLATILE" | "DOUBTER" | "STRANDED" | "SMOLDERING";
@@ -17,6 +29,7 @@ export interface ArchetypeMeta {
   tag: string;        // one-line italic subtitle
   blurb: string;      // 2-3 sentence framing for cover/exec card
   dominantDim: string; // 2-4 char chip on cover ("RC", "EE", etc.)
+  narrativeV2?: string; // long-form v2 narrative (markdown) — Pro Report deep read
 }
 
 export interface PlanWeek {
@@ -56,6 +69,7 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeMeta> = {
     blurb:
       "Your assessment shows you're metabolizing pressure well right now. Exhaustion is in check, engagement is real, recovery systems are working. The risk for The Steady isn't crisis — it's drift. The next hard season is coming. The work is to protect what's working now so you stay here when it arrives.",
     dominantDim: "—",
+    narrativeV2: STEADY_V2,
   },
   DEPLETED: {
     name: "The Depleted",
@@ -63,6 +77,7 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeMeta> = {
     blurb:
       "Your exhaustion dimension is elevated. The engine is running on fumes. You're still showing up and still delivering — which is part of the problem. The Depleted archetype is the classic precursor to fuller burnout patterns. Intervene now while the other systems are still online.",
     dominantDim: "EE",
+    narrativeV2: DEPLETED_V2,
   },
   DETACHED: {
     name: "The Detached",
@@ -70,6 +85,7 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeMeta> = {
     blurb:
       "Your Mental Distance dimension is elevated. Cynicism is creeping in at the edges, investment is lower than it used to be, and colleagues feel more transactional than they should. This is the second classical stage of burnout — and the easiest to miss in yourself because it presents as 'I just need a break.'",
     dominantDim: "MD",
+    narrativeV2: DETACHED_V2,
   },
   FOGGY: {
     name: "The Foggy",
@@ -77,6 +93,7 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeMeta> = {
     blurb:
       "Your Cognitive Impairment dimension is elevated. Focus is slipping, decisions feel heavier, small tasks cost disproportionate effort, and names and threads disappear mid-sentence. Your brain is signalling that the operating environment is exceeding its current bandwidth.",
     dominantDim: "CI",
+    narrativeV2: FOGGY_V2,
   },
   VOLATILE: {
     name: "The Volatile",
@@ -84,6 +101,7 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeMeta> = {
     blurb:
       "Your Emotional Dysregulation dimension is elevated. Shorter fuse, disproportionate reactions, mood shifts that feel out of nowhere. Your nervous system has been running without sufficient recovery long enough that its regulation buffer has collapsed. It is not a character flaw. It is a measurable, recoverable signal.",
     dominantDim: "ED",
+    narrativeV2: VOLATILE_V2,
   },
   DOUBTER: {
     name: "The Doubter",
@@ -91,6 +109,7 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeMeta> = {
     blurb:
       "Your Reduced Efficacy dimension is elevated. The tank may have fuel, but you've started questioning whether it matters. Reduced professional efficacy is the dimension that separates true burnout from simple exhaustion — it attacks identity, not just energy.",
     dominantDim: "RE",
+    narrativeV2: DOUBTER_V2,
   },
   STRANDED: {
     name: "The Stranded",
@@ -98,6 +117,7 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeMeta> = {
     blurb:
       "Your Recovery Capacity dimension is elevated. On paper you're engaged, efficacious, even energetic in bursts. But your recovery systems aren't refilling what you spend. Weekends don't reset you, PTO evaporates, sleep doesn't do its job. The most dangerous archetype to miss — it looks fine from the outside until it collapses fast.",
     dominantDim: "RC",
+    narrativeV2: STRANDED_V2,
   },
   SMOLDERING: {
     name: "The Smoldering",
@@ -105,6 +125,7 @@ export const ARCHETYPES: Record<ArchetypeKey, ArchetypeMeta> = {
     blurb:
       "All six BurnoutIQ dimensions are elevated together. Exhaustion is chronic, mental distance is set in, cognition and emotional regulation are compromised, efficacy is shaken, and recovery has stopped working. This is the fully-expressed burnout syndrome as classified by the WHO ICD-11. This pattern does not resolve on its own — the next 90 days are triage.",
     dominantDim: "ALL",
+    narrativeV2: SMOLDERING_V2,
   },
 };
 

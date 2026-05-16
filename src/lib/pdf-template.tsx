@@ -31,6 +31,7 @@ import {
   Document, Page, View, Text, StyleSheet, Svg, Path, Defs, LinearGradient, Stop, Rect, renderToBuffer,
 } from "@react-pdf/renderer";
 import { ARCHETYPES, getArchetypePlan, type ArchetypeKey } from "./archetype-content";
+import { Markdown } from "./pdf-markdown";
 
 // ─── Color tokens ────────────────────────────────────────────────────────
 
@@ -498,6 +499,21 @@ export function PremiumReportPDF({
 
         <PageFooter pageNum={2} total={TOTAL} />
       </Page>
+
+      {/* ─── DEEP READ: v2 narrative (auto-paginated) ─── */}
+      {meta.narrativeV2 && (
+        <Page size="LETTER" style={[styles.pageBase, styles.pagePaper]}>
+          <PageHeader section="Deep Read" />
+          <Text style={styles.eyebrow}>The Long Read · Your Archetype, In Depth</Text>
+          <Text style={styles.h1}>The {meta.name.replace(/^The\s+/, "")} — Deep Read</Text>
+          <Text style={[styles.subhead, { marginBottom: 18 }]}>
+            What the data is saying, what&apos;s most likely true, and the
+            90-day plan structured for {meta.name.toLowerCase()} patterns
+            specifically.
+          </Text>
+          <Markdown md={meta.narrativeV2} />
+        </Page>
+      )}
 
       {/* ─── PAGE 3: SCORE POSITION ─── */}
       <Page size="LETTER" style={[styles.pageBase, styles.pagePaper]}>

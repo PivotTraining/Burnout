@@ -1,14 +1,6 @@
 /**
  * src/lib/pdf-markdown.tsx
  *
- * Minimal markdown→@react-pdf/renderer component.
- */
-import { View, Text } from "@react-pdf/renderer";
-export function Markdown(props){return null;}
-export default Markdown;
-/**
- * src/lib/pdf-markdown.tsx
- *
  * Minimal markdown → @react-pdf/renderer component.
  * Supports the subset used by archetype narratives (v2):
  *   - ATX headings:  #, ##, ###, ####
