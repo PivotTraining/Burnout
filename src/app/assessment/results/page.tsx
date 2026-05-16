@@ -192,6 +192,8 @@ export default function ResultsV2Page() {
   }
 
   const archetypeKey = result.archetype;
+  const isSevere = result.composite.pct >= 70 || result.archetype === "SMOLDERING";
+
   const archetype = ARCHETYPE_COPY[archetypeKey] ?? {
     name: archetypeKey,
     tagline: "",
@@ -204,6 +206,33 @@ export default function ResultsV2Page() {
       <main className="pt-24 pb-20 bg-light-bg min-h-screen">
         <section className="section-wide max-w-4xl">
           {/* Composite + Archetype header */}
+          {isSevere && (
+            <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 mb-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-red-800">
+                Severe band · Please read this first
+              </p>
+              <h2 className="mt-2 text-xl md:text-2xl font-bold text-red-900 leading-tight">
+                Your reading is in clinical-grade territory.
+              </h2>
+              <p className="mt-3 text-red-900 leading-relaxed">
+                BurnoutIQ can name the pattern, but at this level it should not
+                be your primary intervention. Please consider reaching out to a
+                professional — your EAP, a therapist, or one of the support
+                lines on our crisis page — before working through the rest of
+                this report.
+              </p>
+              <Link
+                href="/support/crisis"
+                className="mt-4 inline-flex items-center px-5 py-2.5 rounded-lg bg-red-700 hover:bg-red-800 text-white text-sm font-semibold"
+              >
+                Open crisis support page →
+              </Link>
+              <p className="mt-3 text-xs text-red-800">
+                If you&apos;re in immediate distress: call or text 988 in the US.
+              </p>
+            </div>
+          )}
+
           <div className="bg-white rounded-2xl border border-border-gray p-8 md:p-10 mb-6 shadow-sm">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
