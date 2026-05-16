@@ -163,11 +163,17 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Recommendation engine is currently in the Python generator (local tool).
+    // For the email path, we pass an empty array and the template handles it.
+    // TODO: port generateRecommendations() from Python to TS for full parity.
+    const recommendations: { title: string; why: string; what: string; owner: string; horizon: string }[] = [];
+
     await sendTeamReport({
       to: body.buyerEmail,
       cohortName: body.cohortName,
       agg,
       narrative,
+      recommendations,
     });
 
     return NextResponse.json({
