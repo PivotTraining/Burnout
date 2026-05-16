@@ -371,7 +371,9 @@ export function PremiumReportPDF({
   archetype,
   burnoutScore,
   customerName,
-  purchaseDate = new Date(),, sector}: Props) {
+  purchaseDate = new Date(),
+  sector,
+}: Props) {
   const meta = ARCHETYPES[archetype];
   const sectorCopy = sector ? getSectorCopy(sector) : null;
   const plan = getArchetypePlan(archetype);
