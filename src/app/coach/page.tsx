@@ -31,14 +31,21 @@ export default function CoachPage() {
     setError("");
     setDemo(null);
     try {
-      const res = await fetch("/api/checkout", {
+      // 100%-off comps bypass Stripe via dedicated endpoint
+      const isFree = promo?.valid && promo.discount === 100;
+      const endpoint = isFree ? "/api/coach-unlock" : "/api/checkout";
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product: "coach",
-          customerEmail: email,
-          promoCode: promo?.valid ? promo.code : undefined,
-        }),
+        body: JSON.stringify(
+          isFree
+            ? { customerEmail: email, promoCode: promo?.code }
+            : {
+                product: "coach",
+                customerEmail: email,
+                promoCode: promo?.valid ? promo.code : undefined,
+              },
+        ),
       });
       const json = await res.json();
       if (json.url) window.location.href = json.url;
