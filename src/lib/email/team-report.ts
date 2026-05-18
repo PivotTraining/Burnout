@@ -17,7 +17,7 @@ import {
   type CohortAggregates,
 } from "../team-report-aggregates";
 
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
+const resend = new Resend(process.env.RESEND_API_KEY ?? "re_build_placeholder");
 const FROM = process.env.RESEND_FROM ?? "BurnoutIQ <hello@pivottraining.dev>";
 
 // Archetype primer — mirrors archetype_deepdives.py ARCHETYPE_PRIMER
@@ -79,7 +79,7 @@ function tableRow(cells: (string | number)[]): string {
     cells
       .map(
         (c) =>
-          \`<td style="padding: 8px 12px; border-bottom: 1px solid #E6E2D9; font-size: 13px; vertical-align: top;">\${c}</td>\`,
+          `<td style="padding: 8px 12px; border-bottom: 1px solid #E6E2D9; font-size: 13px; vertical-align: top;">${c}</td>`,
       )
       .join("") +
     "</tr>"
@@ -92,7 +92,7 @@ function tableHeader(cells: string[]): string {
     cells
       .map(
         (c) =>
-          \`<th style="padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 700; color: #B45309; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #D97706;">\${c}</th>\`,
+          `<th style="padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 700; color: #B45309; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #D97706;">${c}</th>`,
       )
       .join("") +
     "</tr></thead>"
@@ -101,42 +101,42 @@ function tableHeader(cells: string[]): string {
 
 function table(headers: string[], rows: (string | number)[][]): string {
   return (
-    \`<table style="width: 100%; border-collapse: collapse; margin: 12px 0;">\` +
+    `<table style="width: 100%; border-collapse: collapse; margin: 12px 0;">` +
     tableHeader(headers) +
-    \`<tbody>\${rows.map(tableRow).join("")}</tbody>\` +
-    \`</table>\`
+    `<tbody>${rows.map(tableRow).join("")}</tbody>` +
+    `</table>`
   );
 }
 
 function sectionHeading(num: string, text: string): string {
-  return \`<h2 style="font-size: 20px; margin: 36px 0 10px 0; padding-top: 8px; border-top: 1px solid #E6E2D9; color: #0B1220;">\${num}. \${text}</h2>\`;
+  return `<h2 style="font-size: 20px; margin: 36px 0 10px 0; padding-top: 8px; border-top: 1px solid #E6E2D9; color: #0B1220;">${num}. ${text}</h2>`;
 }
 
 function recommendationBlock(rec: Recommendation, idx: number): string {
-  return \`
+  return `
   <div style="margin: 16px 0; padding: 18px; background: #FAFAF7; border-left: 4px solid #D97706; border-radius: 8px;">
     <p style="margin: 0 0 6px 0; font-size: 11px; color: #B45309; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700;">
-      Recommendation \${idx + 1} · \${rec.horizon}
+      Recommendation ${idx + 1} · ${rec.horizon}
     </p>
-    <p style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: #0B1220;">\${rec.title}</p>
-    <p style="margin: 0 0 8px 0; font-size: 13px;"><strong style="color: #B45309;">Why:</strong> \${rec.why}</p>
-    <p style="margin: 0 0 8px 0; font-size: 13px;"><strong style="color: #B45309;">What:</strong> \${rec.what}</p>
-    <p style="margin: 0; font-size: 12px; color: #4B5563;"><strong>Owner:</strong> \${rec.owner}</p>
-  </div>\`;
+    <p style="margin: 0 0 12px 0; font-size: 16px; font-weight: 700; color: #0B1220;">${rec.title}</p>
+    <p style="margin: 0 0 8px 0; font-size: 13px;"><strong style="color: #B45309;">Why:</strong> ${rec.why}</p>
+    <p style="margin: 0 0 8px 0; font-size: 13px;"><strong style="color: #B45309;">What:</strong> ${rec.what}</p>
+    <p style="margin: 0; font-size: 12px; color: #4B5563;"><strong>Owner:</strong> ${rec.owner}</p>
+  </div>`;
 }
 
 function archetypePrimerBlock(): string {
   const order = ["STEADY", "DEPLETED", "DETACHED", "FOGGY", "VOLATILE", "DOUBTER", "STRANDED", "SMOLDERING"];
   return order.map((k) => {
     const p = ARCHETYPE_PRIMER[k];
-    return \`
+    return `
     <div style="margin: 14px 0;">
       <p style="margin: 0 0 4px 0; font-size: 14px;">
-        <strong style="color: #0B1220;">\${ARCHETYPE_LABELS[k] ?? k}</strong>
-        <em style="color: #B45309; margin-left: 6px;">· \${p.tagline}</em>
+        <strong style="color: #0B1220;">${ARCHETYPE_LABELS[k] ?? k}</strong>
+        <em style="color: #B45309; margin-left: 6px;">· ${p.tagline}</em>
       </p>
-      <p style="margin: 0; font-size: 13px; color: #0B1220; line-height: 1.55;">\${p.definition}</p>
-    </div>\`;
+      <p style="margin: 0; font-size: 13px; color: #0B1220; line-height: 1.55;">${p.definition}</p>
+    </div>`;
   }).join("");
 }
 
@@ -154,14 +154,14 @@ export async function sendTeamReport({
   const archetypeRows = agg.archetypes.map(({ archetype, count }) => [
     ARCHETYPE_LABELS[archetype] ?? archetype,
     count,
-    \`\${((count / agg.n) * 100).toFixed(1)}%\`,
+    `${((count / agg.n) * 100).toFixed(1)}%`,
     ARCHETYPE_IMPLICATION[archetype] ?? "—",
   ]);
 
   const bandRows = Object.entries(agg.bands).map(([band, count]) => [
     band,
     count,
-    \`\${((count / agg.n) * 100).toFixed(1)}%\`,
+    `${((count / agg.n) * 100).toFixed(1)}%`,
   ]);
 
   const deptRows = Object.entries(agg.departments).map(([d, c]) => [d, c]);
@@ -177,60 +177,60 @@ export async function sendTeamReport({
     ? recommendations.map(recommendationBlock).join("")
     : '<p style="color: #4B5563; font-style: italic;">No recommendations generated for this cohort.</p>';
 
-  const html = \`<!doctype html>
+  const html = `<!doctype html>
 <html><body style="font-family: -apple-system, system-ui, Helvetica, sans-serif; max-width: 760px; margin: 24px auto; color: #0B1220; line-height: 1.55; padding: 0 20px;">
 
   <p style="font-size: 11px; color: #B45309; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">
     BurnoutIQ — Team Report
   </p>
-  <h1 style="font-size: 28px; line-height: 1.15; margin: 0 0 6px 0;">\${cohortName}</h1>
+  <h1 style="font-size: 28px; line-height: 1.15; margin: 0 0 6px 0;">${cohortName}</h1>
   <p style="margin: 0 0 18px 0; color: #4B5563; font-size: 14px;">
-    Generated \${new Date().toISOString().slice(0, 10)} · Cohort size: \${agg.n} people
-    \${agg.sector ? \` · sector: \${agg.sector}\` : ""}
+    Generated ${new Date().toISOString().slice(0, 10)} · Cohort size: ${agg.n} people
+    ${agg.sector ? ` · sector: ${agg.sector}` : ""}
   </p>
   <p style="margin: 0 0 24px 0; color: #8A93A2; font-size: 12px; font-style: italic;">
     Prepared exclusively for the buyer organization. Confidential.
     Contains aggregated cohort data only — no individual identifiers.
   </p>
 
-  \${sectionHeading("1", "Executive Insight")}
-  <p style="font-size: 14px;">\${narrative}</p>
+  ${sectionHeading("1", "Executive Insight")}
+  <p style="font-size: 14px;">${narrative}</p>
 
-  \${sectionHeading("2", "What I'd Do First — Three Recommendations")}
+  ${sectionHeading("2", "What I'd Do First — Three Recommendations")}
   <p style="font-size: 13px; color: #4B5563;">
     Every cohort has a few moves that move the score and a lot of moves that don't.
     These are the three highest-leverage interventions in your data, ordered by
     urgency and effect size.
   </p>
-  \${recsBlock}
+  ${recsBlock}
 
-  \${sectionHeading("3", "The Picture — Severity Distribution")}
-  <p style="font-size: 13px;">Cohort mean BRI: <strong>\${agg.mean.toFixed(1)} / 100</strong>.</p>
-  \${table(["Severity Band", "Count", "% of cohort"], bandRows)}
+  ${sectionHeading("3", "The Picture — Severity Distribution")}
+  <p style="font-size: 13px;">Cohort mean BRI: <strong>${agg.mean.toFixed(1)} / 100</strong>.</p>
+  ${table(["Severity Band", "Count", "% of cohort"], bandRows)}
 
-  \${sectionHeading("4", "The Eight Archetypes — A Primer")}
+  ${sectionHeading("4", "The Eight Archetypes — A Primer")}
   <p style="font-size: 13px; color: #4B5563;">
     Before looking at how your cohort distributes, here's a brief definition of
     each archetype. Read the ones that show up in your data closely; skim the rest.
   </p>
-  \${archetypePrimerBlock()}
+  ${archetypePrimerBlock()}
 
-  \${sectionHeading("5", "The Archetype Mix in Your Cohort")}
-  \${table(["Archetype", "Count", "% of cohort", "Implication"], archetypeRows)}
+  ${sectionHeading("5", "The Archetype Mix in Your Cohort")}
+  ${table(["Archetype", "Count", "% of cohort", "Implication"], archetypeRows)}
 
-  \${
+  ${
     deptRows.length > 0
-      ? \`\${sectionHeading("6", "Department Patterns")}
+      ? `${sectionHeading("6", "Department Patterns")}
          <p style="font-size: 13px; color: #4B5563;">Sub-groups smaller than 5 are masked for privacy.</p>
-         \${table(["Department", "Count"], deptRows)}\`
+         ${table(["Department", "Count"], deptRows)}`
       : ""
   }
 
-  \${sectionHeading(deptRows.length > 0 ? "7" : "6", "Risk Stratification")}
+  ${sectionHeading(deptRows.length > 0 ? "7" : "6", "Risk Stratification")}
   <p style="font-size: 13px; color: #4B5563;">Counts only. Pivot does not provide identified rosters under any circumstance.</p>
-  \${table(["Risk Tier", "Count", "Recommended Action"], riskRows)}
+  ${table(["Risk Tier", "Count", "Recommended Action"], riskRows)}
 
-  \${sectionHeading(deptRows.length > 0 ? "8" : "7", "The 90-Day Manager Playbook")}
+  ${sectionHeading(deptRows.length > 0 ? "8" : "7", "The 90-Day Manager Playbook")}
   <p style="margin: 12px 0 4px 0;"><strong style="color: #B45309; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">Days 1-14: Surface, don't fix</strong></p>
   <p style="font-size: 13px;">One 1:1 with every direct report. Single agenda question: <em>"What's one thing about this job, this team, or this season that's costing you more than it should?"</em> Aggregate at management layer; look for patterns of three or more.</p>
   <p style="margin: 16px 0 4px 0;"><strong style="color: #B45309; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">Days 15-45: Pick three structural moves</strong></p>
@@ -254,12 +254,12 @@ export async function sendTeamReport({
     A polished Word-document version of this report (~22 pages, with embedded charts and per-archetype deep reads) is available on request. Reply to this email to receive it.
   </p>
 
-</body></html>\`;
+</body></html>`;
 
   await resend.emails.send({
     from: FROM,
     to,
-    subject: \`BurnoutIQ Team Report — \${cohortName}\`,
+    subject: `BurnoutIQ Team Report — ${cohortName}`,
     html,
   });
 }
