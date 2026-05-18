@@ -9,6 +9,7 @@ import {
 } from "@/lib/premium-report-delivery";
 import type { ArchetypeKey } from "@/lib/archetype-content";
 import { provisionPersonalContinuum } from "@/lib/continuum-provisioning";
+import { subscriptionWelcomeEmailHtml } from "@/lib/email";
 
 const PREMIUM_PRODUCT_TAG = "burnoutiq_premium_report_v1";
 const FROM = process.env.RESEND_FROM_EMAIL || "BurnoutIQ <hello@burnoutiqtest.com>";
@@ -106,6 +107,34 @@ export async function POST(req: NextRequest) {
             stripeSubscriptionId: subId,
             currentPeriodEnd: periodEnd,
           });
+
+          // Send the welcome email. Without this, /continuum/success
+          // tells the user to "check your inbox for a welcome email"
+          // and nothing ever arrives.
+          if (process.env.RESEND_API_KEY) {
+            try {
+              const resend = new Resend(process.env.RESEND_API_KEY);
+              const firstName =
+                session.customer_details?.name?.split(" ")[0] || null;
+              await resend.emails.send({
+                from: FROM,
+                to: subscriberEmail,
+                ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+                subject:
+                  "Welcome to BurnoutIQ Continuum — start with your baseline",
+                html: subscriptionWelcomeEmailHtml({
+                  productKind: "continuum",
+                  firstName,
+                  manageUrl: "https://burnoutiqtest.com/home",
+                }),
+              });
+            } catch (err) {
+              console.error(
+                "[stripe webhook] welcome email send failed (non-fatal)",
+                err,
+              );
+            }
+          }
         } catch (err) {
           console.error(
             "[stripe webhook] subscription provisioning failed",

@@ -49,6 +49,37 @@ export async function POST(req: NextRequest) {
       stripeCustomerId: null,
       stripeSubscriptionId: null,
     });
+
+    // Send the welcome email so comp users get the same onboarding as
+    // paid users (Stripe webhook handles the paid path).
+    if (process.env.RESEND_API_KEY) {
+      try {
+        const { Resend } = await import("resend");
+        const { subscriptionWelcomeEmailHtml } = await import("@/lib/email");
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const FROM =
+          process.env.RESEND_FROM_EMAIL ||
+          "BurnoutIQ <hello@burnoutiqtest.com>";
+        const REPLY_TO = process.env.RESEND_REPLY_TO || undefined;
+        await resend.emails.send({
+          from: FROM,
+          to: customerEmail,
+          ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+          subject: "Welcome to BurnoutIQ Continuum — start with your baseline",
+          html: subscriptionWelcomeEmailHtml({
+            productKind: "continuum",
+            firstName: null,
+            manageUrl: "https://burnoutiqtest.com/home",
+          }),
+        });
+      } catch (err) {
+        console.error(
+          "[/api/continuum-unlock] welcome email send failed (non-fatal)",
+          err,
+        );
+      }
+    }
+
     const origin = req.nextUrl.origin;
     return NextResponse.json({
       url: `${origin}/continuum/success?free=1&promo=${encodeURIComponent(promo.code || "")}`,

@@ -87,6 +87,76 @@ export function infoBox(content: string, bg = "#fff8f0", border = "#E8401C"): st
   return `<div style="background:${bg};border-left:4px solid ${border};padding:18px 20px;border-radius:0 6px 6px 0;margin:20px 0;">${content}</div>`;
 }
 
+/* ─── Continuum / Coach welcome email ─────────────────────────────────── */
+
+interface SubscriptionWelcomeInput {
+  productKind: "continuum" | "coach";
+  firstName?: string | null;
+  /** Stripe Customer Portal URL if available, otherwise a fallback. */
+  manageUrl?: string;
+}
+
+export function subscriptionWelcomeEmailHtml(input: SubscriptionWelcomeInput): string {
+  const isCoach = input.productKind === "coach";
+  const productLabel = isCoach ? "BurnoutIQ Coach" : "BurnoutIQ Continuum";
+  const tagline = isCoach
+    ? "Everything in Pro, plus a real human in the loop."
+    : "Stay measured. Stay supported. Cancel anytime.";
+  const greeting = input.firstName ? `Hi ${input.firstName},` : "Hi,";
+  const manageHref = input.manageUrl || "https://burnoutiqtest.com/home";
+
+  const body = `
+    <p style="font-size:16px;line-height:1.6;color:#1A1A1A;margin:0 0 16px;">${greeting}</p>
+    <p style="font-size:15px;line-height:1.65;color:#333;margin:0 0 20px;">
+      Welcome to <strong>${productLabel}</strong>. ${tagline}
+    </p>
+
+    <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#E8401C;margin:24px 0 8px;">
+      Step 1 — take your baseline assessment
+    </p>
+    <p style="font-size:14px;line-height:1.65;color:#444;margin:0 0 12px;">
+      Continuum only works if there's a starting point to measure against. The 36-item BurnoutIQ takes about ten minutes and gives you your archetype + 9-dimension reading. Your monthly pulse from here on out compares to this baseline.
+    </p>
+    ${ctaButton("Take the assessment", "https://burnoutiqtest.com/start")}
+
+    <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#E8401C;margin:28px 0 8px;">
+      Your home base
+    </p>
+    <p style="font-size:14px;line-height:1.65;color:#444;margin:0 0 12px;">
+      Sign in anytime at <a href="https://burnoutiqtest.com/signin?next=/home" style="color:#E8401C;">burnoutiqtest.com/signin</a> with this email. Your archetype, trend, and subscription status live at <strong>/home</strong>.
+    </p>
+
+    ${infoBox(`
+      <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;">What you get every month</p>
+      <ul style="font-size:14px;line-height:1.7;color:#444;margin:6px 0 0;padding-left:20px;">
+        <li>A 6-item pulse — tracks how you're moving against last month</li>
+        <li>Trend chart in your inbox so you can spot drift early</li>
+        <li>Driver-targeted weekly content (article, worksheet, or short video)</li>
+        ${isCoach ? `<li>A 60-min 1:1 with a Pivot facilitator (auto-booked at purchase)</li>` : ""}
+        ${isCoach ? `<li>A custom 30-day action plan written from your session</li>` : ""}
+      </ul>
+    `)}
+
+    <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#999;margin:28px 0 8px;">
+      Manage your subscription
+    </p>
+    <p style="font-size:13px;line-height:1.6;color:#666;margin:0 0 16px;">
+      Update your card, view invoices, change plan, or cancel anytime at <a href="${manageHref}" style="color:#E8401C;">${manageHref.replace(/^https?:\/\//, "")}</a> — handled by Stripe's secure portal.
+    </p>
+
+    <p style="font-size:13px;line-height:1.7;color:#888;margin:24px 0 0;">
+      Questions? Just reply to this email — it goes straight to Chris and the Pivot team.
+    </p>
+  `;
+
+  return brandedEmail({
+    preheader: `Welcome to ${productLabel}. Start with your baseline assessment.`,
+    headerTitle: `Welcome to ${productLabel}`,
+    headerSubtitle: tagline,
+    body,
+  });
+}
+
 export function zoomBox(meetingUrl: string, meetingId: string): string {
   return `<table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7f7;border-radius:6px;margin:20px 0;">
   <tr><td style="padding:24px 28px;">
