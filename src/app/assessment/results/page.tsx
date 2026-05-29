@@ -2,6 +2,8 @@
 
 import { useMemo, useEffect, useState } from "react";
 import MbiCalibrationPrompt from "@/components/MbiCalibrationPrompt";
+import ShareCardSection from "@/components/ShareCardSection";
+import TeamChallengeSection from "@/components/TeamChallengeSection";
 import { getSectorCopy } from "@/lib/biq-sector-copy";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -147,10 +149,16 @@ export default function ResultsV2Page() {
   }, [result]);
 
   // Persist anonymous assessment row server-side and capture assessmentId
-  // so the MBI calibration prompt below can attach to it.
+  // so the MBI calibration prompt below can attach to it. Also passes
+  // any team-challenge invite token stashed by /team/take so the
+  // inviter's heatmap email fires.
   useEffect(() => {
     if (!result || assessmentId) return;
     let cancelled = false;
+    let teamInviteToken: string | null = null;
+    try {
+      teamInviteToken = sessionStorage.getItem("biq_team_invite_token");
+    } catch {}
     fetch("/api/assessment/log", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -158,11 +166,17 @@ export default function ResultsV2Page() {
         archetype: result.archetype,
         burnoutRisk: result.composite.pct,
         scoresJson: result.subscales,
+        teamInviteToken,
       }),
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (!cancelled && d?.id) setAssessmentId(d.id as string);
+        // Clear the token so it doesn't double-attribute if the taker
+        // refreshes the results page.
+        if (teamInviteToken) {
+          try { sessionStorage.removeItem("biq_team_invite_token"); } catch {}
+        }
       })
       .catch(() => {});
     return () => {
@@ -343,6 +357,23 @@ export default function ResultsV2Page() {
               </div>
             </div>
           )}
+
+          {/* Share-card viral hook — between the diagnostic body and paid CTAs */}
+          <div className="mt-12">
+            <ShareCardSection
+              archetype={archetypeKey}
+              archetypeDisplay={archetype.name}
+              score={result.composite.pct}
+            />
+          </div>
+
+          {/* Team-challenge viral hook — invite 5, get heatmap */}
+          <TeamChallengeSection
+            archetype={archetypeKey}
+            archetypeDisplay={archetype.name}
+            burnoutRisk={result.composite.pct}
+            assessmentId={assessmentId}
+          />
 
           {/* CTAs */}
           <div className="bg-navy rounded-2xl p-8 md:p-10 text-white">

@@ -10,14 +10,16 @@
 //     burnoutRisk: number,          // composite 0-100
 //     scoresJson: object,           // per-dimension scores
 //     sector?: string,              // optional sector slug
-//     email?: string                // optional; null for anonymous
+//     email?: string,               // optional; null for anonymous
+//     teamInviteToken?: string,     // present when taker came from a
+//                                   // team-challenge invite email
 //   }
 //
-// Returns: { id: <uuid> } — pass this id to MbiCalibrationPrompt
-// on the results page.
+// Returns: { id: <uuid>, teamHeatmapSent?: boolean }
 
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { recordTeamChallengeCompletion } from "@/lib/team-challenge";
 
 interface Body {
   archetype?: string;
@@ -25,6 +27,7 @@ interface Body {
   scoresJson?: unknown;
   sector?: string | null;
   email?: string | null;
+  teamInviteToken?: string | null;
 }
 
 const VALID_ARCHETYPES = new Set([
@@ -64,5 +67,23 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ id: data.id });
+  // If the taker came from a team-challenge invite link, attribute their
+  // completion to that invite and potentially fire the heatmap email
+  // back to the inviter. Best-effort — never fails the main response.
+  let teamHeatmapSent: boolean | undefined;
+  if (body.teamInviteToken && typeof body.teamInviteToken === "string") {
+    try {
+      const result = await recordTeamChallengeCompletion({
+        inviteToken: body.teamInviteToken,
+        assessmentId: data.id as string,
+        archetype: body.archetype,
+        burnoutRisk: body.burnoutRisk,
+      });
+      teamHeatmapSent = result.heatmapSent;
+    } catch (err) {
+      console.error("[/api/assessment/log] team-challenge attribution failed", err);
+    }
+  }
+
+  return NextResponse.json({ id: data.id, teamHeatmapSent });
 }
