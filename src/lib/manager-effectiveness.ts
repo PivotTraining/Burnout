@@ -297,6 +297,7 @@ export function managerEffectivenessScore(
   directReports: TeamMember[],
   orgBaselineCbs: number,
   managerTenureDays: number,
+  atDate: Date = new Date(),
 ): ManagerScore {
   const base = {
     managerId,
@@ -316,7 +317,7 @@ export function managerEffectivenessScore(
     };
   }
 
-  const teamCbs = aggregateTeamCbs(directReports);
+  const teamCbs = aggregateTeamCbs(directReports, atDate);
   if (teamCbs === null) {
     return {
       ...base,
@@ -343,7 +344,7 @@ export function managerEffectivenessScore(
     flags.push("team_below_org_baseline_and_recovering");
   }
 
-  const concentration = detectTeamConcentrationRisk(directReports);
+  const concentration = detectTeamConcentrationRisk(directReports, atDate);
   if (concentration) {
     flags.push(`concentration_risk_${concentration.pattern}`);
   }
@@ -372,10 +373,11 @@ export function managerEffectivenessScore(
 export function identifyOutlierTeams(
   allTeams: Record<string, TeamMember[]>,
   orgBaselineCbs: number,
+  atDate: Date = new Date(),
 ): TeamOutlier[] {
   const teamScores: Record<string, number> = {};
   for (const [teamId, members] of Object.entries(allTeams)) {
-    const cbs = aggregateTeamCbs(members);
+    const cbs = aggregateTeamCbs(members, atDate);
     if (cbs !== null) teamScores[teamId] = cbs;
   }
   const cbsValues = Object.values(teamScores);

@@ -255,20 +255,20 @@ describe("managerEffectivenessScore", () => {
 
   it("isMeaningful=true with n≥5 and tenure≥180d", () => {
     const reports = homogeneousTeam("t", "m1", 6, 40);
-    const score = managerEffectivenessScore("m1", reports, 40, 200);
+    const score = managerEffectivenessScore("m1", reports, 40, 200, NOW);
     expect(score.isMeaningful).toBe(true);
   });
 
   it("flags significantly_above_org when deviation >20", () => {
     const reports = homogeneousTeam("t", "m1", 6, 70);
-    const score = managerEffectivenessScore("m1", reports, 40, 365);
+    const score = managerEffectivenessScore("m1", reports, 40, 365, NOW);
     expect(score.flaggedPatterns).toContain("team_significantly_above_org_burnout");
     expect(score.deviationFromBaseline).toBe(30);
   });
 
   it("flags moderately_above when deviation 10-20", () => {
     const reports = homogeneousTeam("t", "m1", 6, 55);
-    const score = managerEffectivenessScore("m1", reports, 40, 365);
+    const score = managerEffectivenessScore("m1", reports, 40, 365, NOW);
     expect(score.flaggedPatterns).toContain("team_moderately_above_org_burnout");
     expect(score.flaggedPatterns).not.toContain("team_significantly_above_org_burnout");
   });
@@ -299,7 +299,7 @@ describe("managerEffectivenessScore", () => {
     const leaders = Array.from({ length: 2 }, (_, i) =>
       mkMember(`ld${i}@x`, "t", "m1", 3, [{ daysAgo: 7, cbs: 25 }]),
     );
-    const score = managerEffectivenessScore("m1", [...ics, ...leaders], 40, 365);
+    const score = managerEffectivenessScore("m1", [...ics, ...leaders], 40, 365, NOW);
     expect(score.flaggedPatterns).toContain("concentration_risk_ic_leader_disconnect");
   });
 });
@@ -325,7 +325,7 @@ describe("identifyOutlierTeams", () => {
       mid5: homogeneousTeam("mid5", "m", 6, 44),
       high: homogeneousTeam("high", "m", 6, 75),
     };
-    const out = identifyOutlierTeams(teams, 44);
+    const out = identifyOutlierTeams(teams, 44, NOW);
     const ids = out.map((o) => o.teamId);
     expect(ids).toContain("low");
     expect(ids).toContain("high");
