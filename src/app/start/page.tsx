@@ -59,6 +59,10 @@ export default function StartPage() {
   const [orgToken, setOrgToken] = useState<string | null>(null);
   const [orgInviteOrg, setOrgInviteOrg] = useState<string | null>(null);
 
+  // Warm handoff from the PivotIQ Baseline: /start?from=pivotiq&score=N
+  const [fromPivotIQ, setFromPivotIQ] = useState(false);
+  const [pivotIQScore, setPivotIQScore] = useState<string | null>(null);
+
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -82,6 +86,11 @@ export default function StartPage() {
             }
           })
           .catch(() => {});
+      }
+      if (params.get("from") === "pivotiq") {
+        setFromPivotIQ(true);
+        const sc = params.get("score");
+        if (sc && /^\d{1,3}$/.test(sc)) setPivotIQScore(sc);
       }
     } catch {}
     try {
@@ -299,6 +308,21 @@ export default function StartPage() {
               </div>
             )}
             <BurnoutLogo size={56} showText={false} asLink={false} className="mb-6" />
+            {fromPivotIQ && (
+              <div className="mb-6 p-4 rounded-2xl bg-ember/10 border border-ember/30">
+                <p className="text-ember text-[10px] font-bold uppercase tracking-widest mb-1">
+                  Continuing from your PivotIQ Baseline
+                </p>
+                <p className="text-white text-sm leading-relaxed">
+                  {pivotIQScore
+                    ? `Your burnout signal flagged at ${pivotIQScore}/100 on the PivotIQ Baseline. `
+                    : "Your PivotIQ Baseline flagged burnout. "}
+                  This deeper read splits burnout into its three dimensions — Emotional
+                  Exhaustion, Detachment, and Reduced Effectiveness — to pinpoint exactly
+                  what&rsquo;s driving yours.
+                </p>
+              </div>
+            )}
             {orgInviteOrg && (
               <div className="mb-6 p-4 rounded-2xl bg-ember/10 border border-ember/30">
                 <p className="text-ember text-[10px] font-bold uppercase tracking-widest mb-1">
