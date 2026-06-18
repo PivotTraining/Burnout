@@ -92,6 +92,22 @@ export default function StartPage() {
         const sc = params.get("score");
         if (sc && /^\d{1,3}$/.test(sc)) setPivotIQScore(sc);
       }
+      // Warm-handoff prefill — name/email/organization carried over from the
+      // PivotIQ Baseline (or any inbound link) so the person doesn't re-type.
+      const qpName = params.get("name");
+      if (qpName) {
+        const parts = qpName.trim().split(/\s+/);
+        if (parts[0]) setFirstName(parts[0]);
+        if (parts.length > 1) setLastName(parts.slice(1).join(" "));
+      }
+      const qpFirst = params.get("firstName");
+      if (qpFirst) setFirstName(qpFirst);
+      const qpLast = params.get("lastName");
+      if (qpLast) setLastName(qpLast);
+      const qpEmail = params.get("email");
+      if (qpEmail) setEmail(qpEmail);
+      const qpOrg = params.get("organization") || params.get("org");
+      if (qpOrg) setOrganization(qpOrg);
     } catch {}
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -296,14 +312,14 @@ export default function StartPage() {
         <main className="flex-1 flex items-center justify-center px-4 py-12 pt-28">
           <div className="max-w-lg w-full">
             {resumeAvail && (
-              <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-2xl flex items-start gap-3">
+              <div className="mb-6 p-4 bg-white/10 border border-white/25 rounded-2xl flex items-start gap-3">
                 <div className="flex-1">
                   <p className="text-white text-sm font-semibold">Saved progress found</p>
-                  <p className="text-white/40 text-xs mt-0.5">Pick up where you left off?</p>
+                  <p className="text-white/70 text-xs mt-0.5">Pick up where you left off?</p>
                 </div>
                 <div className="flex gap-3">
                   <button onClick={startResume} className="text-xs font-bold text-ember hover:text-ember-light">Resume</button>
-                  <button onClick={() => setResumeAvail(false)} className="text-xs text-white/30 hover:text-white/60">Dismiss</button>
+                  <button onClick={() => setResumeAvail(false)} className="text-xs text-white/70 hover:text-white">Dismiss</button>
                 </div>
               </div>
             )}
@@ -341,13 +357,13 @@ export default function StartPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
               The workplace burnout assessment.
             </h1>
-            <p className="text-white/55 leading-relaxed mb-3 text-sm">
+            <p className="text-white/75 leading-relaxed mb-3 text-sm">
               45 items across 9 dimensions — three burnout symptoms (Emotional
               Exhaustion, Detachment, Reduced Effectiveness) plus six workplace
               drivers (workload, control, reward, community, fairness, values).
               Plus three optional open‑ended questions that say what numbers can&apos;t.
             </p>
-            <p className="text-white/55 leading-relaxed mb-8 text-sm">
+            <p className="text-white/75 leading-relaxed mb-8 text-sm">
               Built for individuals — and for leaders who want results they can
               take back to the table. Every result includes a Leadership
               Briefing with org‑level signals, leverage points, and the
@@ -359,9 +375,9 @@ export default function StartPage() {
                 ["3 open-ended", "Optional, anonymized"],
                 ["Leadership briefing", "For your next leadership meeting"],
               ].map(([t, b], i) => (
-                <div key={i} className="bg-white/5 border border-white/8 rounded-xl p-3 text-center">
+                <div key={i} className="bg-white/10 border border-white/25 rounded-xl p-4 text-center">
                   <div className="text-white text-xs font-semibold mb-0.5">{t}</div>
-                  <div className="text-white/30 text-[11px]">{b}</div>
+                  <div className="text-white/60 text-[12px]">{b}</div>
                 </div>
               ))}
             </div>
@@ -533,7 +549,7 @@ export default function StartPage() {
           {pulseLinked && pulseCode && (
             <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#0B1220]">
               <div className="px-5 py-4">
-                <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-1">
+                <p className="text-white/60 text-xs font-bold uppercase tracking-wider mb-1">
                   {pulseParam ? "Pulse Profile Updated" : "Complete Your Pulse Profile"}
                 </p>
                 <p className="text-white font-bold text-sm mb-2">
