@@ -3,63 +3,92 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export const metadata = {
-  title: "About BurnoutIQ · The diagnostic firm behind the storefront",
+  title: "About BurnoutIQ · Workplace burnout screening by Pivot",
   description:
-    "BurnoutIQ is a Pivot product. Founded in 2021 by Chris and Jazmine Davis with a clinical bench. Behavioral science, six archetypes, three tiers.",
+    "BurnoutIQ is a non-clinical workplace burnout screening and signal tool developed by Pivot Training & Development. Learn how the product is positioned, measured, and protected.",
   alternates: { canonical: "/about" },
 };
 
 const MILESTONES = [
-  { year: "2021", title: "Pivot founded", desc: "Chris and Jazmine Davis launch Pivot Training & Development from Cleveland." },
-  { year: "2022", title: "First district contract", desc: "Large Midwest public school district partners on district-wide educator training." },
-  { year: "2023", title: "Atlanta office, 15 states", desc: "Nationwide expansion. Workshops delivered across K-12, higher ed, and corporate verticals." },
-  { year: "2024", title: "Fortune 500 healthcare partnership", desc: "Selected by a Fortune 500 healthcare system for enterprise mental-health programming across 500+ employees." },
-  { year: "2025", title: "PressureIQ launches", desc: "First Stress Intelligence assessment ships. The six-archetype engine goes public." },
-  { year: "2026", title: "BurnoutIQ launches", desc: "The enterprise productized storefront ships: three tiers + always-on Subscription, powered by the PressureIQ archetype engine." },
+  {
+    year: "2021",
+    title: "Pivot founded",
+    desc: "Pivot Training & Development launches with a focus on practical workforce learning, behavior change, and organizational development.",
+  },
+  {
+    year: "2025",
+    title: "PressureIQ launches",
+    desc: "Pivot expands its assessment portfolio with a product focused on stress response and performance under pressure.",
+  },
+  {
+    year: "2026",
+    title: "BurnoutIQ launches",
+    desc: "BurnoutIQ launches as a workplace burnout screening and signal tool with individual results, organizational aggregate reporting, and follow-up measurement.",
+  },
 ];
 
 const VALUES = [
-  { title: "Evidence over hype", desc: "Every program is grounded in psychology research — not corporate wellness buzzwords." },
-  { title: "Diagnose before you prescribe", desc: "We don’t ship a workshop and call it a strategy. Archetype + burnout assessment runs first; intervention is calibrated to what the data says." },
-  { title: "Productized, not negotiated", desc: "Teams, Core, Enterprise. Three tiers, transparent pricing. Every engagement is scoped, priced, and outcome-defined before kickoff — no surprises mid-deployment." },
-  { title: "Impact over impressions", desc: "We measure success by behavioral change and P&L outcomes, not attendance numbers." },
+  {
+    title: "Evidence over hype",
+    desc: "We distinguish published theory from Pivot-authored product decisions and state clearly where formal validation is still in progress.",
+  },
+  {
+    title: "Screen before you intervene",
+    desc: "BurnoutIQ is designed to surface patterns and priorities before a team chooses an intervention. A screening signal is not a clinical diagnosis.",
+  },
+  {
+    title: "Protect individual privacy",
+    desc: "Individual results stay confidential. Organizational leaders receive aggregate findings, with small groups suppressed to reduce re-identification risk.",
+  },
+  {
+    title: "Remeasure before you claim impact",
+    desc: "Workplace-driver findings are intervention hypotheses. Follow-up measurement tests whether conditions changed without assuming that one action caused the change.",
+  },
 ];
 
 const FOUNDERS = [
   {
-    name: "Chris Davis, M.S.",
+    name: "Chris Davis",
     initials: "CD",
-    role: "Co-Founder & CEO",
+    role: "Co-Founder",
     accent: "#E85C3A",
     bio:
-      "Master’s in Psychology. 10+ years in psychology and performance coaching. Speaker, author of The What If Effect, and the science and voice behind every BurnoutIQ engagement. Led the design of the six-archetype framework that powers PressureIQ and BurnoutIQ.",
+      "Chris leads the behavioral-science, facilitation, and communication work behind Pivot's workforce-development products and programs.",
   },
   {
-    name: "Jazmine Davis, M.Ed.",
+    name: "Jazmine Davis",
     initials: "JD",
-    role: "Co-Founder & COO",
+    role: "Co-Founder",
     accent: "#1A1A2E",
     bio:
-      "Master’s in Education, former collegiate professor, curriculum architect. The operational engine behind every BurnoutIQ engagement — translating behavioral science into classroom-tested curriculum that adults actually retain. A keynote speaker who has moved thousands.",
+      "Jazmine brings an education and curriculum lens to Pivot's learning experiences, helping translate complex workforce topics into practical tools people can use.",
   },
 ];
 
-const CLINICAL = [
+const GUARDRAILS = [
   {
-    name: "Whitney Ward, LPCC-S",
-    initials: "WW",
-    role: "Clinical Director",
-    accent: "#0D7377",
-    bio:
-      "Licensed Professional Clinical Counselor with supervisory designation. Brings clinical depth and evidence-based therapeutic approaches to every BurnoutIQ program.",
+    eyebrow: "Instrument",
+    title: "45 scored items · 9 dimensions",
+    body:
+      "BurnoutIQ measures three burnout symptom dimensions and six workplace-driver dimensions using original Pivot-authored items, plus three optional open-ended prompts.",
   },
   {
-    name: "Tihera Clements, LCSW",
-    initials: "TC",
-    role: "Clinical Director",
-    accent: "#9333EA",
-    bio:
-      "Licensed Clinical Social Worker. Anchors evidence-based mental-health practice across BurnoutIQ services and ensures clinical fidelity in every client engagement.",
+    eyebrow: "Interpretation",
+    title: "Eight Pivot-authored archetypes",
+    body:
+      "Archetypes are communication and triage aids that help explain patterns. They are not diagnoses, clinical categories, or peer-reviewed psychometric phenotypes.",
+  },
+  {
+    eyebrow: "Privacy",
+    title: "Individual results stay confidential",
+    body:
+      "Organizational reporting is aggregate. Groups with fewer than five respondents are suppressed or combined with a larger reporting unit.",
+  },
+  {
+    eyebrow: "Validation",
+    title: "Transparent about what is known",
+    body:
+      "BurnoutIQ is conceptually grounded in published burnout research, but it has not yet undergone peer-reviewed psychometric validation as an independent instrument.",
   },
 ];
 
@@ -73,42 +102,61 @@ export default function About() {
             About BurnoutIQ
           </p>
           <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-6">
-            We’re not a workshop company.
+            Better workforce decisions start with a clearer signal.
           </h1>
           <p className="text-xl text-navy/60 max-w-3xl leading-relaxed mb-6">
-            BurnoutIQ is the enterprise face of <strong>Pivot</strong>, a behavioral diagnostic
-            firm founded in 2021 in Cleveland and Atlanta. The diagnostic engine underneath is
-            <strong> PressureIQ™</strong> — a six-archetype scoring methodology built on a
-            forced-pair framework across four pressure domains.
+            BurnoutIQ is a <strong>non-clinical workplace burnout screening and signal tool</strong>
+            {" "}developed by Pivot Training &amp; Development. It is designed to help individuals
+            understand their own pattern and help organizations identify privacy-protected
+            aggregate priorities for conversation, action, and follow-up measurement.
           </p>
-          <p className="text-xl text-navy/60 max-w-3xl leading-relaxed">
-            We sell three productized tiers (Teams, Core, Enterprise) plus an always-on SaaS
-            layer (Subscription). The methodology is the product.
+          <p className="text-base text-navy/50 max-w-3xl leading-relaxed">
+            BurnoutIQ is not a clinical diagnostic instrument and should not be used to make
+            individual medical, disability, fitness-for-duty, or employment decisions. The
+            technical methodology documents the scoring rules, limitations, validation status,
+            and organizational privacy standards.
           </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/methodology/burnoutiq" className="inline-flex items-center px-5 py-3 rounded-lg bg-navy text-white hover:bg-navy-light font-semibold">
+              Read the technical methodology →
+            </Link>
+            <Link href="/start" className="inline-flex items-center px-5 py-3 rounded-lg bg-ember text-white hover:bg-ember-light font-semibold">
+              Take the assessment
+            </Link>
+          </div>
         </section>
 
         <section className="bg-cream py-16">
-          <div className="section-wide max-w-4xl">
-            <h2 className="text-3xl font-bold text-navy mb-6">The IP architecture</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card eyebrow="PressureIQ™" title="The engine" body="Six pressure archetypes. Forced-pair scoring across four pressure domains. The behavioral diagnostic engine inside BurnoutIQ — and the layer that makes our reports defensible in front of a CHRO." />
-              <Card eyebrow="BurnoutIQ™" title="The storefront" body="Three productized tiers, an always-on subscription, ROI calculator, dashboards. Transparent pricing your finance team can sign off on without an RFP." />
-              <Card eyebrow="Recharge Method™" title="The deployment" body="Eight-step proprietary framework that takes a BurnoutIQ assessment from diagnosis to lasting organizational change." />
+          <div className="section-wide">
+            <div className="max-w-3xl mb-8">
+              <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
+                Methodology guardrails
+              </p>
+              <h2 className="text-3xl font-bold text-navy mb-3">What BurnoutIQ is — and what it is not</h2>
+              <p className="text-navy/60 leading-relaxed">
+                The product is built to make workforce burnout patterns easier to discuss without
+                overstating what a screening instrument can prove.
+              </p>
             </div>
-            <p className="mt-4 text-sm text-navy/50">
-              See the full <Link href="/methodology" className="text-ember underline">Recharge Method walkthrough →</Link>
-            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl">
+              {GUARDRAILS.map((item) => <Card key={item.title} {...item} />)}
+            </div>
           </div>
         </section>
 
         <section className="section-wide py-16">
-          <h2 className="text-3xl font-bold text-navy mb-1">What deployments deliver</h2>
-          <p className="text-sm text-navy/50 mb-8">Aggregate across Pivot engagements through 2025.</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <Stat value="62%" label="Average reduction in reported burnout" />
-            <Stat value="3×" label="Improvement in engagement scores" />
-            <Stat value="40%" label="Decrease in absenteeism within 90 days" />
-            <Stat value="89%" label="Of participants recommend to colleagues" />
+          <h2 className="text-3xl font-bold text-navy mb-2">From signal to action</h2>
+          <p className="text-navy/60 max-w-3xl leading-relaxed mb-8">
+            BurnoutIQ separates symptoms from workplace drivers. Driver findings help leaders
+            form intervention hypotheses; follow-up measurement helps determine whether the
+            conditions changed over time. That is different from claiming a single workshop,
+            manager action, or policy caused a specific outcome.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-5xl">
+            <Step n="01" title="Screen" body="Collect the individual workplace-burnout signal." />
+            <Step n="02" title="Aggregate" body="Protect privacy and identify eligible group-level patterns." />
+            <Step n="03" title="Act" body="Choose interventions based on the strongest organizational signals." />
+            <Step n="04" title="Remeasure" body="Compare follow-up results and decide what to sustain or change." />
           </div>
         </section>
 
@@ -122,60 +170,49 @@ export default function About() {
         </section>
 
         <section className="section-wide py-16">
-          <h2 className="text-3xl font-bold text-navy mb-2">Clinical bench</h2>
-          <p className="text-sm text-navy/50 mb-8">
-            Licensed clinicians anchor every BurnoutIQ engagement. This is part of why
-            CHROs and Chief Medical Officers can sign off without a procurement battle.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-            {CLINICAL.map((p) => <Bio key={p.name} {...p} />)}
-          </div>
+          <h2 className="text-3xl font-bold text-navy mb-8">Product milestones</h2>
+          <ol className="space-y-5 max-w-4xl">
+            {MILESTONES.map((m) => (
+              <li key={m.year} className="flex gap-5">
+                <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-navy text-white font-extrabold text-sm flex items-center justify-center">
+                  {m.year}
+                </div>
+                <div>
+                  <p className="font-bold text-navy text-lg">{m.title}</p>
+                  <p className="text-sm text-navy/60 leading-relaxed">{m.desc}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </section>
 
         <section className="bg-cream py-16">
-          <div className="section-wide max-w-3xl">
-            <h2 className="text-3xl font-bold text-navy mb-8">Milestones</h2>
-            <ol className="space-y-5">
-              {MILESTONES.map((m) => (
-                <li key={m.year} className="flex gap-5">
-                  <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-navy text-white font-extrabold text-sm flex items-center justify-center">
-                    {m.year}
-                  </div>
-                  <div>
-                    <p className="font-bold text-navy text-lg">{m.title}</p>
-                    <p className="text-sm text-navy/60 leading-relaxed">{m.desc}</p>
-                  </div>
-                </li>
+          <div className="section-wide">
+            <h2 className="text-3xl font-bold text-navy mb-8">What drives the product</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {VALUES.map((v, i) => (
+                <div key={v.title} className="rounded-2xl border border-border-gray bg-white p-6">
+                  <p className="text-[10px] uppercase tracking-widest text-ember font-bold mb-2">
+                    {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="text-lg font-bold text-navy mb-2">{v.title}</h3>
+                  <p className="text-sm text-navy/70 leading-relaxed">{v.desc}</p>
+                </div>
               ))}
-            </ol>
-          </div>
-        </section>
-
-        <section className="section-wide py-16">
-          <h2 className="text-3xl font-bold text-navy mb-8">What drives us</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {VALUES.map((v, i) => (
-              <div key={v.title} className="rounded-2xl border border-border-gray bg-white p-6">
-                <p className="text-[10px] uppercase tracking-widest text-ember font-bold mb-2">
-                  {String(i + 1).padStart(2, "0")}
-                </p>
-                <h3 className="text-lg font-bold text-navy mb-2">{v.title}</h3>
-                <p className="text-sm text-navy/70 leading-relaxed">{v.desc}</p>
-              </div>
-            ))}
+            </div>
           </div>
         </section>
 
         <section className="bg-navy text-white py-20">
           <div className="section-wide max-w-3xl">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Want the long version?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Want the technical version?</h2>
             <p className="text-lg text-white/70 mb-6">
-              Read the Six Archetypes whitepaper, walk through the Recharge Method, or
-              schedule a working session.
+              Review the production scoring methodology, the Recharge Method, or schedule a
+              working session to discuss an organizational deployment.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/whitepaper/six-archetypes" className="inline-flex items-center px-5 py-3 rounded-lg bg-ember hover:bg-ember-light font-semibold">
-                Get the whitepaper →
+              <Link href="/methodology/burnoutiq" className="inline-flex items-center px-5 py-3 rounded-lg bg-ember hover:bg-ember-light font-semibold">
+                BurnoutIQ methodology →
               </Link>
               <Link href="/methodology" className="inline-flex items-center px-5 py-3 rounded-lg bg-white/10 hover:bg-white/20 font-semibold">
                 Recharge Method
@@ -202,11 +239,12 @@ function Card({ eyebrow, title, body }: { eyebrow: string; title: string; body: 
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Step({ n, title, body }: { n: string; title: string; body: string }) {
   return (
     <div className="rounded-2xl border border-border-gray bg-white p-5">
-      <p className="text-3xl md:text-4xl font-extrabold text-ember">{value}</p>
-      <p className="text-xs text-navy/60 mt-1">{label}</p>
+      <p className="text-[10px] uppercase tracking-widest text-ember font-bold mb-2">{n}</p>
+      <p className="font-bold text-navy mb-1">{title}</p>
+      <p className="text-sm text-navy/60 leading-relaxed">{body}</p>
     </div>
   );
 }
