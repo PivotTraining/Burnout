@@ -62,7 +62,9 @@ export default function ResultsBreakdown({
             <div>
               <p className="text-white/35 text-xs font-bold uppercase tracking-wider mb-1">Your top driver</p>
               <p className="text-white font-bold text-base mb-1">{SUBSCALE_LABELS[topDriver]} — {results.subscales[topDriver].pct}%</p>
-              <p className="text-white/55 text-sm leading-relaxed">This is the workplace driver feeding your burnout the hardest right now. Targeted action here will move the composite faster than working on symptoms alone.</p>
+              <p className="text-white/55 text-sm leading-relaxed">
+                This is the workplace condition most elevated in your current results. It is a plausible intervention target, not proof of causation. A targeted change here can be treated as a hypothesis and tested through follow-up measurement.
+              </p>
             </div>
           </div>
         </div>
