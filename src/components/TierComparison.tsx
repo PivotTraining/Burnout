@@ -20,7 +20,7 @@ const tiers = [
   {
     name: "BurnoutIQ Core",
     slug: "core",
-    price: "$35,000–$75,000",
+    price: "$35,000–$95,000",
     cadence: "90-day engagement",
     audience: "VP HR, CHRO direct report",
     features: [
@@ -36,15 +36,15 @@ const tiers = [
   {
     name: "BurnoutIQ Enterprise",
     slug: "enterprise",
-    price: "$125,000–$300,000+",
+    price: "$175,000–$500,000+",
     cadence: "12-month transformation",
     audience: "CHRO, Chief People Officer",
     features: [
       "Multi-site rollout",
-      "Custom archetype playbooks per division",
+      "Workplace-driver playbooks by division",
       "Executive coaching (up to 6 leaders)",
       "Quarterly strategic reviews",
-      "Year-over-year impact study",
+      "Year-over-year measurement",
       "Internal license to BurnoutIQ language",
     ],
     accent: "border-indigo",
@@ -56,14 +56,14 @@ export default function TierComparison() {
     <section id="pricing" className="section-wide py-24 bg-cream">
       <div className="max-w-3xl mb-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
-          Productized. No more custom quotes.
+          Productized. Clear scope.
         </p>
         <h2 className="text-4xl md:text-5xl font-bold text-navy leading-tight mb-4">
           Three tiers. One screening and signal system.
         </h2>
         <p className="text-lg text-navy/60 leading-relaxed">
-          Most enterprise deals land in Core. Teams is the entry point. Enterprise
-          is the 12-month, multi-site transformation.
+          Teams is the 30-day entry point. Core is the 90-day organizational
+          engagement. Enterprise is the 12-month, multi-site program.
         </p>
       </div>
 
