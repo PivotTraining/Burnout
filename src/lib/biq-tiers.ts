@@ -81,7 +81,9 @@ export const TIERS: Record<TierProduct, TierDef> = {
     product: "teams",
     name: "BurnoutIQ Teams",
     tagline: "30-day workplace burnout screening and signal engagement.",
-    billing: { kind: "quoted", range: "$12,000 – $18,000" },
+    // Canonical public range from the three-band Teams offer:
+    // up to 50 = $9,750; up to 100 = $11,750; up to 250 = $14,750.
+    billing: { kind: "quoted", range: "$9,750–$14,750" },
     payoff: [
       "Day 0 exec kickoff (45 min) + comms plan",
       "Org-wide assessment (every employee gets personal results + Pro PDF)",
