@@ -6,7 +6,7 @@ const tiers = [
     name: "BurnoutIQ Teams",
     slug: "teams",
     price: "$9,750–$14,750",
-    cadence: "30-day org diagnostic",
+    cadence: "30-day screening and signal engagement",
     audience: "VP HR, CHRO, COO",
     features: [
       "Org-wide BurnoutIQ assessment + Pro PDF per employee",
@@ -59,7 +59,7 @@ export default function TierComparison() {
           Productized. No more custom quotes.
         </p>
         <h2 className="text-4xl md:text-5xl font-bold text-navy leading-tight mb-4">
-          Three tiers. One diagnostic engine.
+          Three tiers. One screening and signal system.
         </h2>
         <p className="text-lg text-navy/60 leading-relaxed">
           Most enterprise deals land in Core. Teams is the entry point. Enterprise
