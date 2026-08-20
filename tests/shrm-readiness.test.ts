@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
+const home = readFileSync("src/app/page.tsx", "utf8");
 const methodology = readFileSync("src/app/methodology/burnoutiq/page.tsx", "utf8");
 const recharge = readFileSync("src/app/methodology/page.tsx", "utf8");
 const disclosure = readFileSync("src/components/biq/MethodologyDisclosure.tsx", "utf8");
@@ -35,6 +36,10 @@ describe("SHRM-facing BurnoutIQ claim integrity", () => {
     expect(footer).toContain("screening and signal system");
     expect(teams).toContain("screening and signal engagement");
     expect(layout).toContain("non-clinical workplace burnout screening and signal tool");
+    expect(home).toContain("non-clinical workplace burnout screening and signal");
+    expect(home).not.toContain("Full diagnostic");
+    expect(home).not.toContain("45-item diagnostic");
+    expect(home).not.toContain("org diagnostic");
   });
 
   it("preserves validation and benchmark candor", () => {
@@ -50,6 +55,8 @@ describe("SHRM-facing BurnoutIQ claim integrity", () => {
     expect(results).toContain("tested through follow-up measurement");
     expect(results).not.toContain("move the composite faster");
     expect(methodology).toContain("treated as a hypothesis");
+    expect(home).toContain("intervention hypotheses to test with follow-up");
+    expect(home).not.toContain("where leadership intervention actually moves the score");
   });
 
   it("states individual confidentiality and minimum group-size protections", () => {
@@ -58,5 +65,7 @@ describe("SHRM-facing BurnoutIQ claim integrity", () => {
     expect(teams).toContain("Individual results stay confidential");
     expect(teams).toContain("fewer than 5 respondents");
     expect(llms).toContain("aggregate findings only");
+    expect(home).toContain("Your individual result stays confidential");
+    expect(home).not.toContain("100% confidential");
   });
 });
