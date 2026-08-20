@@ -129,10 +129,10 @@ function Hero() {
 /*  Stats Bar                                                         */
 /* ------------------------------------------------------------------ */
 const stats = [
-  { value: "82%", label: "of workers report burnout risk", source: "Mercer, 2024" },
-  { value: "$322B", label: "global cost of burnout-related turnover", source: "Gallup, 2024" },
+  { value: "82%", label: "of employees feel at risk of burnout", source: "Mercer, 2024" },
+  { value: "$322B", label: "global cost of burnout in turnover + lost productivity", source: "Gallup" },
   { value: "9", label: "burnout dimensions measured", source: "3 symptoms + 6 drivers" },
-  { value: "77%", label: "of employees experience burnout at their current job", source: "Deloitte, 2023" },
+  { value: "48%", label: "of workers say they are burned out at work", source: "Deloitte, 2024" },
 ];
 
 function StatsBar() {
