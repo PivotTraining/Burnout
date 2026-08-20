@@ -4,9 +4,9 @@ import PostHogClient from "@/components/PostHogClient";
 
 const SITE_URL = "https://burnoutiqtest.com";
 const SITE_NAME = "BurnoutIQ";
-const SITE_TITLE = "BurnoutIQ — Diagnose burnout by archetype";
+const SITE_TITLE = "BurnoutIQ — Workplace burnout screening and signal tool";
 const SITE_DESCRIPTION =
-  "BurnoutIQ is the burnout diagnostic system for the enterprise. Three productized tiers, one always-on subscription, six-archetype engine. Built by Pivot.";
+  "BurnoutIQ is a non-clinical workplace burnout screening and signal tool from Pivot Training & Development. It measures 45 scored items across 9 dimensions and maps results to 8 Pivot-authored archetypes.";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
   keywords: [
     "BurnoutIQ",
     "PressureIQ",
-    "burnout diagnostic",
+    "workplace burnout screening",
     "workplace burnout",
     "burnout assessment",
-    "archetype assessment",
+    "burnout signal tool",
     "Pivot Training",
   ],
   authors: [{ name: "Pivot Training & Development" }],

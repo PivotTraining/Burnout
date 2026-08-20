@@ -34,7 +34,7 @@ export const TIERS: Record<TierProduct, TierDef> = {
   pro: {
     product: "pro",
     name: "BurnoutIQ Pro",
-    tagline: "Your full diagnostic, your 90-day plan, twelve weeks of nudges.",
+    tagline: "Your full screening report, your 90-day plan, twelve weeks of nudges.",
     billing: { kind: "one-time", priceUsd: 19 },
     payoff: [
       "Full 9-subscale PDF report with sector-aware framing",
@@ -80,8 +80,10 @@ export const TIERS: Record<TierProduct, TierDef> = {
   teams: {
     product: "teams",
     name: "BurnoutIQ Teams",
-    tagline: "30-day org diagnostic. Five-figure results.",
-    billing: { kind: "quoted", range: "$12,000 – $18,000" },
+    tagline: "30-day workplace burnout screening and signal engagement.",
+    // Canonical public range from the three-band Teams offer:
+    // up to 50 = $9,750; up to 100 = $11,750; up to 250 = $14,750.
+    billing: { kind: "quoted", range: "$9,750–$14,750" },
     payoff: [
       "Day 0 exec kickoff (45 min) + comms plan",
       "Org-wide assessment (every employee gets personal results + Pro PDF)",

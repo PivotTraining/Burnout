@@ -1,17 +1,17 @@
 # BurnoutIQ
 
-> BurnoutIQ is a workplace burnout diagnostic from Pivot Training & Development. It scores 9 dimensions of burnout (3 symptoms + 6 workplace drivers) across 36 items, resolves the result into one of 8 archetypes, and ships a Leadership Briefing that's built to forward. Used by VPs of HR, CHROs, and COOs at K-12 districts, healthcare systems, and Fortune 500 companies.
+> BurnoutIQ is a non-clinical workplace burnout screening and signal tool from Pivot Training & Development. The production assessment contains 45 scored items across 9 dimensions (3 burnout symptoms + 6 workplace drivers), plus 3 optional open-ended prompts. Results can be mapped to one of 8 Pivot-authored BurnoutIQ archetypes.
 
-The free 36-item assessment runs in about ten minutes. No account required. Every result includes a Leadership Briefing with org-level signals, leverage points, and the questions to put on next quarter's agenda.
+The assessment is designed to surface workplace burnout patterns, support conversation, guide organizational prioritization, and support follow-up measurement. It is not a clinical diagnostic instrument and should not be used to diagnose a mental-health condition or make individual employment, disability, fitness-for-duty, or medical decisions.
 
 ## What BurnoutIQ measures
 
-Three burnout symptoms (after Maslach et al., 1996):
-- Emotional Exhaustion — depletion of emotional resources
-- Detachment / Cynicism — cynical detachment from work or those served (Depersonalization in clinical literature)
-- Reduced Effectiveness — sense that effort isn't translating to impact (Personal Accomplishment in clinical literature)
+Three burnout symptom dimensions:
+- Emotional Exhaustion
+- Detachment / Cynicism
+- Reduced Effectiveness
 
-Six workplace drivers (after Leiter & Maslach, 2004):
+Six workplace driver dimensions:
 - Workload
 - Control / Autonomy
 - Reward / Recognition
@@ -19,51 +19,66 @@ Six workplace drivers (after Leiter & Maslach, 2004):
 - Fairness / Trust
 - Values Alignment
 
-The Composite Burnout Risk Index (BRI) is a weighted score on 0–100. It is a Pivot-authored composite for triage and longitudinal tracking — explicitly not a clinical measure.
+The production assessment uses 45 scored items: 7 items for each of the 3 symptom dimensions and 4 items for each of the 6 workplace drivers. The response scale is a six-point frequency scale coded 0–5. Three optional open-ended prompts do not affect scoring.
+
+## Composite Burnout Risk
+
+The current production composite weights the three symptom dimensions:
+- 45% Emotional Exhaustion
+- 30% Detachment / Cynicism
+- 25% Reduced Effectiveness
+
+A highly elevated workplace driver adds a small product-design adjustment of 2.5 or 5 points. This adjustment is a Pivot-authored heuristic, not a statistically derived causal or predictive coefficient. A workplace driver can be treated as an intervention hypothesis; BurnoutIQ does not claim that changing one driver will necessarily cause a specific change in the composite.
+
+Risk bands are:
+- Low: 0–29
+- Moderate: 30–49
+- High: 50–69
+- Severe: 70–100
 
 ## The 8 BurnoutIQ archetypes
 
-- **Steady** — composite below 30%, no high subscale. Sustainable for the next 90 days. Risk: drift.
-- **Depleted** — Emotional Exhaustion dominant. Tank is the constraint. Precursor to fuller burnout.
-- **Detached** — Detachment / Cynicism dominant. Still showing up; mentally gone. Quiet quitting next.
-- **Foggy** — Reduced Effectiveness dominant. Working, but the work isn't landing.
-- **Volatile** — Emotional regulation eroded. Shorter fuse, larger reactions. Recoverable.
-- **Doubter** — efficacy attacked at the identity level. Separates burnout from simple exhaustion.
-- **Stranded** — recovery capacity broken. Looks fine externally; collapses fast when it goes.
-- **Smoldering** — all six dimensions elevated together. WHO ICD-11 burnout syndrome.
+BurnoutIQ currently uses eight Pivot-authored pattern labels:
+- Steady
+- Depleted
+- Detached
+- Foggy
+- Volatile
+- Doubter
+- Stranded
+- Smoldering
 
-## Productized tiers
+These archetypes are communication and triage aids. They are not diagnoses, clinical categories, or peer-reviewed psychometric phenotypes.
 
-- **BurnoutIQ Pro** — $19 one-time. Full 9-subscale PDF, 90-day recovery plan, twelve weeks of email nudges, 90-day re-assessment access.
-- **BurnoutIQ Continuum** — $9/mo or $79/yr. Monthly 6-item pulse, trend chart, driver-targeted weekly content. Cancel anytime.
-- **BurnoutIQ Coach** — $197 one-time. Everything in Pro plus a 60-min 1:1 with a Pivot facilitator and 90 days of Continuum.
-- **BurnoutIQ Premium** — $49 one-time. 12-page personalized report, 30/60/90-day recovery plan, conversation scripts.
-- **BurnoutIQ Teams** — $9,750–$14,750. 30-day organizational diagnostic for 50–250 employees. Includes org-wide assessment, department heatmap, manager training, executive readout, and 3 months of Continuum for every employee.
-- **BurnoutIQ Core** — $35,000–$75,000. 90-day engagement for 100–2,000 employees. Org assessment, manager training cohorts, custom workshops, department dashboard, quarterly executive readouts.
-- **BurnoutIQ Enterprise** — $125,000–$300,000+. 12-month transformation for 2,000–50,000+ employees. Multi-site rollout, executive coaching, year-over-year impact study, internal methodology license.
-- **BurnoutIQ Subscription** — always-on SaaS layer. Quarterly org pulses, manager nudge system, department-level archetype heatmap.
+## Validation status and benchmarks
 
-## How BurnoutIQ compares to other burnout instruments
+BurnoutIQ is conceptually grounded in published burnout research, including work associated with Maslach and Leiter, but its items are original to Pivot Training & Development. BurnoutIQ is not affiliated with, nor validated against, the Maslach Burnout Inventory® or Areas of Worklife Survey.
 
-BurnoutIQ items are original to Pivot Training & Development and not derivative of the Maslach Burnout Inventory (MBI), the Areas of Worklife Survey (AWS), the Burnout Assessment Tool (BAT), or the Oldenburg Burnout Inventory (OLBI). BurnoutIQ operationalizes the same theoretical constructs (after Maslach 1996, Leiter & Maslach 2004 and 2016) through Pivot-authored language calibrated for U.S. workforces. BurnoutIQ is not affiliated with, nor validated against, the MBI® or AWS®.
+BurnoutIQ has not yet undergone peer-reviewed psychometric validation as an independent instrument. Concurrent validity, predictive validity, test-retest reliability, factor-structure analysis, and formal BurnoutIQ norming remain on Pivot's research roadmap.
 
-BurnoutIQ differs from clinical instruments in three ways: (1) it ships with a Leadership Briefing designed for forwarding to a manager or CHRO, (2) it includes 9-dimension sector benchmarks against published norms, and (3) it resolves to one of 8 actionable archetypes rather than just a profile classification.
+Sector benchmarks shown in BurnoutIQ are approximate and directional. Published studies vary by instrument, population, scale, and setting. Current benchmark translations are not validated BurnoutIQ percentile norms.
+
+## Organizational privacy
+
+Individual BurnoutIQ scores are confidential. In organizational deployments, HR, managers, and organizational leaders should receive aggregate findings only. No department or subgroup with fewer than 5 respondents should be reported as a breakout; small groups should be suppressed or rolled into a larger reporting unit to reduce re-identification risk.
+
+## BurnoutIQ Teams
+
+BurnoutIQ Teams is a 30-day workplace burnout screening and signal engagement for organizations. Employees receive their own confidential personal results. Leadership receives privacy-protected aggregate findings, eligible-group heatmaps, manager training, and an executive readout. Follow-up measurement can be used to test whether conditions change over time without claiming causation from a single intervention unless outcome evidence supports that conclusion.
 
 ## Primary URLs
 
 - Free assessment: https://burnoutiqtest.com/start
 - The 8 archetypes: https://burnoutiqtest.com/archetypes
-- Methodology: https://burnoutiqtest.com/methodology/burnoutiq
+- Technical methodology: https://burnoutiqtest.com/methodology/burnoutiq
+- Recharge Method: https://burnoutiqtest.com/methodology
 - For teams: https://burnoutiqtest.com/tiers/teams
-- ROI calculator: https://burnoutiqtest.com/roi-calculator
 - Resources: https://burnoutiqtest.com/resources
 
 ## About Pivot Training & Development
 
-Pivot is a behavioral diagnostic firm founded in 2021 by Christopher and Jazmine Davis, headquartered in Cleveland, OH and Atlanta, GA. Pivot's parent brand portfolio includes BurnoutIQ (workplace burnout), PressureIQ (stress intelligence), Recharge Method (8-step organizational recovery framework), and PivotEDU (K-12 + higher-ed programs).
-
-Pivot's clinical bench is led by licensed practitioners (LPCC-S level and above). Chris Davis, M.S. is co-founder and lead of clinical content; Jazmine Davis, M.Ed. is co-founder and director of education and curriculum.
+BurnoutIQ is developed by Pivot Training & Development. The product is intended for workplace education, screening, organizational learning, and workforce-development contexts. For current company information, services, and contact details, use https://www.pivottraining.us.
 
 ## Citing BurnoutIQ
 
-Pivot Training & Development. (2026). BurnoutIQ workplace burnout diagnostic, v0.1. https://burnoutiqtest.com/methodology/burnoutiq
+Pivot Training & Development. (2026). BurnoutIQ workplace burnout screening and signal tool. https://burnoutiqtest.com/methodology/burnoutiq

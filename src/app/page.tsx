@@ -54,10 +54,11 @@ function Hero() {
 
           <div className="fade-up" style={{ animationDelay: "250ms" }}>
             <p className="text-lg md:text-xl text-white/60 max-w-xl leading-relaxed mb-4">
-              BurnoutIQ is a workplace burnout assessment grounded in published
-              burnout research. 45 items across 9 dimensions — three burnout
-              symptoms and six workplace drivers. Every result includes a
-              Leadership Briefing built for forwarding.
+              BurnoutIQ is a non-clinical workplace burnout screening and signal
+              tool grounded in published burnout research. It uses 45 scored items
+              across 9 dimensions — three burnout symptoms and six workplace
+              drivers. Every result includes a Leadership Briefing built for
+              forwarding.
             </p>
           </div>
 
@@ -110,7 +111,7 @@ function Hero() {
             <div className="flex flex-wrap gap-8 text-white/40 text-sm">
               <div className="flex items-center gap-2">
                 <Shield size={16} className="text-ember/60" />
-                <span>100% confidential</span>
+                <span>Your individual result stays confidential</span>
               </div>
               <div className="flex items-center gap-2">
                 <BarChart3 size={16} className="text-ember/60" />
@@ -128,10 +129,10 @@ function Hero() {
 /*  Stats Bar                                                         */
 /* ------------------------------------------------------------------ */
 const stats = [
-  { value: "82%", label: "of workers report burnout risk", source: "Mercer, 2024" },
-  { value: "$322B", label: "global cost of burnout-related turnover", source: "Gallup, 2024" },
+  { value: "82%", label: "of employees feel at risk of burnout", source: "Mercer, 2024" },
+  { value: "$322B", label: "global cost of burnout in turnover + lost productivity", source: "Gallup" },
   { value: "9", label: "burnout dimensions measured", source: "3 symptoms + 6 drivers" },
-  { value: "77%", label: "of employees experience burnout at their current job", source: "Deloitte, 2023" },
+  { value: "48%", label: "of workers say they are burned out at work", source: "Deloitte, 2024" },
 ];
 
 function StatsBar() {
@@ -255,8 +256,10 @@ function Dimensions() {
             ))}
           </div>
           <p className="text-center text-xs text-navy-light/40 mt-6 max-w-xl mx-auto">
-            Drivers are the workplace conditions feeding the symptoms. They are
-            where leadership intervention actually moves the score.
+            Drivers are workplace conditions that may contribute to burnout
+            symptoms. They provide intervention hypotheses to test with follow-up
+            measurement rather than proof that changing one driver will cause a
+            specific score change.
           </p>
         </div>
       </div>
@@ -347,7 +350,7 @@ const plans = [
     name: "Free",
     price: "$0",
     period: "forever",
-    desc: "Full diagnostic + leadership briefing",
+    desc: "Full screening + leadership briefing",
     cta: "Start Free",
     href: "/start",
     dark: false,
@@ -404,7 +407,7 @@ function Pricing() {
             Free first. Pro fixes a moment. Continuum keeps it fixed.
           </h2>
           <p className="text-lg text-navy-light/60 max-w-xl mx-auto">
-            The full diagnostic and Leadership Briefing are free. Pay if you want
+            The full screening and Leadership Briefing are free. Pay if you want
             structure, ongoing measurement, or a real coach.
           </p>
         </div>
@@ -486,7 +489,7 @@ function Pricing() {
                 For organizations
               </p>
               <h3 className="text-xl md:text-2xl font-bold text-white mb-1">
-                BurnoutIQ Teams — 30-day org diagnostic
+                BurnoutIQ Teams — 30-day org screening
               </h3>
               <p className="text-sm text-white/60 max-w-xl">
                 Every employee gets the full assessment + Pro PDF. You get a
@@ -555,7 +558,7 @@ function CTASection() {
 
         <div className="fade-up" style={{ animationDelay: "100ms" }}>
           <p className="text-lg text-white/50 max-w-xl mx-auto mb-10">
-            Free 45-item diagnostic in ~10 minutes. Includes a Leadership Briefing
+            Free 45-item screening in ~10 minutes. Includes a Leadership Briefing
             you can forward.
           </p>
         </div>
@@ -622,9 +625,9 @@ function Footer() {
               <span className="text-lg font-bold text-white">BurnoutIQ</span>
             </div>
             <p className="text-sm text-white/40 leading-relaxed mb-4 max-w-xs">
-              A workplace burnout assessment grounded in published burnout
-              research, with original items authored by Pivot Training &amp;
-              Development.
+              A non-clinical workplace burnout screening and signal tool grounded
+              in published burnout research, with original items authored by Pivot
+              Training &amp; Development.
             </p>
             <p className="text-xs text-white/25">
               Built by Pivot Training &amp; Development

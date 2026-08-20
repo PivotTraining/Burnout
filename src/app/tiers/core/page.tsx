@@ -6,27 +6,27 @@ import { Check } from "lucide-react";
 export const metadata = {
   title: "BurnoutIQ Core · 90-day engagement",
   description:
-    "BurnoutIQ Core is a 90-day org-wide engagement: full archetype mapping, manager training, employee workshops, department-level dashboard, executive readout. $35,000–$95,000.",
+    "BurnoutIQ Core is a 90-day workforce burnout engagement with org-wide screening, privacy-protected aggregate findings, manager training, employee workshops, follow-up measurement, and an executive readout.",
   alternates: { canonical: "/tiers/core" },
 };
 
 export default function CoreTier() {
   const deliverables = [
-    "Full org assessment with archetype mapping by department",
+    "Org-wide BurnoutIQ assessment with privacy-protected aggregate patterns by eligible group",
     "4-session manager training series (live, recorded for replay)",
-    "2–3 employee workshop sessions tailored to dominant archetypes",
-    "Department-level burnout dashboard with archetype heatmap",
+    "2–3 employee workshop sessions tailored to the strongest aggregate signals",
+    "Department-level burnout dashboard with small-group suppression",
     "Quarterly executive readout (60 min, slide-ready)",
     "Manager nudge sequence for the 90-day window",
-    "Custom intervention playbook per archetype",
-    "Optional add-on: BurnoutIQ Subscription for ongoing pulse",
+    "Intervention hypotheses tied to the strongest workplace-driver signals",
+    "Optional add-on: BurnoutIQ Subscription for ongoing pulse measurement",
   ];
   const phases = [
-    { range: "Day 0–14", title: "Diagnostic", desc: "Org-wide BurnoutIQ assessment + archetype mapping." },
+    { range: "Day 0–14", title: "Baseline screening", desc: "Org-wide BurnoutIQ assessment and privacy-protected aggregate readout." },
     { range: "Day 15–30", title: "Manager activation", desc: "Sessions 1–2 of the manager training series. Toolkit drops." },
-    { range: "Day 31–60", title: "Employee workshops", desc: "Live sessions calibrated to your dominant archetype mix." },
+    { range: "Day 31–60", title: "Employee workshops", desc: "Live sessions calibrated to the strongest aggregate workplace signals." },
     { range: "Day 61–80", title: "Reinforce", desc: "Manager training sessions 3–4, nudge cadence active." },
-    { range: "Day 81–90", title: "Executive readout", desc: "What we found, what changed, what’s next." },
+    { range: "Day 81–90", title: "Remeasure + executive readout", desc: "Compare the follow-up signal with baseline, document what changed, and identify next priorities without assuming causation." },
   ];
   return (
     <>
@@ -34,15 +34,15 @@ export default function CoreTier() {
       <main className="pt-20">
         <section className="section-wide py-16">
           <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
-            Tier 2 · Where most enterprise deals land
+            Tier 2 · 90-day organizational engagement
           </p>
           <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">
             BurnoutIQ Core
           </h1>
           <p className="text-xl text-navy/60 max-w-2xl leading-relaxed mb-8">
-            A 90-day engagement that diagnoses, trains, and measures. Built for VPs of HR
-            and CHRO direct reports who need to ship a measurable change inside one
-            fiscal quarter.
+            A 90-day engagement that screens, trains, tests intervention hypotheses,
+            and remeasures. Built for people leaders who need a structured workforce
+            response without treating a screening signal as a clinical diagnosis.
           </p>
           <div className="flex flex-wrap gap-6 text-sm">
             <Stat label="Investment" value="$35,000–$95,000" />
@@ -83,10 +83,11 @@ export default function CoreTier() {
 
         <section className="bg-navy text-white py-20">
           <div className="section-wide max-w-3xl">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Run the math</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Model the business case</h2>
             <p className="text-lg text-white/70 mb-8">
-              Core typically pays back inside the engagement window. Use the ROI
-              calculator to see what your numbers look like.
+              Use the ROI calculator to model your own assumptions about turnover,
+              absenteeism, and workforce costs. Estimates are planning inputs, not
+              guaranteed outcomes from a BurnoutIQ engagement.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/roi-calculator" className="inline-flex items-center px-6 py-3 rounded-lg bg-ember hover:bg-ember-light font-semibold">

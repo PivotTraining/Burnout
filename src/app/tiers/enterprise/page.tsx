@@ -6,17 +6,18 @@ import { Check } from "lucide-react";
 export const metadata = {
   title: "BurnoutIQ Enterprise · 12-month transformation",
   description:
-    "BurnoutIQ Enterprise is a 12-month, multi-site transformation: custom archetype playbooks per division, executive coaching, year-over-year impact study. $175,000–$500,000+.",
+    "BurnoutIQ Enterprise is a 12-month, multi-site workforce burnout program with screening, privacy-protected aggregate reporting, leadership development, follow-up measurement, and strategic reviews.",
   alternates: { canonical: "/tiers/enterprise" },
 };
 
 export default function EnterpriseTier() {
   const deliverables = [
     "Multi-site rollout across business units",
-    "Custom archetype playbooks per division",
+    "Privacy-protected aggregate BurnoutIQ reporting by eligible division",
+    "Workplace-driver playbooks aligned to aggregate signals",
     "Executive coaching for up to 6 leaders",
     "Quarterly strategic reviews with the C-suite",
-    "Year-over-year impact study",
+    "Year-over-year measurement and comparison",
     "Internal license to use BurnoutIQ language during contract year",
     "Dedicated BurnoutIQ engagement lead",
     "BurnoutIQ Subscription included (Tier 4 SaaS layer)",
@@ -28,15 +29,15 @@ export default function EnterpriseTier() {
       <main className="pt-20">
         <section className="section-wide py-16">
           <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
-            Tier 3 · The 12-month behavioral diagnostic
+            Tier 3 · 12-month workforce signal program
           </p>
           <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">
             BurnoutIQ Enterprise
           </h1>
           <p className="text-xl text-navy/60 max-w-2xl leading-relaxed mb-8">
-            A 12-month transformation for organizations that want a single behavioral
-            diagnostic running across every division. CHRO-level signoff. Year-over-year
-            measurement. Internal license to the methodology.
+            A 12-month transformation for organizations that want one consistent
+            workplace burnout screening and signal system across divisions, with
+            privacy-protected aggregate reporting and year-over-year measurement.
           </p>
           <div className="flex flex-wrap gap-6 text-sm">
             <Stat label="Investment" value="$175,000–$500,000+" />
@@ -64,10 +65,10 @@ export default function EnterpriseTier() {
           <h2 className="text-3xl font-bold text-navy mb-6">12-month rhythm</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
-              { q: "Q1", t: "Diagnose", d: "Org-wide assessment, archetype mapping by division, baseline metrics." },
-              { q: "Q2", t: "Deploy", d: "Manager training cohorts, custom playbooks, exec coaching kicks off." },
-              { q: "Q3", t: "Reinforce", d: "Mid-year impact review. Subscription nudge cadence active org-wide." },
-              { q: "Q4", t: "Measure", d: "Year-over-year impact study, peer-review submission, renewal scope." },
+              { q: "Q1", t: "Baseline", d: "Org-wide assessment, privacy-protected aggregate patterns by eligible division, and baseline priorities." },
+              { q: "Q2", t: "Deploy", d: "Manager training cohorts, workplace-driver playbooks, and executive coaching begin." },
+              { q: "Q3", t: "Reinforce", d: "Mid-year review and ongoing pulse measurement across eligible groups." },
+              { q: "Q4", t: "Remeasure", d: "Year-over-year comparison, lessons learned, next priorities, and renewal scope." },
             ].map((p) => (
               <div key={p.q} className="rounded-2xl border border-border-gray p-5">
                 <div className="text-xs uppercase tracking-widest text-ember font-bold">{p.q}</div>
@@ -82,9 +83,9 @@ export default function EnterpriseTier() {
           <div className="section-wide max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">This is a CHRO-level conversation</h2>
             <p className="text-lg text-white/70 mb-8">
-              Enterprise engagements start with a 60-minute working session with Chris
-              and our clinical bench. Bring your retention numbers, claims data, and the
-              departments you’re most worried about.
+              Enterprise engagements start with a working session with the Pivot team.
+              Bring the workforce outcomes you care about, the divisions you want to
+              understand, and the decisions the data needs to support.
             </p>
             <Link href="/briefing" className="inline-flex items-center px-6 py-3 rounded-lg bg-ember hover:bg-ember-light font-semibold">
               Request an Enterprise working session →

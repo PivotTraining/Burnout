@@ -17,11 +17,22 @@ export default function MethodologyDisclosure() {
       </button>
       {open && (
         <div className="px-5 pb-5 text-sm text-navy/70 leading-relaxed space-y-3">
-          <p>BurnoutIQ uses 36 items across 9 subscales. Each subscale is averaged across its items and rescaled to 0–100. PA items are reverse-scored — a high PA percentage means a higher loss of effectiveness.</p>
-          <p>The composite Burnout Risk weights the three Maslach symptoms: 45% EE + 30% DP + 25% PA. When the dominant workplace driver lands in High or Severe territory, a small amplification (2.5–5 pts) is added.</p>
+          <p>
+            BurnoutIQ uses <strong>45 scored items across 9 dimensions</strong>, plus 3 optional open-ended prompts that do not affect the score. Each dimension is rescaled to 0–100. The seven positively worded effectiveness items are reverse-scored so a higher Reduced Effectiveness percentage means greater concern.
+          </p>
+          <p>
+            Composite Burnout Risk weights the three symptom dimensions: 45% Emotional Exhaustion + 30% Detachment / Cynicism + 25% Reduced Effectiveness. A highly elevated workplace driver adds a small 2.5–5 point product-design adjustment. That adjustment is a heuristic, not a validated causal coefficient.
+          </p>
           <p>Risk bands: Low &lt; 30%, Moderate 30–49%, High 50–69%, Severe ≥ 70%.</p>
-          <p>Sector benchmarks are <strong>approximate</strong>. Published MBI / Areas of Worklife norms vary widely and use different scales. We translate published medians and tertile thresholds into a (median, spread) pair per sector and interpolate. Treat the percentile as directional, not measured.</p>
-          <p className="text-navy/40 text-xs">Full lineage and citations on the <Link href="/methodology/burnoutiq" className="text-ember underline font-semibold">BurnoutIQ methodology page</Link>.</p>
+          <p>
+            Sector benchmarks are <strong>approximate and directional</strong>. Published studies use different instruments, populations, scales, and settings. BurnoutIQ does not currently claim validated sector percentile norms.
+          </p>
+          <p>
+            BurnoutIQ is a <strong>workplace burnout screening and signal tool</strong>, not a clinical diagnostic instrument. It has not yet undergone peer-reviewed psychometric validation as an independent instrument.
+          </p>
+          <p className="text-navy/40 text-xs">
+            Full lineage, privacy guardrails, scoring rules, and validation status are documented on the <Link href="/methodology/burnoutiq" className="text-ember underline font-semibold">BurnoutIQ methodology page</Link>.
+          </p>
         </div>
       )}
     </div>
