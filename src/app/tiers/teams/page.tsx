@@ -1,41 +1,28 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight, ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "BurnoutIQ Teams · 30-day org diagnostic",
+  title: "BurnoutIQ Teams · 30-day workplace burnout screening",
   description:
-    "BurnoutIQ Teams is a 30-day organizational burnout diagnostic. Org-wide assessment, manager training, executive readout, and 3 months of Continuum included for every employee. $9,750–$14,750.",
+    "BurnoutIQ Teams is a 30-day workplace burnout screening and signal engagement. Org-wide assessment, aggregate heatmaps, manager training, executive readout, and 3 months of Continuum included for every employee. $9,750–$14,750.",
   alternates: { canonical: "/tiers/teams" },
 };
 
 const TEAMS_BANDS = [
-  {
-    headcount: "Up to 50",
-    price: "$9,750",
-    note: "Best for one team or small org",
-  },
-  {
-    headcount: "Up to 100",
-    price: "$11,750",
-    note: "Most common",
-    featured: true,
-  },
-  {
-    headcount: "Up to 250",
-    price: "$14,750",
-    note: "Multi-department",
-  },
+  { headcount: "Up to 50", price: "$9,750", note: "Best for one team or small org" },
+  { headcount: "Up to 100", price: "$11,750", note: "Most common", featured: true },
+  { headcount: "Up to 250", price: "$14,750", note: "Multi-department" },
 ];
 
 const TIMELINE = [
   { day: "Day 0", title: "Exec kickoff", desc: "45-min call. Confirm objectives, comms plan, calibration on what “success” means." },
-  { day: "Days 0–14", title: "Org-wide assessment", desc: "Every employee takes the 45-item BurnoutIQ. Each gets their personal results plus the Pro PDF." },
-  { day: "Day 14", title: "Department heatmap", desc: "Burnout + driver heatmap by department, delivered as a forwardable PDF." },
-  { day: "Day 21", title: "Manager training", desc: "90-min live session: reading the heatmap, archetype-aware nudge skills, what to do this week." },
-  { day: "Day 30", title: "Executive readout", desc: "60-min readout to your leadership team with custom 90-day action plan." },
-  { day: "Days 30–120", title: "3 months of Continuum", desc: "Every employee gets BurnoutIQ Continuum for 3 months. Quarterly trend visibility for leadership." },
+  { day: "Days 0–14", title: "Org-wide assessment", desc: "Every employee takes the 45-item BurnoutIQ. Each gets their confidential personal results plus the Pro PDF." },
+  { day: "Day 14", title: "Aggregate heatmap", desc: "Burnout + driver heatmap by eligible reporting group, delivered as a forwardable PDF. Groups below the privacy threshold are suppressed." },
+  { day: "Day 21", title: "Manager training", desc: "90-min live session: reading aggregate signals, archetype-aware nudge skills, what to do this week." },
+  { day: "Day 30", title: "Executive readout", desc: "60-min readout to your leadership team with custom 90-day action plan based on aggregate findings." },
+  { day: "Days 30–120", title: "3 months of Continuum", desc: "Every employee gets BurnoutIQ Continuum for 3 months. Aggregate trend visibility for leadership." },
 ];
 
 const FIVE_FIGURE_MATH = [
@@ -43,7 +30,7 @@ const FIVE_FIGURE_MATH = [
   ["3 mo of Continuum", "$9 × 3 × 100 employees", "$2,700"],
   ["Exec kickoff (45 min)", "Custom alignment", "—"],
   ["Manager training (90 min, live)", "Custom delivery", "—"],
-  ["Department heatmap PDF", "Custom analysis", "—"],
+  ["Aggregate heatmap PDF", "Custom analysis", "—"],
   ["Executive readout (60 min) + 90-day plan", "Custom delivery", "—"],
   ["Bundle", "Up to 100 employees", "$11,750"],
 ];
@@ -54,17 +41,13 @@ export default function TeamsTier() {
       <Navbar forceScrolled />
       <main className="pt-20">
         <section className="section-wide py-16">
-          <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
-            Teams · Five-figure value
-          </p>
-          <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">
-            BurnoutIQ Teams
-          </h1>
+          <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">Teams · Five-figure value</p>
+          <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">BurnoutIQ Teams</h1>
           <p className="text-xl text-navy/60 max-w-2xl leading-relaxed mb-8">
-            A 30-day organizational burnout diagnostic. Org-wide assessment, department
-            heatmap, manager training, executive readout, and 3 months of Continuum for
-            every employee. The most common path between “we think we have a burnout
-            problem” and “here’s the plan.”
+            A 30-day workplace burnout screening and signal engagement. Org-wide assessment,
+            aggregate heatmap, manager training, executive readout, and 3 months of Continuum for
+            every employee. The most common path between “we think we have a burnout problem”
+            and “here are the workforce signals and the next hypotheses to test.”
           </p>
           <div className="flex flex-wrap gap-6 text-sm mb-8">
             <Stat label="Investment" value="$9,750–$14,750" />
@@ -73,57 +56,49 @@ export default function TeamsTier() {
             <Stat label="Audience" value="50–250 employees" />
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/briefing"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-bold"
-            >
-              Schedule a 20-min Briefing
-              <ArrowRight className="w-5 h-5" />
+            <Link href="/briefing" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-bold">
+              Schedule a 20-min Briefing <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link
-              href="/demo"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white border border-navy/20 hover:border-navy/40 text-navy font-semibold"
-            >
+            <Link href="/demo" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white border border-navy/20 hover:border-navy/40 text-navy font-semibold">
               Preview the live console →
             </Link>
           </div>
           <p className="text-xs text-navy/40 mt-3 max-w-xl">
-            The preview opens the console with sample-org data (Acme Health System, 1,240 employees).
-            No login required. Real customer data is never shown.
+            The preview opens the console with sample-org data. No login required. Real customer data is never shown.
           </p>
         </section>
 
-        {/* Pricing bands */}
         <section className="bg-cream py-16">
+          <div className="section-wide">
+            <div className="max-w-4xl rounded-2xl bg-white border border-border-gray p-6 md:p-8 flex gap-4 items-start">
+              <ShieldCheck className="w-7 h-7 text-ember shrink-0 mt-0.5" />
+              <div>
+                <h2 className="text-xl font-bold text-navy mb-2">Individual results stay confidential.</h2>
+                <p className="text-navy/65 leading-relaxed">
+                  Employees receive their own personal results. HR, managers, and leaders receive aggregate findings only. No department or subgroup with fewer than 5 respondents is reported as a breakout; small groups are suppressed or rolled into a larger reporting unit to reduce re-identification risk.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-cream pb-16">
           <div className="section-wide">
             <h2 className="text-3xl font-bold text-navy mb-8">Three bands. One outcome.</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {TEAMS_BANDS.map((b) => (
-                <div
-                  key={b.price}
-                  className={`rounded-2xl bg-white p-6 border-2 ${b.featured ? "border-ember" : "border-border-gray"} relative`}
-                >
-                  {b.featured && (
-                    <span className="absolute -top-3 left-6 bg-ember text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                      Most common
-                    </span>
-                  )}
+                <div key={b.price} className={`rounded-2xl bg-white p-6 border-2 ${b.featured ? "border-ember" : "border-border-gray"} relative`}>
+                  {b.featured && <span className="absolute -top-3 left-6 bg-ember text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Most common</span>}
                   <p className="text-xs uppercase tracking-widest font-bold text-navy/40">{b.headcount}</p>
                   <p className="text-3xl font-extrabold text-navy mt-2 mb-1">{b.price}</p>
                   <p className="text-sm text-navy/60 mb-4">{b.note}</p>
-                  <Link
-                    href="/briefing"
-                    className="text-sm text-ember font-bold inline-flex items-center gap-1"
-                  >
-                    Schedule kickoff <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  <Link href="/briefing" className="text-sm text-ember font-bold inline-flex items-center gap-1">Schedule kickoff <ArrowRight className="w-3.5 h-3.5" /></Link>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Timeline */}
         <section className="section-wide py-16">
           <h2 className="text-3xl font-bold text-navy mb-8">30-day timeline</h2>
           <ol className="space-y-6 max-w-3xl">
@@ -139,81 +114,52 @@ export default function TeamsTier() {
           </ol>
         </section>
 
-        {/* Five-figure math */}
         <section className="bg-navy py-16 text-white">
           <div className="section-wide max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">
-              Why it’s a five-figure deliverable
-            </p>
-            <h2 className="text-3xl font-bold mb-6">
-              Each piece justifies a few thousand alone. Bundled, it lands at $11,750.
-            </h2>
+            <p className="text-xs font-semibold uppercase tracking-widest text-ember mb-3">Why it’s a five-figure deliverable</p>
+            <h2 className="text-3xl font-bold mb-6">Each piece justifies a few thousand alone. Bundled, it lands at $11,750.</h2>
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[10px] uppercase tracking-widest text-white/40">
-                  <th className="pb-3">Component</th>
-                  <th className="pb-3">Detail</th>
-                  <th className="pb-3 text-right">Retail</th>
-                </tr>
+                <tr className="text-left text-[10px] uppercase tracking-widest text-white/40"><th className="pb-3">Component</th><th className="pb-3">Detail</th><th className="pb-3 text-right">Retail</th></tr>
               </thead>
               <tbody>
                 {FIVE_FIGURE_MATH.map(([label, detail, price], i) => (
                   <tr key={i} className={`border-t border-white/10 ${label === "Bundle" ? "font-bold" : ""}`}>
-                    <td className="py-3">{label}</td>
-                    <td className="py-3 text-white/60">{detail}</td>
-                    <td className="py-3 text-right tabular-nums">{price}</td>
+                    <td className="py-3">{label}</td><td className="py-3 text-white/60">{detail}</td><td className="py-3 text-right tabular-nums">{price}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <p className="text-xs text-white/40 mt-6">
-              Bundle reflects an effective discount on the underlying line items in
-              exchange for predictable scope and timeline. Add-ons (1:1 manager coaching,
-              custom workshop content, additional readouts) are quoted separately.
+              Bundle reflects an effective discount on the underlying line items in exchange for predictable scope and timeline. Add-ons are quoted separately.
             </p>
           </div>
         </section>
 
-        {/* What you walk away with */}
         <section className="section-wide py-16">
           <h2 className="text-3xl font-bold text-navy mb-8">What you walk away with</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl">
             {[
-              "Org-wide BurnoutIQ scores: 9 subscales, 8 archetypes, top drivers by team",
-              "Department-level heatmap PDF you can put in a board deck",
-              "Custom 90-day action plan tied to your top drivers",
-              "3 months of Continuum for every employee — ongoing trend visibility",
+              "Aggregate BurnoutIQ findings: 9 dimensions, 8 archetypes, top drivers by eligible reporting group",
+              "Privacy-protected heatmap PDF you can put in a board deck",
+              "Custom 90-day action plan tied to your top workforce signals",
+              "3 months of Continuum for every employee — ongoing aggregate trend visibility",
               "Manager training that turns the data into specific behaviors",
               "Executive readout that gives leadership a shared language",
             ].map((line) => (
               <div key={line} className="flex items-start gap-2 text-sm text-navy/80">
-                <Check className="w-4 h-4 text-ember flex-shrink-0 mt-0.5" />
-                <span>{line}</span>
+                <Check className="w-4 h-4 text-ember flex-shrink-0 mt-0.5" /><span>{line}</span>
               </div>
             ))}
           </div>
         </section>
 
-        {/* CTA */}
         <section className="bg-cream py-16">
           <div className="section-wide max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-navy mb-4">Ready to start?</h2>
-            <p className="text-navy/60 mb-6">
-              Schedule a 20-min Briefing. We’ll walk your situation, confirm the band
-              that fits, and put a kickoff date on the calendar.
-            </p>
-            <Link
-              href="/briefing"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-bold mr-3"
-            >
-              Schedule a Briefing <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="/demo"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white border border-navy/20 hover:border-navy/40 text-navy font-semibold"
-            >
-              Preview the console →
-            </Link>
+            <p className="text-navy/60 mb-6">Schedule a 20-min Briefing. We’ll walk your situation, confirm the band that fits, and put a kickoff date on the calendar.</p>
+            <Link href="/briefing" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-ember hover:bg-ember-light text-white font-bold mr-3">Schedule a Briefing <ArrowRight className="w-5 h-5" /></Link>
+            <Link href="/demo" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white border border-navy/20 hover:border-navy/40 text-navy font-semibold">Preview the console →</Link>
           </div>
         </section>
       </main>
@@ -223,10 +169,5 @@ export default function TeamsTier() {
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="text-[10px] uppercase tracking-widest text-navy/40 font-semibold">{label}</div>
-      <div className="text-base font-bold text-navy">{value}</div>
-    </div>
-  );
+  return <div><div className="text-[10px] uppercase tracking-widest text-navy/40 font-semibold">{label}</div><div className="text-base font-bold text-navy">{value}</div></div>;
 }
