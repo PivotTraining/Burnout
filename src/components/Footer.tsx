@@ -19,7 +19,7 @@ const companyLinks = [
   { label: "About", href: "/about" },
   { label: "Methodology (Recharge Method™)", href: "/methodology" },
   { label: "Case Studies", href: "/case-studies" },
-  { label: "The Six Archetypes", href: "/whitepaper/six-archetypes" },
+  { label: "The Eight BurnoutIQ Archetypes", href: "/archetypes" },
   { label: "Schedule a Briefing", href: "/briefing" },
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
@@ -33,11 +33,14 @@ export default function Footer() {
           <div>
             <p className="text-2xl font-extrabold mb-3">BurnoutIQ™</p>
             <p className="text-sm text-white/60 leading-relaxed mb-4">
-              The burnout diagnostic system. Powered by the PressureIQ archetype engine.
+              A workplace burnout screening and signal system. Powered by the PressureIQ archetype engine.
               Deployed via the Recharge Method™. Built by Pivot since 2021.
             </p>
             <p className="text-[10px] uppercase tracking-widest text-ember font-semibold">
-              Diagnose. Deploy. Defend the P&amp;L.
+              Screen. Signal. Act.
+            </p>
+            <p className="text-[11px] text-white/40 leading-relaxed mt-3">
+              BurnoutIQ is not a clinical diagnostic instrument.
             </p>
           </div>
 
