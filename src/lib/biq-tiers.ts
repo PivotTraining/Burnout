@@ -34,7 +34,7 @@ export const TIERS: Record<TierProduct, TierDef> = {
   pro: {
     product: "pro",
     name: "BurnoutIQ Pro",
-    tagline: "Your full diagnostic, your 90-day plan, twelve weeks of nudges.",
+    tagline: "Your full screening report, your 90-day plan, twelve weeks of nudges.",
     billing: { kind: "one-time", priceUsd: 19 },
     payoff: [
       "Full 9-subscale PDF report with sector-aware framing",
@@ -80,7 +80,7 @@ export const TIERS: Record<TierProduct, TierDef> = {
   teams: {
     product: "teams",
     name: "BurnoutIQ Teams",
-    tagline: "30-day org diagnostic. Five-figure results.",
+    tagline: "30-day workplace burnout screening and signal engagement.",
     billing: { kind: "quoted", range: "$12,000 – $18,000" },
     payoff: [
       "Day 0 exec kickoff (45 min) + comms plan",
