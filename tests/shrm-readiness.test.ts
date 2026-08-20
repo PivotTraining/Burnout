@@ -107,4 +107,17 @@ describe("SHRM-facing BurnoutIQ claim integrity", () => {
     expect(about).not.toContain("Average reduction in reported burnout");
     expect(about).not.toContain("Decrease in absenteeism within 90 days");
   });
+
+  it("keeps public enterprise pricing on one price book", () => {
+    expect(tierRegistry).toContain('range: "$9,750–$14,750"');
+    expect(tierRegistry).not.toContain("$12,000 – $18,000");
+    expect(tierComparison).toContain('price: "$9,750–$14,750"');
+    expect(tierComparison).toContain('price: "$35,000–$95,000"');
+    expect(tierComparison).toContain('price: "$175,000–$500,000+"');
+    expect(teams).toContain("$9,750–$14,750");
+    expect(core).toContain("$35,000–$95,000");
+    expect(enterprise).toContain("$175,000–$500,000+");
+    expect(tierComparison).not.toContain("$35,000–$75,000");
+    expect(tierComparison).not.toContain("$125,000–$300,000+");
+  });
 });
