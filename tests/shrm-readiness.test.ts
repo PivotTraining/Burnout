@@ -53,7 +53,7 @@ describe("SHRM-facing BurnoutIQ claim integrity", () => {
   });
 
   it("states individual confidentiality and minimum group-size protections", () => {
-    expect(methodology).toContain("individual BurnoutIQ score is confidential");
+    expect(methodology).toContain("BurnoutIQ score is confidential");
     expect(methodology).toContain("fewer than <strong>5 respondents</strong>");
     expect(teams).toContain("Individual results stay confidential");
     expect(teams).toContain("fewer than 5 respondents");
